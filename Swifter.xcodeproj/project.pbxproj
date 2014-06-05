@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC2CDB181940E33600176A81 /* PartialFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */; };
+		FC2CDB191940E3FC00176A81 /* PartialFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC603922193E740D000538B1 /* PartialFunction.swift */; };
+		FC603923193E740D000538B1 /* PartialFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC603922193E740D000538B1 /* PartialFunction.swift */; };
 		FC7A0EC1193E72710045F66D /* Swifter.h in Headers */ = {isa = PBXBuildFile; fileRef = FC7A0EC0193E72710045F66D /* Swifter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FC7A0EC7193E72710045F66D /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC7A0EBB193E72710045F66D /* Swifter.framework */; };
 		FC7A0ECE193E72710045F66D /* SwifterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC7A0ECD193E72710045F66D /* SwifterTests.swift */; };
@@ -23,6 +26,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialFunctionTests.swift; sourceTree = "<group>"; };
+		FC603922193E740D000538B1 /* PartialFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialFunction.swift; sourceTree = "<group>"; };
+		FC603924193E7436000538B1 /* SwifterPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = SwifterPlayground.playground; sourceTree = "<group>"; };
 		FC7A0EBB193E72710045F66D /* Swifter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Swifter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC7A0EBF193E72710045F66D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FC7A0EC0193E72710045F66D /* Swifter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Swifter.h; sourceTree = "<group>"; };
@@ -72,6 +78,8 @@
 			isa = PBXGroup;
 			children = (
 				FC7A0EC0193E72710045F66D /* Swifter.h */,
+				FC603922193E740D000538B1 /* PartialFunction.swift */,
+				FC603924193E7436000538B1 /* SwifterPlayground.playground */,
 				FC7A0EBE193E72710045F66D /* Supporting Files */,
 			);
 			path = Swifter;
@@ -89,6 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				FC7A0ECD193E72710045F66D /* SwifterTests.swift */,
+				FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */,
 				FC7A0ECB193E72710045F66D /* Supporting Files */,
 			);
 			path = SwifterTests;
@@ -210,6 +219,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC603923193E740D000538B1 /* PartialFunction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,7 +227,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC2CDB191940E3FC00176A81 /* PartialFunction.swift in Sources */,
 				FC7A0ECE193E72710045F66D /* SwifterTests.swift in Sources */,
+				FC2CDB181940E33600176A81 /* PartialFunctionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,6 +332,7 @@
 		FC7A0ED2193E72710045F66D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -329,12 +342,14 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		FC7A0ED3193E72710045F66D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -398,6 +413,7 @@
 				FC7A0ED3193E72710045F66D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		FC7A0ED4193E72710045F66D /* Build configuration list for PBXNativeTarget "SwifterTests" */ = {
 			isa = XCConfigurationList;
@@ -406,6 +422,7 @@
 				FC7A0ED6193E72710045F66D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
