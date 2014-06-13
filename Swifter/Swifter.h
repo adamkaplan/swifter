@@ -14,6 +14,5 @@ FOUNDATION_EXPORT double SwifterVersionNumber;
 //! Project version string for Swifter.
 FOUNDATION_EXPORT const unsigned char SwifterVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <Swifter/PublicHeader.h>
-
-
+// In this header, you should import all the public headers of your framework
+// using statements like #import <Swifter/PublicHeader.h>

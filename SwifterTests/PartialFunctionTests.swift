@@ -10,22 +10,12 @@ import XCTest
 
 class PartialFunctionTests: XCTestCase {
     
-    /*override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }*/
-
     func testCheckOnly() {
         var wasCheckOnly: Bool = false
         
         var reject = PartialFunction<Int, String> { (_, checkOnly: Bool) in
             wasCheckOnly = checkOnly
-            return .NoMatch
+            return .Undefined
         }
         
         reject.isDefinedAt(0)
@@ -35,9 +25,9 @@ class PartialFunctionTests: XCTestCase {
     func testAccept() {
         var acceptEven = PartialFunction<Int, String> { (i: Int, _) in
             if i % 2 == 0 {
-                return .Match("even")
+                return .Defined("even")
             } else {
-                return .NoMatch
+                return .Undefined
             }
         }
         
@@ -50,13 +40,13 @@ class PartialFunctionTests: XCTestCase {
         
         var reject = PartialFunction<Int, String> { _,_ in
             pf1Called = true
-            return .NoMatch
+            return .Undefined
         }
         
         var accept = PartialFunction<Int, String> { _,_ in
             pf2Called = true
             pf1CalledBeforePf2 = pf1Called
-            return .Match("accepted")
+            return .Defined("accepted")
         }
         
         let result1 = reject.applyOrElse(0, defaultFun: accept)
@@ -68,11 +58,54 @@ class PartialFunctionTests: XCTestCase {
         var acceptFirst = PartialFunction<Int, String> { (Int, Bool) in
             pf2Called = true
             pf1CalledBeforePf2 = pf1Called
-            return .Match("bam!")
+            return .Defined("bam!")
         }
-
+        
         let result2 = acceptFirst.applyOrElse(0, defaultFun: accept)
         XCTAssertEqualObjects(result2, "bam!", "The result should be `accept`")
+    }
+    
+    func testOrElse() {
+        var firstCalled = false, secondCalled = false, firstCalledBeforeSecond = false
+        var numCalls = 0
+        
+        var first = PartialFunction<Int, String> { _, _ in
+            firstCalled = true
+            firstCalledBeforeSecond = firstCalled
+            numCalls++
+            return .Undefined
+        }
+        
+        var second = PartialFunction<Int, String> { _, _ in
+            secondCalled = true
+            firstCalledBeforeSecond = firstCalled
+            return .Defined("second")
+        }
+        
+        let right = first.orElse(second).apply(0)
+        XCTAssertTrue(firstCalled, "First partial function in orElse was called")
+        XCTAssertTrue(secondCalled, "Second partial function in orElse was called")
+        XCTAssertTrue(firstCalledBeforeSecond, "The first partial function must be called before the second in orElse")
+        XCTAssertEqualObjects(right, "second", "The result should be `second`")
+        
+        firstCalled = false
+        secondCalled = false
+        firstCalledBeforeSecond = false
+        
+        let left = second.orElse(first).apply(0)
+        XCTAssertFalse(firstCalled, "First partial function should not be called")
+        XCTAssertTrue(secondCalled, "Second partial function should be called")
+        XCTAssertEqualObjects(left, "second", "The result should be `second`")
+        
+        numCalls = 0
+        firstCalled = false
+        secondCalled = false
+        firstCalledBeforeSecond = false
+        
+        let none = first.orElse(first).apply(0)
+        XCTAssertEqual(numCalls, 2, "First partial function should be called twice (not accepting)")
+        XCTAssertNil(none, "The result should be nil when neither left or right accept")
+        
     }
     
     func testAndThen() {
@@ -80,21 +113,21 @@ class PartialFunctionTests: XCTestCase {
         
         var reject = PartialFunction<Int, Int> { _,_ in
             rejectCalled = true
-            return .NoMatch
+            return .Undefined
         }
         
         var first = PartialFunction<Int, String> { _,_ in
             firstCalled = true
-            return .Match("first")
+            return .Defined("first")
         }
         
         var second = PartialFunction<String, String> { (s: String, Bool) in
             secondCalled = true
             firstCalledBeforeSecond = firstCalled
             if s == "first" {
-                return .Match("second")
+                return .Defined("second")
             } else {
-                return .NoMatch
+                return .Undefined
             }
         }
         
@@ -123,54 +156,4 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertTrue(rejectCalled, "Reject partial function should be called")
         XCTAssertNil(failTwice, "Reject should not accept")
     }
-    
-    func testOrElse() {
-        var firstCalled = false, secondCalled = false, firstCalledBeforeSecond = false
-        var numCalls = 0
-        
-        var first = PartialFunction<Int, String> { _, _ in
-            firstCalled = true
-            firstCalledBeforeSecond = firstCalled
-            numCalls++
-            return .NoMatch
-        }
-        
-        var second = PartialFunction<Int, String> { _, _ in
-            secondCalled = true
-            firstCalledBeforeSecond = firstCalled
-            return .Match("second")
-        }
-
-        let right = first.orElse(second).apply(0)
-        XCTAssertTrue(firstCalled, "First partial function in orElse was called")
-        XCTAssertTrue(secondCalled, "Second partial function in orElse was called")
-        XCTAssertTrue(firstCalledBeforeSecond, "The first partial function must be called before the second in orElse")
-        XCTAssertEqualObjects(right, "second", "The result should be `second`")
-        
-        firstCalled = false
-        secondCalled = false
-        firstCalledBeforeSecond = false
-        
-        let left = second.orElse(first).apply(0)
-        XCTAssertFalse(firstCalled, "First partial function should not be called")
-        XCTAssertTrue(secondCalled, "Second partial function should be called")
-        XCTAssertEqualObjects(left, "second", "The result should be `second`")
-        
-        numCalls = 0
-        firstCalled = false
-        secondCalled = false
-        firstCalledBeforeSecond = false
-        
-        let none = first.orElse(first).apply(0)
-        XCTAssertEqual(numCalls, 2, "First partial function should be called twice (not accepting)")
-        XCTAssertNil(none, "The result should be nil when neither left or right accept")
-
-    }
-    
-    /*func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock() {
-            // Put the code you want to measure the time of here.
-        }
-    }*/
 }
