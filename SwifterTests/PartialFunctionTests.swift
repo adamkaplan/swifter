@@ -49,7 +49,7 @@ class PartialFunctionTests: XCTestCase {
             return .Defined("accepted")
         }
         
-        let result1 = reject.applyOrElse(0, defaultFun: accept)
+        let result1 = reject.applyOrElse(0, defaultPF: accept)
         XCTAssertTrue(pf1Called, "First partial function in applyOrElse was called")
         XCTAssertTrue(pf2Called, "Second partial function in applyOrElse was called")
         XCTAssertTrue(pf1CalledBeforePf2, "The first partial function must be called before the second in applyOrElse")
@@ -61,7 +61,7 @@ class PartialFunctionTests: XCTestCase {
             return .Defined("bam!")
         }
         
-        let result2 = acceptFirst.applyOrElse(0, defaultFun: accept)
+        let result2 = acceptFirst.applyOrElse(0, defaultPF: accept)
         XCTAssertEqualObjects(result2, "bam!", "The result should be `accept`")
     }
     
@@ -155,5 +155,63 @@ class PartialFunctionTests: XCTestCase {
         let failTwice = reject.andThen(reject).apply(0)
         XCTAssertTrue(rejectCalled, "Reject partial function should be called")
         XCTAssertNil(failTwice, "Reject should not accept")
+    }
+    
+    func testPatternMatch1() {
+        // match with
+        // | n when n % 2 == 0 && n <= 10 -> Some +n
+        // | n when n % 2 != 0 && n <= 10 -> Some -n
+        // | _ -> None
+        let case1: PartialFunction<Int,Int> = { $0 % 2 == 0 && $0 <= 10 } =|= { +$0 }
+        let case2: PartialFunction<Int,Int> = { $0 % 2 != 0 && $0 <= 10 } =|= { -$0 }
+        let patternMatch1: PartialFunction<Int,Int> =
+            case1 |
+            case2 //|
+//            PartialFunction<Int,Int>( { (i: Int, _) in
+//                if i % 2 == 0 && i <= 10 {
+//                    return .Defined(+i)
+//                } else {
+//                    return .Undefined
+//                }
+//                }) |
+//            PartialFunction<Int,Int>( { (i: Int, _) in
+//                if i % 2 != 0 && i <= 10 {
+//                    return .Defined(-i)
+//                } else {
+//                    return .Undefined
+//                }
+//                }) |
+//            ({ $0 % 2 == 0 && $0 <= 10 } =|= { +$0 }) |
+//            ({ $0 % 2 != 0 && $0 <= 10 } =|= { -$0 })
+
+        XCTAssertEqualObjects((-5 ~|> patternMatch1)!, 05, "Second case")
+        XCTAssertEqualObjects((04 ~|> patternMatch1)!, 04, "First case")
+        XCTAssertEqualObjects((10 ~|> patternMatch1)!, 10, "First case")
+        XCTAssertEqualObjects((11 ~|> patternMatch1), nil, "Third case")
+    }
+    
+    func testPatternMatch2() {
+         // match with
+         // | 1::2::_ -> Some "Hello"
+         // | 0::1::_ -> Some "Goodbye"
+         // | [3, a, 5] -> Some (string_of_int (5 * a))
+         // | _ -> None
+        let case1: PartialFunction<Int[],String> = { $0[0] == 1 && $0[1] == 2 && $0.count >= 3 } =|= { _ in "Hello" }
+        let case2: PartialFunction<Int[],String> = { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } =|= { _ in "Goodbye" }
+        let case3: PartialFunction<Int[],String> = { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } =|= { "\(5 * $0[1])" }
+        let patternMatch2: PartialFunction<Int[],String> =
+            case1 |
+            case2 |
+            case3 //|
+//            { $0[0] == 1 && $0[1] == 2 && $0.count >= 3 } =|= { _ in "Hello" } |
+//            { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } =|= { _ in "Goodbye" } |
+//            { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } =|= { "\(5 * $0[1])" }
+        
+        XCTAssertEqualObjects(([1, 2] ~|> patternMatch2), nil)
+        XCTAssertEqualObjects(([1, 2, 3] ~|> patternMatch2)!, "Hello")
+        XCTAssertEqualObjects(([0, 1, 2, 3, 4, 5] ~|> patternMatch2)!, "Goodbye")
+        XCTAssertEqualObjects(([3, 20, 5] ~|> patternMatch2)!, "100")
+        XCTAssertEqualObjects(([3, 0, 5] ~|> patternMatch2)!, "0")
+        XCTAssertEqualObjects(([3, 4, 5, 6] ~|> patternMatch2), nil)
     }
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0BDA8EAF1952442C005760CF /* Array+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDA8EAE1952442C005760CF /* Array+Functional.swift */; };
 		FC2CDB181940E33600176A81 /* PartialFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */; };
 		FC2CDB191940E3FC00176A81 /* PartialFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC603922193E740D000538B1 /* PartialFunction.swift */; };
 		FC603923193E740D000538B1 /* PartialFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC603922193E740D000538B1 /* PartialFunction.swift */; };
@@ -26,9 +27,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0BDA8EAE1952442C005760CF /* Array+Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Functional.swift"; sourceTree = "<group>"; };
 		FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialFunctionTests.swift; sourceTree = "<group>"; };
 		FC603922193E740D000538B1 /* PartialFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialFunction.swift; sourceTree = "<group>"; };
-		FC603924193E7436000538B1 /* SwifterPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = SwifterPlayground.playground; sourceTree = "<group>"; };
+		FC603924193E7436000538B1 /* PartialFunctionPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; name = PartialFunctionPlayground.playground; path = Swifter/PartialFunctionPlayground.playground; sourceTree = SOURCE_ROOT; };
 		FC7A0EBB193E72710045F66D /* Swifter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Swifter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC7A0EBF193E72710045F66D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FC7A0EC0193E72710045F66D /* Swifter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Swifter.h; sourceTree = "<group>"; };
@@ -56,6 +58,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B191EFD1953367F007C6715 /* PartialFunction */ = {
+			isa = PBXGroup;
+			children = (
+				0BDA8EAE1952442C005760CF /* Array+Functional.swift */,
+				FC603922193E740D000538B1 /* PartialFunction.swift */,
+				FC603924193E7436000538B1 /* PartialFunctionPlayground.playground */,
+			);
+			name = PartialFunction;
+			sourceTree = "<group>";
+		};
 		FC7A0EB1193E72710045F66D = {
 			isa = PBXGroup;
 			children = (
@@ -78,8 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				FC7A0EC0193E72710045F66D /* Swifter.h */,
-				FC603922193E740D000538B1 /* PartialFunction.swift */,
-				FC603924193E7436000538B1 /* SwifterPlayground.playground */,
+				0B191EFD1953367F007C6715 /* PartialFunction */,
 				FC7A0EBE193E72710045F66D /* Supporting Files */,
 			);
 			path = Swifter;
@@ -219,6 +230,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BDA8EAF1952442C005760CF /* Array+Functional.swift in Sources */,
 				FC603923193E740D000538B1 /* PartialFunction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

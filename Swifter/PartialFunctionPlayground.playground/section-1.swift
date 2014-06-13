@@ -1,3 +1,5 @@
+// Playground - noun: a place where people can play
+
 //
 //  PartialFunction.swift
 //  Swifter
@@ -37,7 +39,7 @@ enum DefinedResult<Z> {
     }
     
     /* Applies this PartialFunction to `a`, and in the case that 'a' is undefined
-     * for the function, applies defaultPF to `a`. */
+    * for the function, applies defaultPF to `a`. */
     func applyOrElse(a: A, defaultPF: DefaultPF) -> Z? {
         switch applyOrCheck(a, false) {
         case .Defined(let p):
@@ -65,9 +67,9 @@ enum DefinedResult<Z> {
         return AndThen<A,B,C>(f1: self, f2: nextPF)
     }
     
-//    // class constants are not yet available with generic classes
-//    class let null: PartialFunction<Any,Any> = PartialFunction( { _ in .Undefined } )
-//    class let iden: PartialFunction<A,A> = PartialFunction( { .Defined($0.0) } )
+    //    // class constants are not yet available with generic classes
+    //    class let null: PartialFunction<Any,Any> = PartialFunction( { _ in .Undefined } )
+    //    class let iden: PartialFunction<A,A> = PartialFunction( { .Defined($0.0) } )
 }
 
 /* TODO: make this private. Apple has promised Swift will get access modifiers */
@@ -185,3 +187,76 @@ operator infix ~|> {precedence 32}
 @infix func ~|> <A,B> (value: A, pf: PartialFunction<A,B>) -> B? {
     return pf.apply(value)
 }
+
+extension Array {
+    
+    func collect<B>(pf: PartialFunction<T,B>) -> Array<B> {
+        return (self.filter(pf.isDefinedAt)).map { pf.apply($0)! }
+    }
+    
+}
+
+
+let sample = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+let acceptEven = PartialFunction<Int, Int> { (i: Int, _) in
+    if i % 2 == 0 {
+        return .Defined(i)
+    } else {
+        return .Undefined
+    }
+}
+
+sample.filter(acceptEven.isDefinedAt)
+sample.collect(acceptEven)
+
+let acceptOdd = PartialFunction<Int, Int> { (i: Int, _) in
+    if i % 2 != 0 {
+        return .Defined(i)
+    } else {
+        return .Undefined
+    }
+}
+
+sample.filter(acceptOdd.isDefinedAt)
+
+let acceptNaturalNumbers = acceptEven.orElse(acceptOdd)
+
+sample.filter(acceptNaturalNumbers.isDefinedAt)
+
+let acceptNoNaturalNumbers = acceptEven.andThen(acceptOdd);
+
+sample.filter(acceptNoNaturalNumbers.isDefinedAt)
+sample.collect(acceptNoNaturalNumbers)
+
+
+operator infix /~ {}
+@infix func /~ (num: Int, denom: Int) -> Int? {
+    let divide = PartialFunction<(Int, Int), Int>( { (ints: (Int, Int), _) in
+        let (num, denom) = ints
+        if denom != 0 {
+            return .Defined(num/denom)
+        } else {
+            return .Undefined
+        }
+        })
+    
+    return divide.apply(num, denom)
+}
+
+6 /~ 00
+6 /~ 05
+6 /~ 15
+
+
+// match with
+// | n when n % 2 == 0 && n <= 10 -> Some +n
+// | n when n % 2 != 0 && n <= 10 -> Some -n
+// | _ -> None
+let patt1: PartialFunction<Int,Int> = { $0 % 2 == 0 && $0 <= 10 } =|= { +$0 }
+let patt2: PartialFunction<Int,Int> = { $0 % 2 != 0 && $0 <= 10 } =|= { -$0 }
+
+-5 ~|> patt1 | patt2
+04 ~|> patt1 | patt2
+10 ~|> patt1 | patt2
+11 ~|> patt1 | patt2
