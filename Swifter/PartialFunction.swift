@@ -9,8 +9,8 @@
 import Foundation
 
 enum DefinedResult<Z> {
-    case Defined(Z)
-    case Undefined
+    case Defined(Z) // Defined(A,Z)
+    case Undefined  // Undefined(A)
 }
 
 @objc class PartialFunction<A,B> {

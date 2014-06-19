@@ -10,7 +10,7 @@ import XCTest
 
 class PartialFunctionTests: XCTestCase {
     
-    func testCheckOnly() {
+    func testCheckOnly() -> () {
         var wasCheckOnly: Bool = false
         
         var reject = PartialFunction<Int, String> { (_, checkOnly: Bool) in
@@ -22,7 +22,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertTrue(wasCheckOnly, "isDefinedAt must set `checkOnly` flag")
     }
     
-    func testAccept() {
+    func testAccept() -> () {
         var acceptEven = PartialFunction<Int, String> { (i: Int, _) in
             if i % 2 == 0 {
                 return .Defined("even")
@@ -35,7 +35,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertEqualObjects(acceptEven.apply(2), "even", "2 is even")
     }
     
-    func testApplyOrElse() {
+    func testApplyOrElse() -> () {
         var pf1Called = false, pf2Called = false, pf1CalledBeforePf2 = false
         
         var reject = PartialFunction<Int, String> { _,_ in
@@ -65,7 +65,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertEqualObjects(result2, "bam!", "The result should be `accept`")
     }
     
-    func testOrElse() {
+    func testOrElse() -> () {
         var firstCalled = false, secondCalled = false, firstCalledBeforeSecond = false
         var numCalls = 0
         
@@ -108,7 +108,7 @@ class PartialFunctionTests: XCTestCase {
         
     }
     
-    func testAndThen() {
+    func testAndThen() -> () {
         var firstCalled = false, secondCalled = false, firstCalledBeforeSecond = false, rejectCalled = false
         
         var reject = PartialFunction<Int, Int> { _,_ in
@@ -157,7 +157,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertNil(failTwice, "Reject should not accept")
     }
     
-    func testPatternMatch1() {
+    func testPatternMatch1() -> () {
         // match with
         // | n when n % 2 == 0 && n <= 10 -> Some +n
         // | n when n % 2 != 0 && n <= 10 -> Some -n
@@ -190,7 +190,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertEqualObjects((11 ~|> patternMatch1), nil, "Third case")
     }
     
-    func testPatternMatch2() {
+    func testPatternMatch2() -> () {
          // match with
          // | 1::2::_ -> Some "Hello"
          // | 0::1::_ -> Some "Goodbye"
