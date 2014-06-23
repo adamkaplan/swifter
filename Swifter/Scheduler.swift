@@ -8,10 +8,11 @@
 
 import Foundation
 
-// Manage the creation and selection of threads.
+// TODO: A singleton instance manages the creation and selection of threads.
+// Perhaps deprecated with the installation of Runnable/Callback objects, but
+// might still need a thread assigner.
 
-// TODO: make everything single-instance
-@objc class Scheduler {
+class Scheduler {
     
     var queues: Array<dispatch_queue_t>
 

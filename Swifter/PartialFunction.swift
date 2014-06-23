@@ -9,8 +9,8 @@
 import Foundation
 
 enum DefinedResult<Z> {
-    case Defined(Z) // Defined(A,Z)
-    case Undefined  // Undefined(A)
+    case Defined(Z)
+    case Undefined
 }
 
 @objc class PartialFunction<A,B> {
@@ -184,4 +184,9 @@ operator infix | {precedence 64 associativity left}
 operator infix ~|> {precedence 32}
 @infix func ~|> <A,B> (value: A, pf: PartialFunction<A,B>) -> B? {
     return pf.apply(value)
+}
+
+/* Matches the value with the PartialFunction. */
+func match<A,B>(value: A, patternMatch: (() -> PartialFunction<A,B>)) -> B? {
+    return patternMatch().apply(value)
 }

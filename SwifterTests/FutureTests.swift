@@ -10,7 +10,7 @@ import XCTest
 
 class FutureTests: XCTestCase {
 
-    func testWaitFor() {
+    func testWaitFor() -> () {
         NSLog("Beginning of testWaitFor()")
         var result: Int?
         
@@ -36,7 +36,7 @@ class FutureTests: XCTestCase {
         NSLog("Ending of testWaitFor()")
     }
     
-    func testMap() {
+    func testMap() -> () {
         NSLog("Beginning of testMap()")
         
         let c: (() -> Int) = { _ in
@@ -50,7 +50,7 @@ class FutureTests: XCTestCase {
             return y
         }
         
-        let f = Future(function:c)
+        let f = Future(f:c)
         
         f
         >=> { NSLog("This is \($0)") }

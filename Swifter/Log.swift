@@ -9,14 +9,16 @@
 import Foundation
 
 enum LogCategory: String {
-    case PromiseLogging = "Promise logging"
-    case PromiseMade = "Promise made"
-    case PromiseFulfilled = "Promise fulfilled"
-    case FutureLogging = "Future logging"
-    case FutureBound = "Future bound"
-    case SchedulerLogging = "Scheduler logging"
-    case ThreadCreation = "Thread created"
-    case ThreadDispatch = "Thread dispatched"
+    case Promise = "Promise"
+    case PromiseMade = "PromiseMade"
+    case PromiseFailed = "PromiseFailed"
+    case PromiseBroken = "PromiseBroken"
+    case PromiseFulfilled = "PromiseFulfilled"
+    case Future = "Future"
+    case FutureMapped = "FutureMapped"
+    case Scheduler = "Scheduler"
+    case ThreadCreation = "ThreadCreation"
+    case ThreadDispatch = "ThreadDispatch"
 }
 
 func Log(category: LogCategory) {

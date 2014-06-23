@@ -188,6 +188,10 @@ operator infix ~|> {precedence 32}
     return pf.apply(value)
 }
 
+func match<A,B>(value: A, patternMatch: (() -> PartialFunction<A,B>)) -> B? {
+    return patternMatch().apply(value)
+}
+
 extension Array {
     
     func collect<B>(pf: PartialFunction<T,B>) -> Array<B> {
@@ -248,7 +252,6 @@ operator infix /~ {}
 6 /~ 05
 6 /~ 15
 
-
 // match with
 // | n when n % 2 == 0 && n <= 10 -> Some +n
 // | n when n % 2 != 0 && n <= 10 -> Some -n
@@ -260,3 +263,8 @@ let patt2: PartialFunction<Int,Int> = { $0 % 2 != 0 && $0 <= 10 } =|= { -$0 }
 04 ~|> patt1 | patt2
 10 ~|> patt1 | patt2
 11 ~|> patt1 | patt2
+
+match (-5) {
+    { (i: Int) in i % 2 == 0 && i <= 10 } =|= { +$0 } |
+    patt2
+}

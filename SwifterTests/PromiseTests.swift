@@ -13,7 +13,7 @@ class PromiseTests: XCTestCase {
     func testFill() -> () {
         let p: Promise<Int> = Promise()
         
-        p.fill(5)
+        p.fulfill(5)
         
         if let r = p.peek() as? Int {
             XCTAssertEqualObjects(r, 5)
@@ -27,7 +27,7 @@ class PromiseTests: XCTestCase {
             XCTFail()
         }
         
-        p.fill(5)
+        p.fulfill(5)
         
         if !p.isFulfilled() {
             XCTFail()
