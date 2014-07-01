@@ -8,237 +8,161 @@
 
 import Foundation
 
-// TODO: Abstract away all scheduling; encapsulate into Runnable/Callback
-// tasks. Futures only wrap and manipulate Callbacks and Promises to yield
-// asynchronous computation.
-
-let scheduler: Scheduler = Scheduler()
-
-class Future<T>: NSObject {
+class Future<T> {
     
-    typealias P = Promise<Try<T>>
-    typealias PS = PromiseState<Try<T>>
+    typealias E = NSException
+    typealias PNSE = PredicateNotSatisfiedException
     
-    let promise: P
-    let queue: dispatch_queue_t
-    var test: Bool = false
+    // TODO: make protected
+    let promise: Promise<T>
     
+    /* Optionally returns the current value of the Future, dependent on its completion status. */
+    var value: Try<T>? {
+    get {
+        return self.promise.value
+    }
+    }
+    
+    /* Creates a already-completed Future whose value is `value`. */
     init(value: T) {
-        self.promise = Promise<Try<T>>()
-        self.queue = scheduler.assignThread()
-        
-        super.init()
-
-        let block: (() -> ()) = {
-            _ = self.promise.fulfill(Try.Success(value))
-        }
-        
-        dispatch_async(self.queue, block)
+        self.promise = Promise<T>(value: .Success(value))
     }
     
-    init(value: T, queue: dispatch_queue_t) {
-        self.promise = Promise<Try<T>>()
-        self.queue = queue
-        
-        super.init()
-        
-        let block: (() -> ()) = {
-            _ = self.promise.fulfill(Try.Success(value));
-        }
-        
-        dispatch_async(self.queue, block)
+    /* Creates a Future whose value will be determined from the completion of task. */
+    init(task: (() -> T)) {
+        self.promise = Promise<T>()
+        let task = Executable<T>(task: { _ in task }, thread: NSOperationQueue(), observed: self.promise) // TODO
+        self.promise.executeOrMap(task)
     }
     
-    init(f: (() -> Try<T>)) {
-        self.promise = Promise<Try<T>>()
-        self.queue = scheduler.assignThread()
+    /* Creates a Future whose status is directly linked to the state of the Promise. */
+    init(linkedPromise: Promise<T>) {
+        self.promise = linkedPromise
+    }
+    
+    /* Creates a copied Promise, bound to the original, that will be used as the
+     * state of this Future. */
+    init(copiedPromise: Promise<T>) {
+        self.promise = Promise<T>()
+        copiedPromise.alsoFulfill(self.promise)
+    }
+    
+    /* Creates a new future from the application of `f` to the resulting PromiseState. */
+    func fold<S>(f: ((Try<T>) -> Try<S>)) -> Future<S> {
+        let promise = Promise<S>()
         
-        super.init()
+        self.promise.executeOrMap(Executable<T>(task: {
+            (t: Try<T>) -> Any in
+            promise.tryFulfill(f(t))
+            }, thread: Scheduler.assignThread(), observed: self))
         
-        let block: (() -> ()) = {
-            _ = self.promise.fulfill(f())
-        }
-        
-        dispatch_async(self.queue, block)
+        return Future<S>(linkedPromise: promise)
     }
     
-    convenience init(f: (() -> T)) {
-        self.init(f:{ .Success(f()) })
-    }
-    
-    init(f: (() -> Try<T>), queue: dispatch_queue_t) {
-        self.promise = Promise<Try<T>>()
-        self.queue = queue
-        
-        super.init()
-        
-        let block: (() -> ()) = {
-            _ = self.promise.fulfill(f())
-        }
-        
-        dispatch_async(self.queue, block)
-    }
-    
-    convenience init(f: (() -> T), queue: dispatch_queue_t) {
-        self.init(f:{ .Success(f()) }, queue:queue)
-    }
-    
-    func cancel() -> Bool {
-        return self.promise.breakPromise()
-    }
-    
-    func isFinished() -> Bool {
-        return self.promise.isFulfilled()
-    }
-    
-    func isCancelled() -> Bool {
-        return self.promise.isBroken()
-    }
-    
-    func getPromise() -> P {
-        return self.promise
-    }
-    
-    func getState() -> PS {
-        return self.getPromise().getState()
-    }
-    
-    func map<S>(f: ((T) -> Try<S>)) -> Future<S> {
-        
-        let f = Future<S>(f:{ () -> Try<S> in
-            var state: PS! = nil
-            var result: Try<S>! = nil
-            
-            dispatch_sync(scheduler.assignThread(), {
-                do {} while !self.test
-                state = self.getPromise().getState()
-                })
-            
-            switch state! {
-            case .Fulfilled(let value):
-                result = value.map(f)
-            case .Broken:
-                result = Try.Failure(PromiseBrokenException())
-            case .Pending:
-                ()
-            }
-            
-            return result
-            })
-        
-        self.promise.registerObserver(f)
-        
-        return f
-    }
-    
+    /* Creates a new Future whose value is the application of `f` to the result
+     * of this Future. */
     func map<S>(f: ((T) -> S)) -> Future<S> {
-        return self.map({ Try.Success(f($0)) })
+        Log(.FutureFolded, "Future is mapped to a new Future")
+        return self.fold { $0.map(f) }
     }
     
-    // Modularize when algorithm has been designed
-    func map<S>(f: ((Try<T>) -> Try<S>)) -> Future<S> {
-        let f = Future<S>(f:{ () -> Try<S> in
-            var state: PS! = nil
-            var result: Try<S>! = nil
-            
-            dispatch_sync(scheduler.assignThread(), {
-                do {} while !self.test
-                state = self.getPromise().getState()
-                })
-            
-            switch state! {
-            case .Fulfilled(let value):
-                result = f(value)
-            case .Broken:
-                result = Try.Failure(PromiseBrokenException())
-            case .Pending:
-                ()
-            }
-            
-            return result
-            })
+    /* Creates a new Future from the application of `f` to the result of this
+     * Future. */
+    func bind<S>(f: ((T) -> Future<S>)) -> Future<S> {
+        Log(.FutureFolded, "Future is bound to a new Future")
         
-        self.promise.registerObserver(f)
+        let promise = Promise<S>()
+
+        self.promise.executeOrMap(Executable<T>(task: {
+            (t: Try<T>) -> () in
+            _ = t.map(f).fold( {
+                (s: Future<S>) -> Any in
+                s.promise.alsoFulfill(promise)
+                }, { promise.tryFail($0) })
+            }, thread: Scheduler.assignThread(), observed: self))
         
-        return f
+        return Future<S>(linkedPromise: promise)
     }
     
-    func map<S>(f: ((Try<T>) -> S)) -> Future<S> {
-        return self.map({ Try.Success(f($0)) })
+    /* Creates a new future by filtering the value of the current Future with a
+     * predicate. */
+    func filter(p: ((T) -> Bool)) -> Future<T> {
+        Log(.FutureFolded, "Future is filtered.")
+        return self.fold { $0.filter(p) }
     }
     
-    func map<S>(pf: PartialFunction<Try<T>,Try<S>>) -> Future<S> {
-        let f = Future<S>(f:{ () -> Try<S> in
-            var state: PS! = nil
-            var result: Try<S>! = nil
-            
-            dispatch_sync(scheduler.assignThread(), {
-                do {} while !self.test
-                state = self.getPromise().getState()
-                })
-            
-            switch state! {
-            case .Fulfilled(let value):
-                result = pf.apply(value)
-            case .Broken:
-                result = Try.Failure(PromiseBrokenException())
-            case .Pending:
-                ()
-            }
-            
-            return result
-            })
-        self.promise.registerObserver(f)
-        
-        return f
-    }
-    
-    func map<S>(pf: PartialFunction<Try<T>,S>) -> Future<S> {
-        return self.map({ Try.Success(pf.apply($0)!) })
-    }
-    
-//    func bind(f: ((T) -> Future<S>)) -> Future<S> {
-//        
-//    }
-    
-    func peek() -> T? {
-        return self.promise.peek()?.toOption()
-    }
-    
-    func waitFor() -> Try<T>? {
-        switch self.promise.waitFor() {
-        case .Fulfilled(let value):
-            return value
-        default:
-            return nil
-        }
-    }
-    
+    /* Applies the PartialFunction to the successful result of this Future. */
     func onSuccess<S>(pf: PartialFunction<T,S>) -> () {
-        
+        self.fold { $0.onSuccess(pf.tryApply) }
+    }
+
+    /* Applies the PartialFunction to the failure of this Future. */
+    func onFailure<S>(pf: PartialFunction<E,S>) -> () {
+        self.fold { $0.onFailure(pf.tryApply) }
+    }
+ 
+    /* Applies the PartialFunction to the completed result of this Future. */
+    func onComplete<S>(pf: PartialFunction<Try<T>,S>) -> () {
+        self.fold(pf.tryApply)
+    }
+   
+    /* Creates a new future that will handle any matching throwable that this 
+     * future might contain. */
+    func recover(pf: PartialFunction<E,T>) -> Future<T> {
+        return self.fold { $0.recover(pf) }
     }
     
-    func onFailure<S>(pf: PartialFunction<T,S>) -> () {
-        
+    /* Applies the PartialFunction to the result of this Future, and returns a new 
+     * Future with the result of this Future. */
+    func andThen<S>(pf: PartialFunction<Try<T>,S>) -> Future<S> {
+        return self.fold { pf.tryApply($0) }
     }
     
-//    func and<S>(other: Future<S>) -> Future<(T,S)> {
-//        
-//    }
-    
-//    class func all<T>(futures: Future<T>[]) -> Future<T[]> {
-//        
-//    }
-    
-    
-    
-    func promiseDidFinish(_: NSNotification) {
-        self.test = true
+    /* Returns a single Future whose value, when completed, will be a tuple of the 
+     * completed values of the two Futures. */
+    func and<S>(other: Future<S>) -> Future<(T,S)> {
+        // Fix mapping and binding.
+        return self.bind {
+            (first: T) -> Future<(T,S)> in
+            other.bind {
+                (second: S) -> Future<(T,S)> in
+                return Future<(T,S)>(value: (first, second))
+            }
+        }
     }
     
 }
 
-operator infix >=> {associativity left}
-@infix func >=> <T,S> (f: Future<T>, c: ((T) -> S)) -> Future<S> {
-    return f.map(c)
+extension Future : Awaitable {
+    
+    /* The final type of the action that is awaited. */
+    typealias AwaitedResult = Future<T>
+    
+    typealias CompletedResult = T
+    
+    /* The result of the awaited action at completion. */
+    var completedResult: T {
+    get {
+        self.await()
+        return self.value!.toOption()!
+    }
+    }
+    
+    /* Returns if the awaited action has completed. */
+    func isComplete() -> Bool {
+        return self.promise.isFulfilled()
+    }
+    
+    /* Awaits indefinitely until the action has completed. */
+    func await() -> Future<T> {
+        return self.await(NSTimeInterval.infinity)
+    }
+    
+    /* Returns an attempt at awaiting the action for an NSTimeInterval duration. */
+    func await(time: NSTimeInterval) -> Future<T> {
+        let future = Future<T>(copiedPromise: self.promise)
+        future.promise.timeout(time)
+        return future
+    }
+    
 }

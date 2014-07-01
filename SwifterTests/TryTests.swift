@@ -46,7 +46,20 @@ class TryTests: XCTestCase {
         let f: Try<String> = .Failure(NSException())
         
         XCTAssertEqual(s.toOption()!, "Kitten")
-        XCTAssertNil(f.toOption())
+        assertNil(f.toOption())
+    }
+    
+    func testUnwrap() -> () {
+        let s: Try<String> = .Success("Kitten")
+        
+        XCTAssertEqualObjects(s.unwrap(), "Kitten")
+    }
+    
+    func testFilter() -> () {
+        let s: Try<Int> = .Success(10)
+        
+        XCTAssertEqual(s.filter( { $0 % 2 == 0 } ).toOption()!, 10)
+        assertNil(s.filter( { $0 < 0 } ).toOption())
     }
     
     func testGetOrElse() -> () {
@@ -63,7 +76,7 @@ class TryTests: XCTestCase {
         
         XCTAssertTrue(s.orElse(.Success(false)).getOrElse(nil))
         XCTAssertFalse(f.orElse(.Success(false)).getOrElse(true))
-        XCTAssertNil(f.orElse(.Failure(NSException())).getOrElse(nil))
+        assertNil(f.orElse(.Failure(NSException())).getOrElse(nil))
     }
     
     func testMap() -> () {
@@ -73,14 +86,51 @@ class TryTests: XCTestCase {
         let successTry: Try<Int> = .Success(10)
         let failureTry: Try<Int> = .Failure(NSException())
         
-        XCTAssertEqual(successTry.map( { (i: Int) -> Int in
+        XCTAssertEqual(successTry.map( {
+            (i: Int) -> Int in
             onSuccess = true
             return 2 * i } ).toOption()!, 10)
         XCTAssertTrue(onSuccess)
-        XCTAssertNil(failureTry.map( { (i: Int) -> Int in
+        assertNil(failureTry.map( {
+            (i: Int) -> Int in
             onFailure = true
             return 2 * i } ).toOption())
         XCTAssertFalse(onFailure)
+    }
+    
+    /* Applies f to the value of this Try if it is a .Success(T), or otherwise
+    * raises a TryDidFailException. */
+
+    
+    func testOnSuccess() {
+        var onSuccess: Bool = false
+        var onFailure: Bool = false
+        
+        let successTry: Try<Bool> = .Success(false)
+        let failureTry: Try<Bool> = .Failure(NSException())
+        
+        XCTAssertTrue(successTry.onSuccess( {
+            (b: Bool) -> Bool in
+            onSuccess = true
+            return !b }).toOption()!)
+        XCTAssertTrue(onSuccess)
+        
+        failureTry.onSuccess { _ in onFailure = true }
+        XCTAssertFalse(onFailure)
+    }
+    
+    func testOnFailure() {
+        var onSuccess: Bool = false
+        var onFailure: Bool = false
+        
+        let successTry: Try<Bool> = .Success(false)
+        let failureTry: Try<Bool> = .Failure(NSException())
+
+        successTry.onFailure { _ in onSuccess = true }
+        XCTAssertFalse(onSuccess)
+        
+        XCTAssertTrue(failureTry.onFailure({ _ in onFailure = true; return true }).toOption()! as Bool)
+        XCTAssertTrue(onFailure)
     }
     
     func testBind() -> () {
@@ -94,7 +144,7 @@ class TryTests: XCTestCase {
             onSuccess = true
             return Try.Success(2 * i) } ).toOption()!, 10)
         XCTAssertTrue(onSuccess)
-        XCTAssertNil(failureTry.bind( { (i: Int) -> Try<Int>
+        assertNil(failureTry.bind( { (i: Int) -> Try<Int>
             in onFailure = true
             return Try.Success(2 * i) } ).toOption())
         XCTAssertFalse(onFailure)

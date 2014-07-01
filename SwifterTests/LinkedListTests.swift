@@ -11,51 +11,33 @@ import XCTest
 class LinkedListTests: XCTestCase {
 
     func testInit() {
-        let ll1 = LinkedList<Int>(head: 10)
-        XCTAssertEqual(ll1.head!.head, 10)
-        XCTAssertNil(ll1.head!.next)
-        XCTAssertTrue(ll1.head! === ll1.last)
-
-        let ll2 = LinkedList<String>(head: "Cat", next: LinkedList<String>(head: "Kitten"))
-        XCTAssertEqual(ll2.head!.head, "Cat")
-        XCTAssertEqual(ll2.head!.next!.head, "Kitten")
-        XCTAssertNil(ll2.head!.next!.next)
-        XCTAssertTrue(ll2.head!.next! === ll2.last)
+        let li = LinkedList<Int>(this: 10)
+        XCTAssertEqualObjects(li.this!, 10)
+        assertNil(li.next)
+        assertNil(li.prev)
     }
     
     func testPush() {
-        let ll = LinkedList<Int>(head: 10)
-        ll.push(11)
-        XCTAssertEqual(ll.head!.head, 11)
-        XCTAssertEqual(ll.head!.next!.head, 10)
-        XCTAssertNil(ll.head!.next!.next)
-        XCTAssertTrue(ll.head!.next! === ll.last)
-    }
-    
-    func testAdd() {
-        let ll = LinkedList<Int>(head: 10)
-        ll.add(11)
-        XCTAssertEqual(ll.head!.head, 10)
-        XCTAssertEqual(ll.head!.next!.head, 11)
-        XCTAssertNil(ll.head!.next!.next)
-        XCTAssertTrue(ll.head!.next! === ll.last)
+        let ls = LinkedList<String>(this: "Cat")
+        ls.push("Kitten")
+        XCTAssertEqualObjects(ls.this!, "Kitten")
+        XCTAssertEqualObjects(ls.next!.this!, "Cat")
+//        XCTAssertEqualObjects(ls.next!.prev!, "Kitten")
+        assertNil(ls.next!.next)
+        assertNil(ls.prev)
     }
     
     func testPop() {
-        let ll = LinkedList<Int>(head: 10)
-        ll.push(11)
-        ll.push(12)
-        XCTAssertEqual(ll.pop()!, 12)
-        XCTAssertEqual(ll.head!.head, 11)
-        XCTAssertEqual(ll.head!.next!.head, 10)
-        XCTAssertNil(ll.head!.next!.next)
-        XCTAssertTrue(ll.head!.next! === ll.last)
-        XCTAssertEqual(ll.pop()!, 11)
-        XCTAssertEqual(ll.head!.head, 10)
-        XCTAssertNil(ll.head!.next)
-        XCTAssertTrue(ll.head! === ll.last)
-        XCTAssertEqual(ll.pop()!, 10)
-        XCTAssertNil(ll.head)
+        let ls = LinkedList<String>(this: "Cat")
+        ls.push("Kitten")
+        ls.push("Kitty")
+        XCTAssertEqualObjects(ls.pop(), "Kitty")
+//        XCTAssertEqualObjects(ls.next!.prev!, "Cat")
+        XCTAssertEqualObjects(ls.this!, "Kitten")
+        XCTAssertEqualObjects(ls.next!.this!, "Cat")
+//        XCTAssertEqualObjects(ls.next!.prev!, "Kitten")
+        assertNil(ls.next!.next)
+        assertNil(ls.prev)
     }
 
 }

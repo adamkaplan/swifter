@@ -9,30 +9,24 @@
 import Foundation
 
 enum LogCategory: String {
+    case Executable = "Executable"
+    case OnceExecutable = "OnceExecutable"
+    case Future = "Future"
+    case FutureFolded = "FutureMapped"
     case Promise = "Promise"
     case PromiseMade = "PromiseMade"
-    case PromiseFailed = "PromiseFailed"
-    case PromiseBroken = "PromiseBroken"
     case PromiseFulfilled = "PromiseFulfilled"
-    case Future = "Future"
-    case FutureMapped = "FutureMapped"
-    case Scheduler = "Scheduler"
-    case ThreadCreation = "ThreadCreation"
-    case ThreadDispatch = "ThreadDispatch"
+    case LinkedList = "LinkedList"
 }
 
-func Log(category: LogCategory) {
-    #if DEBUG
+func Log(category: LogCategory) -> () {
+    #if LOGGING
         NSLog(category.toRaw())
     #endif
-
-    do {} while false;
 }
 
 func Log(category: LogCategory, format: String, args: Any...) -> () {
-    #if DEBUG
+    #if LOGGING
         NSLog(format, args)
     #endif
-    
-    do {} while false;
 }

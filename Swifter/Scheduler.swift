@@ -8,30 +8,10 @@
 
 import Foundation
 
-// TODO: A singleton instance manages the creation and selection of threads.
-// Perhaps deprecated with the installation of Runnable/Callback objects, but
-// might still need a thread assigner.
-
 class Scheduler {
     
-    var queues: Array<dispatch_queue_t>
-
-    let stall: dispatch_queue_t = dispatch_queue_create("concurrent stalling queue", DISPATCH_QUEUE_CONCURRENT)
-    // A concurrent queue onto which bound futures are placed.
-    
-    init() {
-        self.queues = []
+    class func assignThread() -> NSOperationQueue {
+        return NSOperationQueue()
     }
     
-    func createThread() -> dispatch_queue_t {
-        let ns: NSString = "Queue \(self.queues.count - 1)"
-        let cs: CString = ns.cStringUsingEncoding(String.defaultCStringEncoding())
-        let q: dispatch_queue_t = dispatch_queue_create(cs, DISPATCH_QUEUE_CONCURRENT)
-        self.queues.append(q)
-        return q
-    }
-    
-    func assignThread() -> dispatch_queue_t {
-        return createThread()
-    }
 }

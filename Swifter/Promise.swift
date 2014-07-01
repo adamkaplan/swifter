@@ -8,129 +8,202 @@
 
 import Foundation
 
-// TODO: Refactor Promises to be more concise and essential. Create Callback
-// system in which Promises interact with Runnable/Callback objects once a value
-// that is promised has been fulfilled. Scheduling and the Callback objects are to
-// be abstracted from Promises; Promises only work with fulfilled values and
-// announce when they have been fulfilled. They interact with Callbacks by running
-// a callback or execute method.
-
+/* A PromiseState encapsulates all possible states of the Promise: .Pending,
+ * or .Fulfilled with either a .Success(T) or a .Failure(E). */
 enum PromiseState<T> {
-    case Fulfilled(T)
-    case Broken
+    case Fulfilled(Try<T>)
     case Pending
-}
-
-// Only necessary for logging; use #if in conjunction with Log.
-extension PromiseState: Printable {
-    var description: String {
+    
+    var value: Try<T>? {
     get {
         switch self {
-        case .Fulfilled(let value):
-            return ".Fulfilled(\(value))"
-        case .Broken:
-            return ".Broken"
+        case .Fulfilled(let t):
+            return t
         case .Pending:
-            return ".Pending"
+            return nil
         }
     }
     }
+    
 }
 
-class PromiseBrokenException: NSException {
+/* A PromiseAlreadyFulfilledException indicates that a Promise was attempted to be
+ * fulfilled with a value after already beeing fulfilled. */
+class PromiseAlreadyFulfilledException : NSException {
     
     init() {
-        super.init(name:"PromiseBrokenException", reason:nil, userInfo:nil)
+        super.init(name: "PromisedAlreadyFulfilledException", reason: nil, userInfo: nil)
     }
     
 }
 
-@objc class Promise<T> {
+/* A Promise is an object that contains only a state of an asynchronous computation:
+ * it is either .Pending or .Fulfilled with a value. Promises themselves do not
+ * enact computation, but act as state endpoints in a computation. */
+class Promise<T> {
     
+    typealias PAFE = PromiseAlreadyFulfilledException
+    
+    // TODO: make private
     var state: PromiseState<T>
+    
+    var future: Future<T> {
+    get {
+        return Future<T>(linkedPromise: self)
+    }
+    }
+
+    var value: Try<T>? {
+    get {
+       return self.state.value
+    }
+    }
     
     init() {
         Log(.PromiseMade)
         self.state = .Pending
     }
     
-    func fulfill(value: T) -> Bool {
+    convenience init(value: Try<T>) {
+        self.init()
+        self.tryFulfill(value)
+    }
+    
+    /* Applies fulfilled to a .Fufilled(Try<T>) and pending to a .Pending. */
+    func stateFold<S>(fulfilled: ((Try<T>) -> S), pending: (() -> S)) -> S {
         switch self.state {
+        case .Fulfilled(let f):
+            return fulfilled(f)
         case .Pending:
+            return pending()
+        }
+    }
+    
+    // TODO: make private
+    /* Attempts to change the state of the Promise to a .Fulfilled(Try<T>), and
+     * returns whether or not the state change occured. */
+    func tryFulfill(value: Try<T>) -> Bool {
+        return self.stateFold({ _ in
+            Log(.Promise, "Attempted to fulfill an already-fulfilled promise (\(self.state)).")
+            return false
+            }, {
             Log(.PromiseFulfilled, "Fulfilled with \(value)")
             self.state = .Fulfilled(value)
-            NSNotificationCenter().postNotificationName(nil, object: self, userInfo: nil)
+            NSNotificationCenter.defaultCenter().postNotification(CallbackNotification<Try<T>>(value: value))
             return true
-        default:
-            Log(.Promise, "Attempted to fulfill an already-fulfilled promise (\(self.state)).")
-            return false
+            })
+    }
+    
+    /* Changes the state of the Promise from a .Pending to a .Fulfilled(Try<T>), or
+     * raises a PromiseAlreadyFulfilledException. */
+    func fulfill(value: Try<T>) -> () {
+        if !self.tryFulfill(value) {
+            PAFE().raise()
         }
     }
     
-    func breakPromise() -> Bool {
-        switch self.state {
-        case .Pending:
-            self.state = .Broken
-            Log(.PromiseBroken)
-            return true
-        default:
-            Log(.Promise, "Attempted to fulfill an already-fulfilled promise (\(self.state)).")
-            return false
-        }
-    }
-    
+    /* Returns whether the Promise has reached a .Fulfilled(T) state. */
     func isFulfilled() -> Bool {
-        switch self.state {
-        case .Fulfilled(_):
-            return true
-        default:
-            return false
+        return self.stateFold({ _ in true }, { false })
+    }
+
+    /* Attempts to change the state of the Promise to a .Fulfilled(.Success(T)),
+     * and returns whether or not the state change occurred. */
+    func trySuccess(s: T) -> Bool {
+        return self.tryFulfill(.Success(s))
+    }
+    
+    /* Attempts to change the state of the Promise to a .Fulfilled(.Success(T)),
+     * and if not possible, raises a PromiseAlreadyFulfilledException. */
+    func success(s: T) -> () {
+        if !self.trySuccess(s) {
+            PAFE().raise()
         }
     }
     
-    func isBroken() -> Bool {
-        switch self.state {
-        case .Broken:
-            return true
-        default:
-            return false
+    /* Attempts to change the state of the Promise to a .Fulfilled(.Failure(E)),
+     * and returns whether or not the state change occurred. */
+    func tryFail(e: NSException) -> Bool {
+        return self.tryFulfill(.Failure(e))
+    }
+   
+    /* Attempts to change the state of the Promise to a .Fulfilled(.Failure(E)),
+     * and if not possible, raises a PromiseAlreadyFulfilledException. */
+    func fail(e: NSException) -> () {
+        if !self.tryFail(e) {
+            PAFE().raise()
         }
     }
     
-    func isPending() -> Bool {
-        switch self.state {
-        case .Pending:
-            return true
-        default:
-            return false
-        }
+    /* Fulfills the Promise simultaneously with this Promise. */
+    func alsoFulfill(promise: Promise<T>) -> () {
+        let exec = Executable<T>(task: { promise.tryFulfill($0) }, thread: Scheduler.assignThread(), observed: self)
+        self.executeOrMap(exec)
     }
     
-    func peek() -> T? {
-        switch self.state {
-        case .Fulfilled(let value):
-            Log(.Promise, "Peeking at Fulfilled(\(value))")
-            return value
-        default:
-            return nil
-        }
+    /* Executes the Executable with the value of the .Fulfilled promise, or
+     * otherwise schedules the Executable to be executed after the Promise reaches
+     * the .Fulfilled state. */
+    func executeOrMap(exec: Executable<T>) -> () {
+        self.stateFold({
+            exec.executeWithValue($0)
+            }, {
+                // Create callback.
+        })
     }
     
-    func getState() -> PromiseState<T> {
-        return self.state
+    /* Schedules the Task to be executed for when the Promise is .Fulfilled. */
+    func onComplete(task: ((Try<T>) -> Any)) -> () {
+        self.executeOrMap(Executable<T>(task: task, thread: Scheduler.assignThread(), observed: self)) // THREAD
     }
     
-    func waitFor() -> PromiseState<T> {
-        do {} while self.isPending()
+}
+
+extension Promise : Awaitable {
         
-        return self.getState()
+    /* The type of the action that is awaited. */
+    typealias AwaitedResult = Promise<T>
+    
+    /* The type of the completed result of the action. */
+    typealias CompletedResult = Try<T>
+    
+    /* The result of the awaited action at completion. */
+    var completedResult: CompletedResult {
+    get {
+        do {} while !self.isFulfilled()
+        return self.state.value!
+    }
     }
     
-//    func futureOf() -> Future<T> {
-//
-//    }
-    
-    func registerObserver(obs: NSObject) {
-        NSNotificationCenter.defaultCenter().addObserver(obs, selector:"promiseDidFinish", name:nil, object:self)
+    /* Returns if the awaited action has completed. */
+    func isComplete() -> Bool {
+        return self.isFulfilled()
     }
+    
+    /* Awaits indefinitely until the action has completed. */
+    func await() -> AwaitedResult {
+        return self.await(NSTimeInterval.infinity)
+    }
+
+    // TODO: make private or refactor timeout().
+    /* Attempts to fail this Promise with a PromiseAlreadyFulfilledException. */
+    func tryFailWithPAFE(timer: NSTimer!) -> () {
+        self.tryFail(PAFE())
+    }
+    
+    /* Fails the Promise with a TimeoutException after the specified NSTimeInterval. */
+    func timeout(time: NSTimeInterval) {
+        NSTimer.scheduledTimerWithTimeInterval(time, target: self, selector: "tryFailWithPAFE:", userInfo: nil, repeats: false)
+    }
+
+    /* Returns an attempt at awaiting the action for an NSTimeInterval duration. */
+    func await(time: NSTimeInterval) -> AwaitedResult {
+        let promise = Promise<T>()
+        
+        self.alsoFulfill(promise)
+        promise.timeout(time)
+        
+        return promise
+    }
+    
 }

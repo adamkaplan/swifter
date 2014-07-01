@@ -8,9 +8,38 @@
 
 import Foundation
 
+class PredicateNotSatisfiedException : NSException {
+    
+    init() {
+        super.init(name: "PredicateNotSatisfiedException", reason: nil, userInfo: nil)
+    }
+    
+}
+
+class TryDidFailException : NSException {
+    
+    init() {
+        super.init(name: "TryDidFailException", reason: nil, userInfo: nil)
+    }
+    
+}
+
+class TryDidNotFailException : NSException {
+    
+    init() {
+        super.init(name: "TryDidNotFailException", reason: nil, userInfo: nil)
+    }
+    
+}
+
+/* A Try<T> represents a successful computation of a T as a .Success(T),
+ * or a failure to correctly compute the value as a .Failure(E). */
 enum Try<T> {
     
     typealias E = NSException
+    typealias PNSE = PredicateNotSatisfiedException
+    typealias TDFE = TryDidFailException
+    typealias TDNFE = TryDidNotFailException
     
     case Success(T)
     case Failure(E)
@@ -40,10 +69,18 @@ enum Try<T> {
         return self.fold({ $0 }, { _ in nil })
     }
     
-    /* Converts a .Success(T) to a Failure(E) if p is not satisfied, or otherwise
+    /* Forcedly unwraps this Try, throwing the exception contained in .Failure(E). */
+    func unwrap() -> T {
+        return self.fold({ $0 }, {
+            ($0 as NSException).raise();
+            return self.toOption()!
+            })
+    }
+    
+    /* Converts a .Success(T) to a Failure(PNSE) if p is not satisfied, or otherwise
      * propagates the Try. */
     func filter(p: ((T) -> Bool)) -> Try<T> {
-        return self.fold({ p($0) ? .Success($0) : .Failure(NSException()) }, { .Failure($0) })
+        return self.fold({ p($0) ? self : .Failure(PNSE()) }, { _ in self })
     }
     
     /* Gets the value of this Try if it is a .Success(T), or otherwise defaultT. */
@@ -60,6 +97,18 @@ enum Try<T> {
      * propagates the .Failure(E). */
     func map<S>(f: ((T) -> S)) -> Try<S> {
         return self.fold({ .Success(f($0)) }, { .Failure($0) })
+    }
+    
+    /* Applies f to the value of this Try if it is a .Success(T), or otherwise
+     * raises a TryDidFailException. */
+    func onSuccess<S>(f: ((T) -> S)) -> Try<S> {
+        return self.fold({ .Success(f($0)) }, { _ in .Failure(TDFE()) })
+    }
+
+    /* Applies f to the value of this Try if it is a .Failure(E), or otherwise
+    * raises a TryDidFailException. */
+    func onFailure<S>(f: ((E) -> S)) -> Try<S> {
+        return self.fold({ _ in .Failure(TDNFE()) }, { .Success(f($0)) })
     }
     
     /* Applies f to the value of this Try if it is a .Success(T), or otherwise

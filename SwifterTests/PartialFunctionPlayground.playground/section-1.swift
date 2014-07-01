@@ -1,3 +1,5 @@
+// Playground - noun: a place where people can play
+
 //
 //  PartialFunction.swift
 //  Swifter
@@ -13,15 +15,7 @@ enum DefinedResult<Z> {
     case Undefined
 }
 
-class UndefinedArgumentException : NSException {
-    
-    init() {
-        super.init(name: "UndefinedArgumentException", reason: nil, userInfo: nil)
-    }
-    
-}
-
-class PartialFunction<A,B> {
+@objc class PartialFunction<A,B> {
     
     typealias PF = PartialFunction<A,B>
     
@@ -29,15 +23,12 @@ class PartialFunction<A,B> {
     
     typealias DefaultPF = PartialFunction<A,Z>
     
-    typealias UAE = UndefinedArgumentException
-    
     let applyOrCheck: (A, Bool) -> DefinedResult<Z>
     
     init(f: (A, Bool) -> DefinedResult<Z>) {
         self.applyOrCheck = f
     }
     
-    /* Optionally applies this PartialFunction to `a` if it is in the domain. */
     func apply(a: A) -> B? {
         switch applyOrCheck(a, false) {
         case .Defined(let p):
@@ -48,24 +39,13 @@ class PartialFunction<A,B> {
     }
     
     /* Applies this PartialFunction to `a`, and in the case that 'a' is undefined
-     * for the function, applies defaultPF to `a`. */
+    * for the function, applies defaultPF to `a`. */
     func applyOrElse(a: A, defaultPF: DefaultPF) -> Z? {
         switch applyOrCheck(a, false) {
         case .Defined(let p):
             return p
         default:
             return defaultPF.apply(a)
-        }
-    }
-    
-    /* Attempts to apply this PartialFunction to `a` and returns a Try of the 
-     * attempt. */
-    func tryApply(a: A) -> Try<B> {
-        switch applyOrCheck(a, false) {
-        case .Defined(let p):
-            return .Success(p)
-        case .Undefined:
-            return .Failure(UAE())
         }
     }
     
@@ -79,21 +59,17 @@ class PartialFunction<A,B> {
         }
     }
     
-    /* Returns a PartialFunction that first applies this function, or else applies 
-     * otherPF. */
     func orElse(otherPF: PF) -> PF {
         return OrElse(f1: self, f2: otherPF)
     }
     
-    /* Returns a PartialFunction that first applies this function, and if successful,
-     * next applies nextPF. */
     func andThen<C>(nextPF: PartialFunction<B,C>) -> PartialFunction<A,C> {
         return AndThen<A,B,C>(f1: self, f2: nextPF)
     }
     
-//    // class constants are not yet available with generic classes
-//    class let null: PartialFunction<Any,Any> = PartialFunction( { _ in .Undefined } )
-//    class let iden: PartialFunction<A,A> = PartialFunction( { .Defined($0.0) } )
+    //    // class constants are not yet available with generic classes
+    //    class let null: PartialFunction<Any,Any> = PartialFunction( { _ in .Undefined } )
+    //    class let iden: PartialFunction<A,A> = PartialFunction( { .Defined($0.0) } )
 }
 
 /* TODO: make this private. Apple has promised Swift will get access modifiers */
@@ -182,7 +158,7 @@ class AndThen<A,B,C> : PartialFunction<A,C> {
     }
 }
 
-/* Creates a non-side-effect PartialFunction from body for a specific domain. */
+/* Creates a PartialFunction from body for a specific domain. */
 operator infix =|= {precedence 255}
 @infix func =|= <A,B> (domain: ((a: A) -> Bool), body: ((a: A) -> B)) -> PartialFunction<A,B> {
     return PartialFunction<A,B>( { (a: A, _) in
@@ -212,7 +188,78 @@ operator infix ~|> {precedence 32}
     return pf.apply(value)
 }
 
-/* Matches the value with the PartialFunction. */
 func match<A,B>(value: A, patternMatch: (() -> PartialFunction<A,B>)) -> B? {
     return patternMatch().apply(value)
 }
+
+extension Array {
+    
+    func collect<B>(pf: PartialFunction<T,B>) -> Array<B> {
+        return (self.filter(pf.isDefinedAt)).map { pf.apply($0)! }
+    }
+    
+}
+
+
+let sample = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+let acceptEven = PartialFunction<Int, Int> { (i: Int, _) in
+    if i % 2 == 0 {
+        return .Defined(i)
+    } else {
+        return .Undefined
+    }
+}
+
+sample.filter(acceptEven.isDefinedAt)
+sample.collect(acceptEven)
+
+let acceptOdd = PartialFunction<Int, Int> { (i: Int, _) in
+    if i % 2 != 0 {
+        return .Defined(i)
+    } else {
+        return .Undefined
+    }
+}
+
+sample.filter(acceptOdd.isDefinedAt)
+
+let acceptNaturalNumbers = acceptEven.orElse(acceptOdd)
+
+sample.filter(acceptNaturalNumbers.isDefinedAt)
+
+let acceptNoNaturalNumbers = acceptEven.andThen(acceptOdd);
+
+sample.filter(acceptNoNaturalNumbers.isDefinedAt)
+sample.collect(acceptNoNaturalNumbers)
+
+
+operator infix /~ {}
+@infix func /~ (num: Int, denom: Int) -> Int? {
+    let divide = PartialFunction<(Int, Int), Int>( { (ints: (Int, Int), _) in
+        let (num, denom) = ints
+        if denom != 0 {
+            return .Defined(num/denom)
+        } else {
+            return .Undefined
+        }
+        })
+    
+    return divide.apply(num, denom)
+}
+
+6 /~ 00
+6 /~ 05
+6 /~ 15
+
+// match with
+// | n when n % 2 == 0 && n <= 10 -> Some +n
+// | n when n % 2 != 0 && n <= 10 -> Some -n
+// | _ -> None
+let patt1: PartialFunction<Int,Int> = { $0 % 2 == 0 && $0 <= 10 } =|= { +$0 }
+let patt2: PartialFunction<Int,Int> = { $0 % 2 != 0 && $0 <= 10 } =|= { -$0 }
+
+-5 ~|> patt1 | patt2
+04 ~|> patt1 | patt2
+10 ~|> patt1 | patt2
+11 ~|> patt1 | patt2

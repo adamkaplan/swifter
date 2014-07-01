@@ -31,7 +31,7 @@ class PartialFunctionTests: XCTestCase {
             }
         }
         
-        XCTAssertNil(acceptEven.apply(1), "1 is not even")
+        assertNil(acceptEven.apply(1), "1 is not even")
         XCTAssertEqualObjects(acceptEven.apply(2), "even", "2 is even")
     }
     
@@ -104,7 +104,7 @@ class PartialFunctionTests: XCTestCase {
         
         let none = first.orElse(first).apply(0)
         XCTAssertEqual(numCalls, 2, "First partial function should be called twice (not accepting)")
-        XCTAssertNil(none, "The result should be nil when neither left or right accept")
+        assertNil(none, "The result should be nil when neither left or right accept")
         
     }
     
@@ -146,7 +146,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertTrue(rejectCalled, "Reject partial function should be called")
         XCTAssertFalse(firstCalled, "First partial function should not be called")
         XCTAssertFalse(secondCalled, "Second partial function should not be called")
-        XCTAssertNil(fail, "Reject should not accept")
+        assertNil(fail, "Reject should not accept")
         
         firstCalled = false
         secondCalled = false
@@ -154,7 +154,7 @@ class PartialFunctionTests: XCTestCase {
         
         let failTwice = reject.andThen(reject).apply(0)
         XCTAssertTrue(rejectCalled, "Reject partial function should be called")
-        XCTAssertNil(failTwice, "Reject should not accept")
+        assertNil(failTwice, "Reject should not accept")
     }
     
     func testPatternMatch1() -> () {
@@ -162,32 +162,28 @@ class PartialFunctionTests: XCTestCase {
         // | n when n % 2 == 0 && n <= 10 -> Some +n
         // | n when n % 2 != 0 && n <= 10 -> Some -n
         // | _ -> None
-        let case1: PartialFunction<Int,Int> = { $0 % 2 == 0 && $0 <= 10 } =|= { +$0 }
-        let case2: PartialFunction<Int,Int> = { $0 % 2 != 0 && $0 <= 10 } =|= { -$0 }
         let patternMatch1: PartialFunction<Int,Int> =
-            case1 |
-            case2 //|
-//            PartialFunction<Int,Int>( { (i: Int, _) in
-//                if i % 2 == 0 && i <= 10 {
-//                    return .Defined(+i)
-//                } else {
-//                    return .Undefined
-//                }
-//                }) |
-//            PartialFunction<Int,Int>( { (i: Int, _) in
-//                if i % 2 != 0 && i <= 10 {
-//                    return .Defined(-i)
-//                } else {
-//                    return .Undefined
-//                }
-//                }) |
+            PartialFunction<Int,Int>( { (i: Int, _) in
+                if i % 2 == 0 && i <= 10 {
+                    return .Defined(+i)
+                } else {
+                    return .Undefined
+                }
+                }) |
+            PartialFunction<Int,Int>( { (i: Int, _) in
+                if i % 2 != 0 && i <= 10 {
+                    return .Defined(-i)
+                } else {
+                    return .Undefined
+                }
+                }) //|
 //            ({ $0 % 2 == 0 && $0 <= 10 } =|= { +$0 }) |
 //            ({ $0 % 2 != 0 && $0 <= 10 } =|= { -$0 })
 
         XCTAssertEqualObjects((-5 ~|> patternMatch1)!, 05, "Second case")
         XCTAssertEqualObjects((04 ~|> patternMatch1)!, 04, "First case")
-        XCTAssertEqualObjects((10 ~|> patternMatch1)!, 10, "First case")
-        XCTAssertEqualObjects((11 ~|> patternMatch1), nil, "Third case")
+        XCTAssertEqualObjects((match (10) { patternMatch1 })!, 10, "First case")
+        XCTAssertEqualObjects((match (11) { patternMatch1 }), nil, "Third case")
     }
     
     func testPatternMatch2() -> () {
@@ -210,8 +206,8 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertEqualObjects(([1, 2] ~|> patternMatch2), nil)
         XCTAssertEqualObjects(([1, 2, 3] ~|> patternMatch2)!, "Hello")
         XCTAssertEqualObjects(([0, 1, 2, 3, 4, 5] ~|> patternMatch2)!, "Goodbye")
-        XCTAssertEqualObjects(([3, 20, 5] ~|> patternMatch2)!, "100")
-        XCTAssertEqualObjects(([3, 0, 5] ~|> patternMatch2)!, "0")
-        XCTAssertEqualObjects(([3, 4, 5, 6] ~|> patternMatch2), nil)
+        XCTAssertEqualObjects((match ([3, 20, 5]) { patternMatch2 })!, "100")
+        XCTAssertEqualObjects((match ([3, 0, 5]) { patternMatch2 })!, "0")
+        XCTAssertEqualObjects((match ([3, 4, 5, 6]) { patternMatch2 }), nil)
     }
 }
