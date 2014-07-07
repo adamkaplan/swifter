@@ -8,9 +8,6 @@
 
 import XCTest
 
-let canExecuteNotification = "CanExecuteNotification"
-let notificationCenter = NSNotificationCenter.defaultCenter()
-
 class ExecutableTests: XCTestCase {
     
     func testReceiveNotification() -> () {
@@ -37,7 +34,7 @@ class ExecutableTests: XCTestCase {
         }
         let exec = Executable<Any>(task: task, thread: NSOperationQueue(), observed: nil)
         
-        exec.executeWithValue(.Success(10))
+        exec.executeWithValue(.Success([10]))
         do {} while !onComplete
     }
     
@@ -70,7 +67,7 @@ class OnceExecutableTests: XCTestCase {
         }
         let exec = Executable<Int>(task: task, thread: NSOperationQueue(), observed: nil)
         
-        exec.executeWithValue(.Success(10))
+        exec.executeWithValue(.Success([10]))
         do {} while !onComplete
         // Test exception TODO
     }

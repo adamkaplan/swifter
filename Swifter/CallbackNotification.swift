@@ -10,13 +10,24 @@ import Foundation
 
 /* A CallbackNotification is used to notify and execute an Executable upon
  * the completion of an observed object that triggers the execution. */
-class CallbackNotification<T> : NSNotification {
+class CallbackNotification : NSNotification {
     
-    let value: T
+    var _value: [Any]
+    var value: Any {
+    get
+    {
+       return _value[0]
+    }
+    set(newValue)
+    {
+        _value = [newValue]
+    }
+    }
     
-    init(value: T) {
-        self.value = value
+    init(value: Any) {
+        _value = [value]
         super.init()
+        self.value = value
     }
     
 }

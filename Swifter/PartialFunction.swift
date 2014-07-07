@@ -63,7 +63,7 @@ class PartialFunction<A,B> {
     func tryApply(a: A) -> Try<B> {
         switch applyOrCheck(a, false) {
         case .Defined(let p):
-            return .Success(p)
+            return .Success([p])
         case .Undefined:
             return .Failure(UAE())
         }

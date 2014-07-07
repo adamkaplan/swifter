@@ -22,7 +22,7 @@ class LinkedListTests: XCTestCase {
         ls.push("Kitten")
         XCTAssertEqualObjects(ls.this!, "Kitten")
         XCTAssertEqualObjects(ls.next!.this!, "Cat")
-//        XCTAssertEqualObjects(ls.next!.prev!, "Kitten")
+        XCTAssertEqualObjects(ls.next!.prev!.this, "Kitten")
         assertNil(ls.next!.next)
         assertNil(ls.prev)
     }
@@ -32,10 +32,10 @@ class LinkedListTests: XCTestCase {
         ls.push("Kitten")
         ls.push("Kitty")
         XCTAssertEqualObjects(ls.pop(), "Kitty")
-//        XCTAssertEqualObjects(ls.next!.prev!, "Cat")
+        XCTAssertEqualObjects(ls.next!.prev!.this, "Cat")
         XCTAssertEqualObjects(ls.this!, "Kitten")
         XCTAssertEqualObjects(ls.next!.this!, "Cat")
-//        XCTAssertEqualObjects(ls.next!.prev!, "Kitten")
+        XCTAssertEqualObjects(ls.next!.prev!.this, "Kitten")
         assertNil(ls.next!.next)
         assertNil(ls.prev)
     }

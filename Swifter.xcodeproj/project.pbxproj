@@ -42,6 +42,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0BDA0135196B211200104FB2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FC7A0EB2193E72710045F66D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FC7A0EBA193E72710045F66D;
+			remoteInfo = Swifter;
+		};
 		FC7A0EC8193E72710045F66D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FC7A0EB2193E72710045F66D /* Project object */;
@@ -246,6 +253,7 @@
 			);
 			dependencies = (
 				FC7A0EC9193E72710045F66D /* PBXTargetDependency */,
+				0BDA0136196B211200104FB2 /* PBXTargetDependency */,
 			);
 			name = SwifterTests;
 			productName = SwifterTests;
@@ -353,6 +361,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0BDA0136196B211200104FB2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FC7A0EBA193E72710045F66D /* Swifter */;
+			targetProxy = 0BDA0135196B211200104FB2 /* PBXContainerItemProxy */;
+		};
 		FC7A0EC9193E72710045F66D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = FC7A0EBA193E72710045F66D /* Swifter */;

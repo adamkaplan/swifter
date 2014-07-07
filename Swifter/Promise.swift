@@ -89,7 +89,7 @@ class Promise<T> {
             }, {
             Log(.PromiseFulfilled, "Fulfilled with \(value)")
             self.state = .Fulfilled(value)
-            NSNotificationCenter.defaultCenter().postNotification(CallbackNotification<Try<T>>(value: value))
+            NSNotificationCenter.defaultCenter().postNotification(CallbackNotification(value: value))
             return true
             })
     }
@@ -110,7 +110,7 @@ class Promise<T> {
     /* Attempts to change the state of the Promise to a .Fulfilled(.Success(T)),
      * and returns whether or not the state change occurred. */
     func trySuccess(s: T) -> Bool {
-        return self.tryFulfill(.Success(s))
+        return self.tryFulfill(.Success([s]))
     }
     
     /* Attempts to change the state of the Promise to a .Fulfilled(.Success(T)),

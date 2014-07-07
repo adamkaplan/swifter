@@ -9,11 +9,22 @@
 // TODO: make a functional version; conform to Sequence. is this necessary?
 class LinkedList<T> {
     
-    var this: T!
+    var _this: [T!]
+    var this: T! {
+    get
+    {
+        return _this[0]
+    }
+    set(newThis)
+    {
+        _this = [newThis]
+    }
+    }
     var next: LinkedList<T>?
     var prev: LinkedList<T>?
     
     init(this: T) {
+        _this = [this]
         self.this = this
         self.next = nil
         self.prev = nil

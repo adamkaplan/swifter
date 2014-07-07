@@ -8,6 +8,7 @@
 
 import XCTest
 
-func assertNil<T where T: Equatable>(expression: T?) -> () {
-    XCTAssertTrue(expression == nil)
+func assertNil<T>(expression: T?, _ message: String = "") -> () {
+    let isSome = expression ? true : false
+    XCTAssertTrue(isSome, message)
 }

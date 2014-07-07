@@ -51,8 +51,8 @@ class FutureTests: XCTestCase {
         let f1f: Future<Int> = f1.fold({
             var result: Try<Int>! = nil
             switch $0 {
-            case .Success("f1 is finished"):
-                result = Try.Success(10)
+            case .Success(["f1 is finished"]):
+                result = Try.Success([10])
             default:
                 result = Try.Failure(NSException(name: "IncorrectFuture", reason: "f1 not correctly fulfilled", userInfo: nil))
             }
@@ -136,7 +136,7 @@ class FutureTests: XCTestCase {
     
     func testOnSuccess() -> () {
         var onSuccess: Bool = false
-        let p1 = Promise<Int>(value: .Success(100))
+        let p1 = Promise<Int>(value: .Success([100]))
         let f1 = Future<Int>(linkedPromise: p1)
         f1.onSuccess( { _ in true } =|= { _ in onSuccess = true })
         do {} while !onSuccess
@@ -147,7 +147,7 @@ class FutureTests: XCTestCase {
     }
     
     func testOnFailure() -> () {
-        let p1 = Promise<Int>(value: .Success(100))
+        let p1 = Promise<Int>(value: .Success([100]))
         let f1 = Future<Int>(linkedPromise: p1)
         f1.onFailure( { _ in true } =|= { _ in NSException(name: "FutureTestException", reason: nil, userInfo: nil).raise() })
         
@@ -165,7 +165,7 @@ class FutureTests: XCTestCase {
             { $0.isSuccess() } =|= { _ in onSuccess = !onSuccess } |
             { $0.isFailure() } =|= { _ in onFailure = !onFailure }
         
-        let p1 = Promise<Int>(value: .Success(100))
+        let p1 = Promise<Int>(value: .Success([100]))
         let f1 = Future<Int>(linkedPromise: p1)
         f1.onComplete(pf)
         do {} while !onSuccess
@@ -181,7 +181,7 @@ class FutureTests: XCTestCase {
     func testRecover() -> () {
         let pf: PartialFunction<NSException,Int> = { _ in true } =|= { _ in return 200 }
         
-        let p1 = Promise<Int>(value: .Success(100))
+        let p1 = Promise<Int>(value: .Success([100]))
         let f1 = Future<Int>(linkedPromise: p1)
         let f1r = f1.recover(pf)
         do {} while !f1r.value
@@ -200,13 +200,13 @@ class FutureTests: XCTestCase {
             { $0.unwrap() < 25 } =|= { _ in "L" } |
             { _ in true } =|= { _ in "Default" }
         
-        let p1 = Promise<Int>(value: .Success(100))
+        let p1 = Promise<Int>(value: .Success([100]))
         let f1 = Future<Int>(linkedPromise: p1)
         let f1at = f1.andThen(pf)
         do {} while !f1at.value
         XCTAssertEqualObjects(f1at.value!.unwrap(), "G")
         
-        let p2 = Promise<Int>(value: .Success(20))
+        let p2 = Promise<Int>(value: .Success([20]))
         let f2 = Future<Int>(linkedPromise: p2)
         let f2at = f2.andThen(pf)
         do {} while !f2at.value

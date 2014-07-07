@@ -41,14 +41,14 @@ enum Try<T> {
     typealias TDFE = TryDidFailException
     typealias TDNFE = TryDidNotFailException
     
-    case Success(T)
+    case Success([T])
     case Failure(E)
     
     /* Applies success to a .Success(T) and failure to a .Failure(E). */
     func fold<S>(success: ((T) -> S), failure: ((E) -> S)) -> S {
         switch self {
         case .Success(let s):
-            return success(s)
+            return success(s[0])
         case .Failure(let e):
             return failure(e)
         }
@@ -96,19 +96,19 @@ enum Try<T> {
     /* Applies f to the value of this Try if it is a .Success(T), or otherwise
      * propagates the .Failure(E). */
     func map<S>(f: ((T) -> S)) -> Try<S> {
-        return self.fold({ .Success(f($0)) }, { .Failure($0) })
+        return self.fold({ .Success([f($0)]) }, { .Failure($0) })
     }
     
     /* Applies f to the value of this Try if it is a .Success(T), or otherwise
      * raises a TryDidFailException. */
     func onSuccess<S>(f: ((T) -> S)) -> Try<S> {
-        return self.fold({ .Success(f($0)) }, { _ in .Failure(TDFE()) })
+        return self.fold({ .Success([f($0)]) }, { _ in .Failure(TDFE()) })
     }
 
     /* Applies f to the value of this Try if it is a .Failure(E), or otherwise
     * raises a TryDidFailException. */
     func onFailure<S>(f: ((E) -> S)) -> Try<S> {
-        return self.fold({ _ in .Failure(TDNFE()) }, { .Success(f($0)) })
+        return self.fold({ _ in .Failure(TDNFE()) }, { .Success([f($0)]) })
     }
     
     /* Applies f to the value of this Try if it is a .Success(T), or otherwise
@@ -122,7 +122,7 @@ enum Try<T> {
     func recover(pf: PartialFunction<E,T>) -> Try<T> {
         return self.fold({ _ in self }, {
             if pf.isDefinedAt($0) {
-                return .Success(pf.apply($0)!)
+                return .Success([pf.apply($0)!])
             } else {
                 return self
             }

@@ -25,14 +25,13 @@ class Future<T> {
     
     /* Creates a already-completed Future whose value is `value`. */
     init(value: T) {
-        self.promise = Promise<T>(value: .Success(value))
+        self.promise = Promise<T>(value: .Success([value]))
     }
     
     /* Creates a Future whose value will be determined from the completion of task. */
     init(task: (() -> T)) {
         self.promise = Promise<T>()
-        let task = Executable<T>(task: { _ in task }, thread: NSOperationQueue(), observed: self.promise) // TODO
-        self.promise.executeOrMap(task)
+        self.promise.executeOrMap(Executable<T>(task: { _ in task }, thread: NSOperationQueue(), observed: self.promise)) // TODO
     }
     
     /* Creates a Future whose status is directly linked to the state of the Promise. */

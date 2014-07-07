@@ -183,7 +183,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertEqualObjects((-5 ~|> patternMatch1)!, 05, "Second case")
         XCTAssertEqualObjects((04 ~|> patternMatch1)!, 04, "First case")
         XCTAssertEqualObjects((match (10) { patternMatch1 })!, 10, "First case")
-        XCTAssertEqualObjects((match (11) { patternMatch1 }), nil, "Third case")
+        assertNil(match (11) { patternMatch1 })
     }
     
     func testPatternMatch2() -> () {
@@ -192,10 +192,10 @@ class PartialFunctionTests: XCTestCase {
          // | 0::1::_ -> Some "Goodbye"
          // | [3, a, 5] -> Some (string_of_int (5 * a))
          // | _ -> None
-        let case1: PartialFunction<Int[],String> = { $0[0] == 1 && $0[1] == 2 && $0.count >= 3 } =|= { _ in "Hello" }
-        let case2: PartialFunction<Int[],String> = { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } =|= { _ in "Goodbye" }
-        let case3: PartialFunction<Int[],String> = { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } =|= { "\(5 * $0[1])" }
-        let patternMatch2: PartialFunction<Int[],String> =
+        let case1: PartialFunction<[Int],String> = { $0[0] == 1 && $0[1] == 2 && $0.count >= 3 } =|= { _ in "Hello" }
+        let case2: PartialFunction<[Int],String> = { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } =|= { _ in "Goodbye" }
+        let case3: PartialFunction<[Int],String> = { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } =|= { "\(5 * $0[1])" }
+        let patternMatch2: PartialFunction<[Int],String> =
             case1 |
             case2 |
             case3 //|
@@ -203,11 +203,11 @@ class PartialFunctionTests: XCTestCase {
 //            { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } =|= { _ in "Goodbye" } |
 //            { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } =|= { "\(5 * $0[1])" }
         
-        XCTAssertEqualObjects(([1, 2] ~|> patternMatch2), nil)
+        assertNil([1, 2] ~|> patternMatch2)
         XCTAssertEqualObjects(([1, 2, 3] ~|> patternMatch2)!, "Hello")
         XCTAssertEqualObjects(([0, 1, 2, 3, 4, 5] ~|> patternMatch2)!, "Goodbye")
         XCTAssertEqualObjects((match ([3, 20, 5]) { patternMatch2 })!, "100")
         XCTAssertEqualObjects((match ([3, 0, 5]) { patternMatch2 })!, "0")
-        XCTAssertEqualObjects((match ([3, 4, 5, 6]) { patternMatch2 }), nil)
+        assertNil(match ([3, 4, 5, 6]) { patternMatch2 })
     }
 }
