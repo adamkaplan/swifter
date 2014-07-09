@@ -98,10 +98,6 @@ class TryTests: XCTestCase {
         XCTAssertFalse(onFailure)
     }
     
-    /* Applies f to the value of this Try if it is a .Success([T]), or otherwise
-    * raises a TryDidFailException. */
-
-    
     func testOnSuccess() {
         var onSuccess: Bool = false
         var onFailure: Bool = false

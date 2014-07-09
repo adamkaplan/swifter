@@ -8,7 +8,6 @@
 
 #import "UIKit/UIKit.h"
 
-
 //! Project version number for Swifter.
 FOUNDATION_EXPORT double SwifterVersionNumber;
 

@@ -13,6 +13,7 @@ import Foundation
 class CallbackNotification : NSNotification {
     
 //    // TODO: Reimplement and make generic
+//    // TODO: ADD LOGGING
 //    // it is a subclass that just wraps var callbackValue into userInfo
 //    
 //    var callbackValue: Any {

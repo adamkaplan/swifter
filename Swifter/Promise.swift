@@ -8,6 +8,9 @@
 
 import Foundation
 
+let notificationCenter = NSNotificationCenter.defaultCenter()
+let promiseFulfilledNotification = "PromiseFulfilledNotification"
+
 /* A PromiseState encapsulates all possible states of the Promise: .Pending,
  * or .Fulfilled with either a .Success(T) or a .Failure(E). */
 enum PromiseState<T> {
@@ -69,8 +72,12 @@ class Promise<T> {
         self.tryFulfill(value)
     }
     
+    deinit {
+        DLog(.Promise, "Deinitializing Promise")
+    }
+    
     /* Applies fulfilled to a .Fufilled(Try<T>) and pending to a .Pending. */
-    func stateFold<S>(fulfilled: ((Try<T>) -> S), pending: (() -> S)) -> S {
+    func fold<S>(fulfilled: ((Try<T>) -> S), pending: (() -> S)) -> S {
         switch self.state {
         case .Fulfilled(let f):
             return fulfilled(f)
@@ -83,15 +90,14 @@ class Promise<T> {
     /* Attempts to change the state of the Promise to a .Fulfilled(Try<T>), and
      * returns whether or not the state change occured. */
     func tryFulfill(value: Try<T>) -> Bool {
-        return self.stateFold({
+        return self.fold({
                 _ in
                 Log(.Promise, "Attempted to fulfill an already-fulfilled promise (\(self.state)).")
                 return false
             }, {
                 Log(.PromiseFulfilled, "Fulfilled with \(value)")
                 self.state = .Fulfilled(value)
-                let userInfo = ["callbackValue" : value]
-                NSNotificationCenter.defaultCenter().postNotification(name: canExecuteNotification, object: self, userInfo: userInfo)
+                notificationCenter.postNotificationName(promiseFulfilledNotification, object: self, userInfo: ["callbackValue" : value.toObject()])
                 return true
             })
     }
@@ -106,7 +112,7 @@ class Promise<T> {
     
     /* Returns whether the Promise has reached a .Fulfilled(T) state. */
     func isFulfilled() -> Bool {
-        return self.stateFold({ _ in true }, { false })
+        return self.fold({ _ in true }, { false })
     }
 
     /* Attempts to change the state of the Promise to a .Fulfilled(.Success(T)),
@@ -139,7 +145,7 @@ class Promise<T> {
     
     /* Fulfills the Promise simultaneously with this Promise. */
     func alsoFulfill(promise: Promise<T>) -> () {
-        let exec = Executable<T>(task: { promise.tryFulfill($0) }, thread: Scheduler.assignThread(), observed: self)
+        let exec = Executable<T>(task: { promise.tryFulfill($0); return () }, thread: Scheduler.assignThread())
         self.executeOrMap(exec)
     }
     
@@ -147,22 +153,33 @@ class Promise<T> {
      * otherwise schedules the Executable to be executed after the Promise reaches
      * the .Fulfilled state. */
     func executeOrMap(exec: Executable<T>) -> () {
-        self.stateFold({
+        self.fold({
             exec.executeWithValue($0)
             }, {
-                // TODOCreate callback.
-        })
+                // TODO Prevent from being deinitialized.
+                let observer = notificationCenter.addObserverForName(promiseFulfilledNotification, object: self, queue: exec.thread, usingBlock:
+                    {
+                        Log(.Executable, "in usingBlock")
+                        if let value = ($0.userInfo["callbackValue"] as? TryObject<T>)?.toEnum() {
+                            exec.executeWithValue(value)
+                        }
+                    })
+                exec.thread.addOperationWithBlock {
+                    do {} while !exec.value
+                    notificationCenter.removeObserver(observer)
+                }
+            })
     }
     
     /* Schedules the Task to be executed for when the Promise is .Fulfilled. */
-    func onComplete(task: ((Try<T>) -> Any)) -> () {
-        self.executeOrMap(Executable<T>(task: task, thread: Scheduler.assignThread(), observed: self)) // THREAD
+    func onComplete(task: ((Try<T>) -> ())) -> () {
+        self.executeOrMap(Executable<T>(task: task, thread: Scheduler.assignThread()))
     }
     
 }
 
 extension Promise : Awaitable {
-        
+    
     /* The type of the action that is awaited. */
     typealias AwaitedResult = Promise<T>
     
@@ -184,28 +201,23 @@ extension Promise : Awaitable {
     
     /* Awaits indefinitely until the action has completed. */
     func await() -> AwaitedResult {
-        return self.await(NSTimeInterval.infinity)
-    }
-
-    // TODO: make private or refactor timeout().
-    /* Attempts to fail this Promise with a PromiseAlreadyFulfilledException. */
-    func tryFailWithPAFE(timer: NSTimer!) -> () {
-        self.tryFail(PAFE())
+        do {NSRunLoop.mainRunLoop().runMode(NSDefaultRunLoopMode, beforeDate: NSDate(timeIntervalSinceNow: 0))} while !self.isComplete()
+        return self
     }
     
     /* Fails the Promise with a TimeoutException after the specified NSTimeInterval. */
     func timeout(time: NSTimeInterval) {
-        NSTimer.scheduledTimerWithTimeInterval(time, target: self, selector: "tryFailWithPAFE:", userInfo: nil, repeats: false)
+        NSTimer.scheduledTimerWithTimeInterval(time, userInfo: nil, repeats: false) {
+            _ in
+            Log(.Timer, "Timing out")
+            _ = self.tryFulfill(.Failure(PAFE()))
+        }
     }
 
-    /* Returns an attempt at awaiting the action for an NSTimeInterval duration. */
+    /* Returns the blocked attempt at awaiting the action for an NSTimeInterval duration. */
     func await(time: NSTimeInterval) -> AwaitedResult {
-        let promise = Promise<T>()
-        
-        self.alsoFulfill(promise)
-        promise.timeout(time)
-        
-        return promise
+        self.timeout(time)
+        return self.await()
     }
     
 }

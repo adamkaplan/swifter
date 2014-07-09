@@ -11,6 +11,7 @@ import Foundation
 enum LogCategory: String, LogicValue {
     case Executable = "Executable"
     case OnceExecutable = "OnceExecutable"
+    case Timer = "Timer"
     case Future = "Future"
     case FutureFolded = "FutureMapped"
     case Promise = "Promise"
@@ -24,6 +25,8 @@ enum LogCategory: String, LogicValue {
             return true
         case .OnceExecutable:
             return true
+        case .Timer:
+            return true
         case .Future:
             return true
         case .FutureFolded:
@@ -35,7 +38,7 @@ enum LogCategory: String, LogicValue {
         case .PromiseFulfilled:
             return true
         case .LinkedList:
-            return false
+            return true
         }
     }
 }
@@ -58,12 +61,16 @@ func Log(category: LogCategory, format: String, args: Any...) -> () {
 
 func DLog(category: LogCategory) -> () {
     #if DEBUG
-        Log(category)
+        if category {
+            NSLog(category.toRaw())
+        }
     #endif
 }
 
 func DLog(category: LogCategory, format: String, args: Any...) -> () {
     #if DEBUG
-        Log(category, format, args)
+        if category {
+            NSLog(format, args)
+        }
     #endif
 }

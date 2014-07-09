@@ -31,13 +31,10 @@ class LinkedList<T> {
     }
     
     deinit {
-        #if DEBUG
-            Log(.LinkedList, "Cell of \(self.this) is being deinitialized.")
-        #endif
+        DLog(.LinkedList, "Deinitializing LinkedList")
     }
     
     func push(t: T) -> () {
-        // Head is not referenced after returning; the old cell still is
         let next = LinkedList<T>(this: self.this)
         next.prev = self
         next.next = self.next

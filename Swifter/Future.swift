@@ -31,7 +31,8 @@ class Future<T> {
     /* Creates a Future whose value will be determined from the completion of task. */
     init(task: (() -> T)) {
         self.promise = Promise<T>()
-        self.promise.executeOrMap(Executable<T>(task: { _ in task() }, thread: NSOperationQueue(), observed: self.promise)) // TODO
+        // TODO: Capture .Failures
+        Executable(task: { _ in self.promise.success(task()) }, thread: NSOperationQueue()).executeWithValue(.Success([10]))
     }
     
     /* Creates a Future whose status is directly linked to the state of the Promise. */
@@ -46,14 +47,18 @@ class Future<T> {
         copiedPromise.alsoFulfill(self.promise)
     }
     
+    deinit {
+        DLog(.Future, "Deinitializing Future")
+    }
+    
     /* Creates a new future from the application of `f` to the resulting PromiseState. */
     func fold<S>(f: ((Try<T>) -> Try<S>)) -> Future<S> {
         let promise = Promise<S>()
         
         self.promise.executeOrMap(Executable<T>(task: {
-            (t: Try<T>) -> Any in
-            promise.tryFulfill(f(t))
-            }, thread: Scheduler.assignThread(), observed: self))
+            (t: Try<T>) -> () in
+            promise.fulfill(f(t))
+            }, thread: Scheduler.assignThread()))
         
         return Future<S>(linkedPromise: promise)
     }
@@ -78,7 +83,7 @@ class Future<T> {
                 (s: Future<S>) -> Any in
                 s.promise.alsoFulfill(promise)
                 }, { promise.tryFail($0) })
-            }, thread: Scheduler.assignThread(), observed: self))
+            }, thread: Scheduler.assignThread()))
         
         return Future<S>(linkedPromise: promise)
     }
@@ -160,7 +165,7 @@ extension Future : Awaitable {
     /* Returns an attempt at awaiting the action for an NSTimeInterval duration. */
     func await(time: NSTimeInterval) -> Future<T> {
         let future = Future<T>(copiedPromise: self.promise)
-        future.promise.timeout(time)
+        future.promise.await(time)
         return future
     }
     

@@ -46,7 +46,7 @@ enum Try<T> : Printable {
     
     var description: String {
     get {
-        return self.fold({ ".Success(\($0))" }, { ".Failure(\($0))" })
+        return self.fold({ _ in ".Success" }, { _ in ".Failure" })
     }
     }
     

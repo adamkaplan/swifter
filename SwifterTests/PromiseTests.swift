@@ -28,7 +28,7 @@ class PromiseTests: XCTestCase {
         }
         
         let promise3 = Promise<Int>(value: .Failure(NSException()))
-        switch promise2.state {
+        switch promise3.state {
         case .Fulfilled(.Failure(_)):
             ()
         default:
@@ -36,17 +36,17 @@ class PromiseTests: XCTestCase {
         }
     }
     
-    func testStateFold() -> () {
+    func testFold() -> () {
         var onPending: Bool = false
         var onFulfilled: Bool = false
         
         let promise1 = Promise<Int>()
-        promise1.stateFold({ _ in onFulfilled = true }, { _ in onPending = true })
+        promise1.fold({ _ in onFulfilled = true }, { _ in onPending = true })
         XCTAssertTrue(onPending)
         XCTAssertFalse(onFulfilled)
         
         let promise2 = Promise<String>(value: .Success(["Hello"]))
-        promise1.stateFold({ _ in onFulfilled = true }, { _ in onPending = false })
+        promise2.fold({ _ in onFulfilled = true }, { _ in onPending = false })
         XCTAssertTrue(onPending)
         XCTAssertTrue(onFulfilled)
     }
@@ -54,6 +54,8 @@ class PromiseTests: XCTestCase {
     func testTryFulfill() -> () {
         let promise1 = Promise<Int>()
         XCTAssertTrue(promise1.tryFulfill(.Success([10])))
+        XCTAssertEqual(promise1.value!.toOption()!, 10)
+        XCTAssertFalse(promise1.tryFulfill(.Success([11])))
         XCTAssertEqual(promise1.value!.toOption()!, 10)
     
         let promise2 = Promise<String>(value: .Success(["Hello"]))
@@ -77,12 +79,14 @@ class PromiseTests: XCTestCase {
         promise1.alsoFulfill(promise2)
         promise1.tryFulfill(.Success([10]))
         XCTAssertEqual(promise1.value!.toOption()!, 10)
+        do {} while !promise2.value
         XCTAssertEqual(promise2.value!.toOption()!, 10)
         
         let promise3 = Promise<String>(value: .Success(["Hello"]))
         let promise4 = Promise<String>()
         promise3.alsoFulfill(promise4)
         XCTAssertEqualObjects(promise3.value!.toOption()!, "Hello")
+        do {} while !promise4.value
         XCTAssertEqualObjects(promise4.value!.toOption()!, "Hello")
     }
     
@@ -93,15 +97,16 @@ class PromiseTests: XCTestCase {
         let exec1: Executable<Int> = Executable<Int>(task: {
             (ti: Try<Int>) -> () in
             var i = ti.toOption()!
-            do { j++ } while i++ < Int.max/10
+            do { j++ } while i++ < STALL
             finishedExecuting = true
-            }, thread: NSOperationQueue(), observed: promise1)
+            }, thread: NSOperationQueue())//, observed: promise1)
+        promise1.executeOrMap(exec1)
         promise1.tryFulfill(.Success([0]))
-        while (j < Int.max/10/2) {
+        while (j < STALL/2) {
             XCTAssertFalse(finishedExecuting)
         }
         while (true) {
-            if (j == Int.max/10) {
+            if (j == STALL) {
                 XCTAssertTrue(finishedExecuting)
                 break
             }
@@ -112,16 +117,13 @@ class PromiseTests: XCTestCase {
         let exec2: Executable<Int> = Executable<Int>(task: {
             (ti: Try<Int>) -> () in
             var i = ti.toOption()!
-            do { j++ } while i++ < Int.max/10
+            do { j++ } while i++ < STALL
             finishedExecuting = true
-            }, thread: NSOperationQueue(), observed: promise2)
+            }, thread: NSOperationQueue())
         promise2.tryFulfill(.Success([0]))
         promise2.executeOrMap(exec2)
-        while (j < Int.max/10/2) {
-            XCTAssertFalse(finishedExecuting)
-        }
         while (true) {
-            if (j == Int.max/10) {
+            if (j == STALL) {
                 XCTAssertTrue(finishedExecuting)
                 break
             }
@@ -134,12 +136,12 @@ class PromiseTests: XCTestCase {
         promise1.onComplete { _ in onComplete = true }
         XCTAssertFalse(onComplete)
         promise1.tryFulfill(.Success([10]))
-        XCTAssertTrue(onComplete)
+        do {} while !onComplete
         
         onComplete = false
         let promise2 = Promise<Int>(value: .Success([10]))
         promise2.onComplete { _ in onComplete = true }
-        XCTAssertTrue(onComplete)
+        do {} while !onComplete
     }
     
     func testAwait() -> () {
@@ -149,27 +151,19 @@ class PromiseTests: XCTestCase {
         let exec1: Executable<Int> = Executable<Int>(task: {
             (ti: Try<Int>) -> () in
             var i = ti.toOption()!
-            do {} while i++ < Int.max/10
+            do {} while ++i < STALL
             finishedExecuting = true
             promise2.tryFulfill(.Success([i]))
-            }, thread: NSOperationQueue(), observed: promise1)
+            }, thread: NSOperationQueue())
+        promise1.executeOrMap(exec1)
         promise1.fulfill(.Success([0]))
-        promise1.await()
+        promise2.await()
         XCTAssertTrue(finishedExecuting)
-        XCTAssertEqual(promise2.value!.toOption()!, Int.max/10)
+        XCTAssertEqual(promise2.value!.toOption()!, STALL)
         
-        finishedExecuting = false
         let promise3 = Promise<Int>()
-        let promise4 = Promise<Int>()
-        let exec3: Executable<Int> = Executable<Int>(task: {
-            (ti: Try<Int>) -> () in
-            var i = ti.toOption()!
-            do {} while i++ < Int.max/10
-            promise4.tryFulfill(.Success([i]))
-            }, thread: NSOperationQueue(), observed: promise3)
-        promise1.fulfill(.Success([0]))
-        promise2.await(0)
-        XCTAssertTrue(promise2.value!.isFailure())
+        await(promise3)
+        promise3.await(1)
+        XCTAssertTrue(promise3.value!.isFailure())
     }
-
 }

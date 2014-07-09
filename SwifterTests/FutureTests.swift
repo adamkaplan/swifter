@@ -17,13 +17,14 @@ class FutureTests: XCTestCase {
         var onComplete: Bool = false
         let f2 = Future<String>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max/10
+            do {} while j++ < STALL
             onComplete = true;
             return "f2 is finished"
             })
         while !onComplete {
             assertNil(f2.value)
         }
+        do {} while !f2.value
         XCTAssertEqualObjects(f2.value!.unwrap(), "f2 is finished")
         
         let p1 = Promise<Int>()
@@ -45,7 +46,7 @@ class FutureTests: XCTestCase {
         var onComplete: Bool = false
         let f1 = Future<String>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max/10
+            do {} while j++ < STALL
             return "f1 is finished"
             })
         let f1f: Future<Int> = f1.fold({
@@ -59,7 +60,7 @@ class FutureTests: XCTestCase {
             onComplete = true
             return result
             })
-        do {} while !onComplete
+        do {} while !f1f.value
         XCTAssertEqual(f1f.value!.unwrap(), 10)
     }
     
@@ -76,6 +77,7 @@ class FutureTests: XCTestCase {
         let f2 = Future<Bool>(copiedPromise: p2)
         let f2m: Future<String> = f2.map {
             onComplete = true
+            DLog(.Future, "Here")
             if $0 {
                 return "Hello"
             } else {
@@ -83,22 +85,23 @@ class FutureTests: XCTestCase {
             }
         }
         p2.tryFail(NSException(name: "FutureTestException", reason: nil, userInfo: nil))
-        do {} while !onComplete
-        assertNil(f2m.value)
-        // Test that an Exception is thrown.
+        do {} while !f2m.value
+        XCTAssertFalse(onComplete)
+        assertNil(f2m.value!.toOption())
+        // TODO EXCEPTIONS
     }
 
     func testBind() -> () {
         let f1 = Future<Int>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max/10
+            do {} while j++ < STALL
             return 100
             })
         let f2: Future<Int> = f1.bind {
             (i: Int) -> Future<Int> in
             return Future<Int>(task: {
                 var j: Int = 0;
-                do {} while j++ < Int.max/10
+                do {} while j++ < STALL
                 return -i
             })
         }
@@ -111,17 +114,17 @@ class FutureTests: XCTestCase {
             (i: Int) -> Future<Int> in
             return Future<Int>(task: {
                 var j: Int = 0;
-                do {} while j++ < Int.max/10
+                do {} while j++ < STALL
                 return -i
                 })
         }
-        // Test that the exception is mapped.
+        // TODO EXCEPTIONS
     }
     
     func testFilter() -> () {
         let f1 = Future<Int>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max/10
+            do {} while j++ < STALL
             return 100
             })
         
@@ -131,39 +134,39 @@ class FutureTests: XCTestCase {
         
         let f3 = f1.filter { $0 != 100 }
         do {} while !f2.value
-        // Test the exception.
+        // TODO EXCEPTIONS
     }
     
     func testOnSuccess() -> () {
         var onSuccess: Bool = false
         let p1 = Promise<Int>(value: .Success([100]))
         let f1 = Future<Int>(linkedPromise: p1)
-        f1.onSuccess( { _ in true } =|= { _ in onSuccess = true })
+        f1.onSuccess( { _ in true } =|= { _ in onSuccess = true; return Try.Success([""]) } as PartialFunction<Int,Try<String>>)
         do {} while !onSuccess
         
         let p2 = Promise<Int>(value: .Failure(NSException(name: "FutureTestException", reason: nil, userInfo: nil)))
         let f2 = Future<Int>(linkedPromise: p2)
-        f2.onSuccess( { _ in true } =|= { _ in NSException(name: "FutureTestException", reason: nil, userInfo: nil).raise() })
+        f2.onSuccess( { _ in true } =|= { _ in NSException(name: "FutureTestException", reason: nil, userInfo: nil).raise(); return Try.Success([""]) }  as PartialFunction<Int,Try<String>>)
     }
     
     func testOnFailure() -> () {
         let p1 = Promise<Int>(value: .Success([100]))
         let f1 = Future<Int>(linkedPromise: p1)
-        f1.onFailure( { _ in true } =|= { _ in NSException(name: "FutureTestException", reason: nil, userInfo: nil).raise() })
+        f1.onFailure( { _ in true } =|= { _ in NSException(name: "FutureTestException", reason: nil, userInfo: nil).raise(); return Try.Success([""]) } as PartialFunction<NSException,Try<String>>)
         
         var onFailure: Bool = false
         let p2 = Promise<Int>(value: .Failure(NSException(name: "FutureTestException", reason: nil, userInfo: nil)))
         let f2 = Future<Int>(linkedPromise: p2)
-        f2.onSuccess( { _ in true } =|= { _ in onFailure = true })
+        f2.onFailure( { _ in true } =|= { _ in onFailure = true; return Try.Success([""]) } as PartialFunction<NSException,Try<String>>)
         do {} while !onFailure
     }
     
     func testOnComplete() -> () {
         var onSuccess: Bool = false
         var onFailure: Bool = false
-        let pf: PartialFunction<Try<Int>,()> =
-            { $0.isSuccess() } =|= { _ in onSuccess = !onSuccess } |
-            { $0.isFailure() } =|= { _ in onFailure = !onFailure }
+        let pf: PartialFunction<Try<Int>,Try<Int>> =
+            { $0.isSuccess() } =|= { _ in onSuccess = !onSuccess; return Try.Success([5]) } |
+            { $0.isFailure() } =|= { _ in onFailure = !onFailure; return Try.Success([5]) }
         
         let p1 = Promise<Int>(value: .Success([100]))
         let f1 = Future<Int>(linkedPromise: p1)
@@ -196,8 +199,8 @@ class FutureTests: XCTestCase {
     
     func testAndThen() -> () {
         let pf: PartialFunction<Try<Int>,String> =
-            { $0.unwrap() > 25 } =|= { _ in "G" } |
-            { $0.unwrap() < 25 } =|= { _ in "L" } |
+            { $0.toOption() ? $0.unwrap() > 25 : false } =|= { _ in "G" } |
+            { $0.toOption() ? $0.unwrap() < 25 : false } =|= { _ in "L" } |
             { _ in true } =|= { _ in "Default" }
         
         let p1 = Promise<Int>(value: .Success([100]))
@@ -221,13 +224,13 @@ class FutureTests: XCTestCase {
 
     func testAnd() -> () {
         let f1 = Future<Int>(task: {
-//            var j: Int = 0;
-//            do {} while j++ < Int.max/10
+            var j: Int = 0;
+            do {} while j++ < STALL
             return 100
             })
         let f2 = Future<String>(task: {
-//            var j: Int = 0;
-//            do {} while j++ < Int.max/10
+            var j: Int = 0;
+            do {} while j++ < STALL
             return "Hello"
             })
         let f3 = f1.and(f2)
@@ -249,7 +252,7 @@ class FutureTests: XCTestCase {
         
         let f2 = Future<String>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max/10
+            do {} while j++ < STALL
             return "Hello"
             })
         do {} while !f2.isComplete()
@@ -259,7 +262,7 @@ class FutureTests: XCTestCase {
     func testAwait() -> () {
         let f1 = Future<String>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max/10
+            do {} while j++ < STALL
             return "Hello"
             })
         f1.await()

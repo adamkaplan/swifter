@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B0CDDE7196DDBD900743482 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B65E46B1953642300C6013A /* Promise.swift */; };
+		0B0CDDE8196DDBDA00743482 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B65E46B1953642300C6013A /* Promise.swift */; };
+		0B0CDDE9196DDBE100743482 /* Future.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B65E469195363FD00C6013A /* Future.swift */; };
+		0B0CDDEA196DDBE100743482 /* Future.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B65E469195363FD00C6013A /* Future.swift */; };
 		0B119BFC196AF94C00CC82E4 /* SwiftTestUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B119BFB196AF94C00CC82E4 /* SwiftTestUtilities.swift */; };
 		0B1AD18F195CBBBF004E61DB /* Try.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B69E0A11958C0B3002CE96D /* Try.swift */; };
 		0B1AD193195CC226004E61DB /* Scheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B39C59019538CA20014C2DE /* Scheduler.swift */; };
@@ -14,22 +18,27 @@
 		0B1AD195195CC22A004E61DB /* Array+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDA8EAE1952442C005760CF /* Array+Functional.swift */; };
 		0B1AD196195CC22C004E61DB /* PartialFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC603922193E740D000538B1 /* PartialFunction.swift */; };
 		0B1AD197195CC22E004E61DB /* Try.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B69E0A11958C0B3002CE96D /* Try.swift */; };
+		0B2568A01970371900577846 /* Timer+FunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BFF8291196F014C00D2AFE3 /* Timer+FunctionalTests.swift */; };
 		0B31693619634E2500BC1C62 /* CallbackNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D4819634A520033ECE0 /* CallbackNotification.swift */; };
 		0B31693719634E2600BC1C62 /* CallbackNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D4819634A520033ECE0 /* CallbackNotification.swift */; };
 		0B31693819634E2900BC1C62 /* Awaitable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D45196320BB0033ECE0 /* Awaitable.swift */; };
 		0B39C59119538CA20014C2DE /* Scheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B39C59019538CA20014C2DE /* Scheduler.swift */; };
-		0B4D4877196DB76400BA7256 /* PartialFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */; };
-		0B4D4878196DB76800BA7256 /* Array+FunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4418BF1964955E00BF7BFA /* Array+FunctionalTests.swift */; };
+		0B601A7919705CF9006C1D16 /* PromiseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B65E46419535E3100C6013A /* PromiseTests.swift */; };
+		0B601A7A19706ED3006C1D16 /* TryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B3C73A1195A0DC90019ADBA /* TryTests.swift */; };
+		0B601A7B19706ED7006C1D16 /* PartialFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */; };
+		0B601A7C19706ED9006C1D16 /* LinkedListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6083D2195CB3AB00FDA568 /* LinkedListTests.swift */; };
+		0B601A7D19706EDB006C1D16 /* Array+FunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4418BF1964955E00BF7BFA /* Array+FunctionalTests.swift */; };
+		0B601A7E19706EDF006C1D16 /* FutureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B39C58E1953766D0014C2DE /* FutureTests.swift */; };
+		0B601A7F19706EE1006C1D16 /* ExecutableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4418BD1964953A00BF7BFA /* ExecutableTests.swift */; };
 		0B6933751954A1EE004837D2 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD34F931954821400460556 /* Log.swift */; };
 		0BC26D411961EA5D0033ECE0 /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D401961EA5D0033ECE0 /* Executable.swift */; };
 		0BC26D421961EA5D0033ECE0 /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D401961EA5D0033ECE0 /* Executable.swift */; };
 		0BC26D471963261F0033ECE0 /* Awaitable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D45196320BB0033ECE0 /* Awaitable.swift */; };
 		0BD34F941954821400460556 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD34F931954821400460556 /* Log.swift */; };
-		0BDA013C196B3A0400104FB2 /* TryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B3C73A1195A0DC90019ADBA /* TryTests.swift */; };
-		0BDA014A196B3F7200104FB2 /* LinkedListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6083D2195CB3AB00FDA568 /* LinkedListTests.swift */; };
 		0BDA8EAF1952442C005760CF /* Array+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDA8EAE1952442C005760CF /* Array+Functional.swift */; };
 		0BDBC670195CAB4700F79900 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDBC66F195CAB4700F79900 /* LinkedList.swift */; };
-		0BDC6AB7196C3F4E008D97DF /* ExecutableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4418BD1964953A00BF7BFA /* ExecutableTests.swift */; };
+		0BFF828F196EF0DA00D2AFE3 /* NSTimer+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */; };
+		0BFF8293196F024300D2AFE3 /* NSTimer+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */; };
 		FC603923193E740D000538B1 /* PartialFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC603922193E740D000538B1 /* PartialFunction.swift */; };
 		FC7A0EC1193E72710045F66D /* Swifter.h in Headers */ = {isa = PBXBuildFile; fileRef = FC7A0EC0193E72710045F66D /* Swifter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FC7A0EC7193E72710045F66D /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC7A0EBB193E72710045F66D /* Swifter.framework */; };
@@ -44,6 +53,13 @@
 			remoteInfo = Swifter;
 		};
 		0BDA0135196B211200104FB2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FC7A0EB2193E72710045F66D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FC7A0EBA193E72710045F66D;
+			remoteInfo = Swifter;
+		};
+		0BEB0DD2196F3BEA006D65A2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FC7A0EB2193E72710045F66D /* Project object */;
 			proxyType = 1;
@@ -78,6 +94,8 @@
 		0BD34F931954821400460556 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Log.swift; path = Swifter/Log.swift; sourceTree = "<group>"; };
 		0BDA8EAE1952442C005760CF /* Array+Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Functional.swift"; sourceTree = "<group>"; };
 		0BDBC66F195CAB4700F79900 /* LinkedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
+		0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSTimer+Functional.swift"; sourceTree = "<group>"; };
+		0BFF8291196F014C00D2AFE3 /* Timer+FunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Timer+FunctionalTests.swift"; sourceTree = "<group>"; };
 		FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialFunctionTests.swift; sourceTree = "<group>"; };
 		FC603922193E740D000538B1 /* PartialFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialFunction.swift; sourceTree = "<group>"; };
 		FC7A0EBB193E72710045F66D /* Swifter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Swifter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -111,6 +129,7 @@
 			children = (
 				0BDA8EAE1952442C005760CF /* Array+Functional.swift */,
 				0BDBC66F195CAB4700F79900 /* LinkedList.swift */,
+				0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */,
 				FC603922193E740D000538B1 /* PartialFunction.swift */,
 				0B69E0A11958C0B3002CE96D /* Try.swift */,
 			);
@@ -134,6 +153,7 @@
 				0B6083D2195CB3AB00FDA568 /* LinkedListTests.swift */,
 				FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */,
 				0B4418BC1964951700BF7BFA /* PartialFunctionPlayground.playground */,
+				0BFF8291196F014C00D2AFE3 /* Timer+FunctionalTests.swift */,
 				0B3C73A1195A0DC90019ADBA /* TryTests.swift */,
 			);
 			name = Utility;
@@ -256,6 +276,7 @@
 				FC7A0EC9193E72710045F66D /* PBXTargetDependency */,
 				0BDA0136196B211200104FB2 /* PBXTargetDependency */,
 				0B119364196DBA6D00CC2166 /* PBXTargetDependency */,
+				0BEB0DD3196F3BEA006D65A2 /* PBXTargetDependency */,
 			);
 			name = SwifterTests;
 			productName = SwifterTests;
@@ -286,6 +307,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = FC7A0EB1193E72710045F66D;
 			productRefGroup = FC7A0EBC193E72710045F66D /* Products */;
@@ -323,10 +345,13 @@
 				0BDA8EAF1952442C005760CF /* Array+Functional.swift in Sources */,
 				0BC26D471963261F0033ECE0 /* Awaitable.swift in Sources */,
 				0BDBC670195CAB4700F79900 /* LinkedList.swift in Sources */,
+				0BFF828F196EF0DA00D2AFE3 /* NSTimer+Functional.swift in Sources */,
 				0B31693619634E2500BC1C62 /* CallbackNotification.swift in Sources */,
 				FC603923193E740D000538B1 /* PartialFunction.swift in Sources */,
 				0B39C59119538CA20014C2DE /* Scheduler.swift in Sources */,
 				0B1AD18F195CBBBF004E61DB /* Try.swift in Sources */,
+				0B0CDDE7196DDBD900743482 /* Promise.swift in Sources */,
+				0B0CDDE9196DDBE100743482 /* Future.swift in Sources */,
 				0BD34F941954821400460556 /* Log.swift in Sources */,
 				0BC26D411961EA5D0033ECE0 /* Executable.swift in Sources */,
 			);
@@ -337,20 +362,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				0B1AD196195CC22C004E61DB /* PartialFunction.swift in Sources */,
-				0BDA013C196B3A0400104FB2 /* TryTests.swift in Sources */,
+				0B0CDDEA196DDBE100743482 /* Future.swift in Sources */,
+				0BFF8293196F024300D2AFE3 /* NSTimer+Functional.swift in Sources */,
 				0B1AD193195CC226004E61DB /* Scheduler.swift in Sources */,
-				0BDC6AB7196C3F4E008D97DF /* ExecutableTests.swift in Sources */,
 				0BC26D421961EA5D0033ECE0 /* Executable.swift in Sources */,
-				0B4D4877196DB76400BA7256 /* PartialFunctionTests.swift in Sources */,
-				0B4D4878196DB76800BA7256 /* Array+FunctionalTests.swift in Sources */,
-				0BDA014A196B3F7200104FB2 /* LinkedListTests.swift in Sources */,
+				0B601A7F19706EE1006C1D16 /* ExecutableTests.swift in Sources */,
 				0B31693819634E2900BC1C62 /* Awaitable.swift in Sources */,
+				0B601A7D19706EDB006C1D16 /* Array+FunctionalTests.swift in Sources */,
+				0B601A7919705CF9006C1D16 /* PromiseTests.swift in Sources */,
 				0B31693719634E2600BC1C62 /* CallbackNotification.swift in Sources */,
 				0B1AD197195CC22E004E61DB /* Try.swift in Sources */,
+				0B601A7E19706EDF006C1D16 /* FutureTests.swift in Sources */,
 				0B1AD195195CC22A004E61DB /* Array+Functional.swift in Sources */,
+				0B601A7C19706ED9006C1D16 /* LinkedListTests.swift in Sources */,
 				0B1AD194195CC228004E61DB /* LinkedList.swift in Sources */,
+				0B601A7B19706ED7006C1D16 /* PartialFunctionTests.swift in Sources */,
+				0B601A7A19706ED3006C1D16 /* TryTests.swift in Sources */,
 				0B6933751954A1EE004837D2 /* Log.swift in Sources */,
+				0B2568A01970371900577846 /* Timer+FunctionalTests.swift in Sources */,
 				0B119BFC196AF94C00CC82E4 /* SwiftTestUtilities.swift in Sources */,
+				0B0CDDE8196DDBDA00743482 /* Promise.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,6 +397,11 @@
 			isa = PBXTargetDependency;
 			target = FC7A0EBA193E72710045F66D /* Swifter */;
 			targetProxy = 0BDA0135196B211200104FB2 /* PBXContainerItemProxy */;
+		};
+		0BEB0DD3196F3BEA006D65A2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FC7A0EBA193E72710045F66D /* Swifter */;
+			targetProxy = 0BEB0DD2196F3BEA006D65A2 /* PBXContainerItemProxy */;
 		};
 		FC7A0EC9193E72710045F66D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -413,7 +449,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				METAL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_SWIFT_FLAGS = "";
+				OTHER_SWIFT_FLAGS = "-DLOGGING";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -495,7 +531,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				METAL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				"OTHER_SWIFT_FLAGS[arch=*]" = "-DDEBUG";
+				OTHER_SWIFT_FLAGS = "-DDEBUG -DLOGGING";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";

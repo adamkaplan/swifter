@@ -8,52 +8,24 @@
 
 import Foundation
 
-let canExecuteNotification = "CanExecuteNotification"
-let notificationCenter = NSNotificationCenter.defaultCenter()
-
 /* An Executable is a wrapped computation (Task) and thread on which to be executed. */
 class Executable<T> {
     
     typealias Task = ((Try<T>) -> ())
     
     let task: Task
-    
     let thread: NSOperationQueue
-    
-    let observer: AnyObject!
-    let observed: AnyObject!
-    
     var value: Try<T>!
 
     /* Creates an Executable to run a Task on an NSOperationQueue, optionally
      * triggered by a CallbackNotification sent from `observed`. */
-    init(task: Task, thread: NSOperationQueue, observed: AnyObject!) {
+    init(task: Task, thread: NSOperationQueue) {
         self.task = task
         self.thread = thread
-        self.observed = observed
-        self.observer = notificationCenter.addObserverForName(canExecuteNotification,
-            object: observed,
-            queue: thread,
-            usingBlock: {
-                NSLog(
-                    "in usingBlock")
-                self.receiveNotification($0)
-            })
     }
     
     deinit {
-        Log(.Executable, "Deinitializing Executable and removing from notification center.")
-        notificationCenter.removeObserver(self)
-    }
-    
-    /* The selector called when the notification center receives a CanExecuteNotification. */
-    func receiveNotification(notification: NSNotification) -> () {
-        Log(.Executable, "Received notification")
-        
-        if let tryObject = (notification.userInfo["callbackValue"] as? TryObject<T>) {
-            let value = tryObject.toEnum()
-            self.executeWithValue(value)
-        }
+        DLog(.Executable, "Deinitializing Executable")
     }
     
     /* Executes the Executable by running its Task on the NSOperationQueue with `value`. */
@@ -82,25 +54,13 @@ class OnceExecutable<T> : Executable<T> {
     
     /* Creates a OnceExecutable to run a Task on an NSOperationQueue, optionally
      * triggered by a CallbackNotification sent from `observed`. */
-    init(task: Task, thread: NSOperationQueue, observed: AnyObject!) {
-        super.init(task: task, thread: thread, observed: observed)
+    init(task: Task, thread: NSOperationQueue) {
+        super.init(task: task, thread: thread)
     }
     
     /* Creates a OnceExecutable with the execution parameters as the Executable. */
     init(parent: Executable<T>) {
-        super.init(task: parent.task, thread: parent.thread, observed: parent.observed)
-    }
-    
-    /* The selector called when the notification center receives a CanExecuteNotification. 
-     * The OnceExecutable implementation removes the Executable from the notification center
-     * dispatch table to minimize callbacks to execute more than once. */
-    override func receiveNotification(notification: NSNotification) -> () {
-        super.receiveNotification(notification)
-        
-        if (self.value) {
-            notificationCenter.removeObserver(self.observer)
-            Log(.OnceExecutable, "Removed the OnceExecutable from the notification center dispatch table.")
-        }
+        super.init(task: parent.task, thread: parent.thread)
     }
     
     /* Executes the Executable by running its Task on the NSOperationQueue with `value`. 
