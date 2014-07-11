@@ -30,8 +30,8 @@ class Future<T> {
     
     /* Creates a Future whose value will be determined from the completion of task. */
     init(task: (() -> T)) {
+        // TODO: refactor to Try<T>
         self.promise = Promise<T>()
-        // TODO: Capture .Failures
         Executable(task: { _ in self.promise.success(task()) }, thread: NSOperationQueue()).executeWithValue(.Success([10]))
     }
     

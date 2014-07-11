@@ -144,6 +144,8 @@ class PromiseTests: XCTestCase {
         do {} while !onComplete
     }
     
+
+    
     func testAwait() -> () {
         var finishedExecuting: Bool = false
         let promise1 = Promise<Int>()
@@ -162,8 +164,18 @@ class PromiseTests: XCTestCase {
         XCTAssertEqual(promise2.value!.toOption()!, STALL)
         
         let promise3 = Promise<Int>()
-        await(promise3)
-        promise3.await(1)
+        promise3.DAwait(0)
         XCTAssertTrue(promise3.value!.isFailure())
     }
+}
+
+extension Promise {
+    
+    func DAwait(time: NSTimeInterval) -> () {
+        self.timeout(time)
+        while !self.isComplete() {
+            NSRunLoop.mainRunLoop().runMode(NSDefaultRunLoopMode, beforeDate: NSDate(timeIntervalSinceNow: 0))
+        }
+    }
+    
 }

@@ -8,25 +8,46 @@
 
 import Foundation
 
+let callbackNotification = "CallbackNotification"
+let callbackValueKey = "callbackValue"
+
 /* A CallbackNotification is used to notify and execute an Executable upon
  * the completion of an observed object that triggers the execution. */
-class CallbackNotification : NSNotification {
+class CallbackNotification<T : AnyObject> : NSNotification {
     
-//    // TODO: Reimplement and make generic
-//    // TODO: ADD LOGGING
-//    // it is a subclass that just wraps var callbackValue into userInfo
-//    
-//    var callbackValue: Any {
+//    override var name: String! {
 //    get {
-//        // Retrieve from userInfo
-//    }
-//    set {
-//        // Store into userInfo
+//        return callbackNotification
 //    }
 //    }
 //    
-//    init(callbackValue: Any, caller: AnyObject?) {
-//        // Store callbackValue and create NSNotification
+//    let caller: AnyObject!
+//    
+//    override var object: AnyObject! {
+//    get {
+//        return self.caller
+//    }
+//    }
+//
+//    let _callbackValue: T
+//    
+//    var callbackValue: T {
+//    get {
+//        return _callbackValue
+//    }
+//    }
+//    
+//    override var userInfo: [NSObject : AnyObject]! {
+//    get {
+//        return [callbackValueKey : self.callbackValue]
+//    }
+//    }
+//    
+//    init(callbackValue: T, caller: AnyObject?) {
+//        Log(.Callback, "CallbackNotification initialized")
+//        self._callbackValue = callbackValue
+//        self.caller = caller
+//        super.init(name: self.name, object: self.object, userInfo: self.userInfo)
 //    }
     
 }

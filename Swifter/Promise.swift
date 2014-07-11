@@ -20,8 +20,8 @@ enum PromiseState<T> {
     var value: Try<T>? {
     get {
         switch self {
-        case .Fulfilled(let t):
-            return t
+        case .Fulfilled(let f):
+            return f
         case .Pending:
             return nil
         }
@@ -97,6 +97,7 @@ class Promise<T> {
             }, {
                 Log(.PromiseFulfilled, "Fulfilled with \(value)")
                 self.state = .Fulfilled(value)
+//                notificationCenter.postNotification(CallbackNotification(callbackValue: value.toObject(), caller: self))
                 notificationCenter.postNotificationName(promiseFulfilledNotification, object: self, userInfo: ["callbackValue" : value.toObject()])
                 return true
             })
@@ -145,7 +146,7 @@ class Promise<T> {
     
     /* Fulfills the Promise simultaneously with this Promise. */
     func alsoFulfill(promise: Promise<T>) -> () {
-        let exec = Executable<T>(task: { promise.tryFulfill($0); return () }, thread: Scheduler.assignThread())
+        let exec = Executable<T>(task: { _ = promise.tryFulfill($0) }, thread: Scheduler.assignThread())
         self.executeOrMap(exec)
     }
     
@@ -157,10 +158,13 @@ class Promise<T> {
             exec.executeWithValue($0)
             }, {
                 // TODO Prevent from being deinitialized.
+                // What if the Promise is fulfilled right here?
+                // // Use OnceExecutable and add as observer before checking if already fulfilled
+                // // Use LockedList?
                 let observer = notificationCenter.addObserverForName(promiseFulfilledNotification, object: self, queue: exec.thread, usingBlock:
                     {
                         Log(.Executable, "in usingBlock")
-                        if let value = ($0.userInfo["callbackValue"] as? TryObject<T>)?.toEnum() {
+                        if let value = ($0.userInfo[callbackValueKey] as? TryObject<T>)?.toEnum() {
                             exec.executeWithValue(value)
                         }
                     })
@@ -201,7 +205,7 @@ extension Promise : Awaitable {
     
     /* Awaits indefinitely until the action has completed. */
     func await() -> AwaitedResult {
-        do {NSRunLoop.mainRunLoop().runMode(NSDefaultRunLoopMode, beforeDate: NSDate(timeIntervalSinceNow: 0))} while !self.isComplete()
+        do {} while !self.isComplete()
         return self
     }
     

@@ -17,7 +17,7 @@ class Timer_FunctionalTests: XCTestCase {
             onComplete = true
             })
         while !onComplete {
-            mainRunLoop.runMode(NSDefaultRunLoopMode, beforeDate: NSDate(timeIntervalSinceNow: 0))
+            NSRunLoop.mainRunLoop().runMode(NSDefaultRunLoopMode, beforeDate: NSDate(timeIntervalSinceNow: 0))
         }
     }
     

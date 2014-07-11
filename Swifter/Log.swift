@@ -12,6 +12,7 @@ enum LogCategory: String, LogicValue {
     case Executable = "Executable"
     case OnceExecutable = "OnceExecutable"
     case Timer = "Timer"
+    case Callback = "Callback"
     case Future = "Future"
     case FutureFolded = "FutureMapped"
     case Promise = "Promise"
@@ -26,6 +27,8 @@ enum LogCategory: String, LogicValue {
         case .OnceExecutable:
             return true
         case .Timer:
+            return true
+        case .Callback:
             return true
         case .Future:
             return true
