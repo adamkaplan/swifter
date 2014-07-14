@@ -11,6 +11,7 @@ import Foundation
 enum LogCategory: String, LogicValue {
     case Executable = "Executable"
     case OnceExecutable = "OnceExecutable"
+    case Lock = "Lock"
     case Timer = "Timer"
     case Callback = "Callback"
     case Future = "Future"
@@ -25,6 +26,8 @@ enum LogCategory: String, LogicValue {
         case .Executable:
             return true
         case .OnceExecutable:
+            return true
+        case .Lock:
             return true
         case .Timer:
             return true

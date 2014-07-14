@@ -38,5 +38,15 @@ class LinkedListTests: XCTestCase {
         assertNil(ls.next!.next)
         assertNil(ls.prev)
     }
+    
+    func testIsEmpty() {
+        let l1 = LinkedList<Int>()
+        XCTAssertTrue(l1.isEmpty())
+        
+        let l2 = LinkedList<Int>(this: 10)
+        XCTAssertFalse(l2.isEmpty())
+        l2.pop()
+        XCTAssertTrue(l2.isEmpty())
+    }
 
 }

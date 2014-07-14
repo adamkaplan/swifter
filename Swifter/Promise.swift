@@ -49,6 +49,8 @@ class Promise<T> {
     
     // TODO: make private
     var state: PromiseState<T>
+    let lock: NSLock
+    let callbacks: LockedList<Executable<T>>
     
     var future: Future<T> {
     get {
@@ -65,6 +67,8 @@ class Promise<T> {
     init() {
         Log(.PromiseMade)
         self.state = .Pending
+        self.lock = NSLock()
+        self.callbacks = LockedList<Executable<T>>()
     }
     
     convenience init(value: Try<T>) {
@@ -78,11 +82,14 @@ class Promise<T> {
     
     /* Applies fulfilled to a .Fufilled(Try<T>) and pending to a .Pending. */
     func fold<S>(fulfilled: ((Try<T>) -> S), pending: (() -> S)) -> S {
-        switch self.state {
-        case .Fulfilled(let f):
-            return fulfilled(f)
-        case .Pending:
-            return pending()
+        return self.lock.perform {
+            [unowned self] () -> S in
+            switch self.state {
+            case .Fulfilled(let f):
+                return fulfilled(f)
+            case .Pending:
+                return pending()
+            }
         }
     }
     
@@ -98,7 +105,8 @@ class Promise<T> {
                 Log(.PromiseFulfilled, "Fulfilled with \(value)")
                 self.state = .Fulfilled(value)
 //                notificationCenter.postNotification(CallbackNotification(callbackValue: value.toObject(), caller: self))
-                notificationCenter.postNotificationName(promiseFulfilledNotification, object: self, userInfo: ["callbackValue" : value.toObject()])
+//                notificationCenter.postNotificationName(promiseFulfilledNotification, object: self, userInfo: ["callbackValue" : value.toObject()])
+                self.callback()
                 return true
             })
     }
@@ -150,29 +158,41 @@ class Promise<T> {
         self.executeOrMap(exec)
     }
     
+    func addCallback(exec: Executable<T>) -> () {
+        self.fold({ exec.executeWithValue($0) }, { self.callbacks.push(exec) })
+    }
+    
+    func callback() -> () {
+        while !self.callbacks.isEmpty() {
+            self.callbacks.pop()!.executeWithValue(self.value!)
+        }
+    }
+    
     /* Executes the Executable with the value of the .Fulfilled promise, or
      * otherwise schedules the Executable to be executed after the Promise reaches
      * the .Fulfilled state. */
     func executeOrMap(exec: Executable<T>) -> () {
-        self.fold({
-            exec.executeWithValue($0)
-            }, {
-                // TODO Prevent from being deinitialized.
-                // What if the Promise is fulfilled right here?
-                // // Use OnceExecutable and add as observer before checking if already fulfilled
-                // // Use LockedList?
-                let observer = notificationCenter.addObserverForName(promiseFulfilledNotification, object: self, queue: exec.thread, usingBlock:
-                    {
-                        Log(.Executable, "in usingBlock")
-                        if let value = ($0.userInfo[callbackValueKey] as? TryObject<T>)?.toEnum() {
-                            exec.executeWithValue(value)
-                        }
-                    })
-                exec.thread.addOperationWithBlock {
-                    do {} while !exec.value
-                    notificationCenter.removeObserver(observer)
-                }
-            })
+//        let onceExec = OnceExecutable(parent: exec)
+        self.addCallback(exec)
+        
+        
+//        self.fold({
+//            exec.executeWithValue($0)
+//            }, {
+//                // TODO Prevent from being deinitialized.
+//                // What if the Promise is fulfilled right here?
+//                let observer = notificationCenter.addObserverForName(promiseFulfilledNotification, object: self, queue: exec.thread, usingBlock:
+//                    {
+//                        Log(.Executable, "in usingBlock")
+//                        if let value = ($0.userInfo[callbackValueKey] as? TryObject<T>)?.toEnum() {
+//                            exec.executeWithValue(value)
+//                        }
+//                    })
+//                exec.thread.addOperationWithBlock {
+//                    do {} while !exec.value
+//                    notificationCenter.removeObserver(observer)
+//                }
+//            })
     }
     
     /* Schedules the Task to be executed for when the Promise is .Fulfilled. */

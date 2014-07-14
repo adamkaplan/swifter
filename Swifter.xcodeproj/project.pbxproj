@@ -31,12 +31,17 @@
 		0B601A7E19706EDF006C1D16 /* FutureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B39C58E1953766D0014C2DE /* FutureTests.swift */; };
 		0B601A7F19706EE1006C1D16 /* ExecutableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4418BD1964953A00BF7BFA /* ExecutableTests.swift */; };
 		0B6933751954A1EE004837D2 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD34F931954821400460556 /* Log.swift */; };
+		0B6AA73D19757621002A11F9 /* NSLock+FunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6AA73C19757621002A11F9 /* NSLock+FunctionalTests.swift */; };
 		0BC26D411961EA5D0033ECE0 /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D401961EA5D0033ECE0 /* Executable.swift */; };
 		0BC26D421961EA5D0033ECE0 /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D401961EA5D0033ECE0 /* Executable.swift */; };
 		0BC26D471963261F0033ECE0 /* Awaitable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D45196320BB0033ECE0 /* Awaitable.swift */; };
 		0BD34F941954821400460556 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD34F931954821400460556 /* Log.swift */; };
 		0BDA8EAF1952442C005760CF /* Array+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDA8EAE1952442C005760CF /* Array+Functional.swift */; };
 		0BDBC670195CAB4700F79900 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDBC66F195CAB4700F79900 /* LinkedList.swift */; };
+		0BE8F8D51974732500734D1C /* NSLock+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE8F8D41974732500734D1C /* NSLock+Functional.swift */; };
+		0BE8F8D8197477EC00734D1C /* NSLock+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE8F8D41974732500734D1C /* NSLock+Functional.swift */; };
+		0BE8F8DA197487DA00734D1C /* LockedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE8F8D9197487DA00734D1C /* LockedList.swift */; };
+		0BE8F8DB197487DA00734D1C /* LockedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE8F8D9197487DA00734D1C /* LockedList.swift */; };
 		0BFF828F196EF0DA00D2AFE3 /* NSTimer+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */; };
 		0BFF8293196F024300D2AFE3 /* NSTimer+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */; };
 		FC603923193E740D000538B1 /* PartialFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC603922193E740D000538B1 /* PartialFunction.swift */; };
@@ -88,12 +93,15 @@
 		0B65E469195363FD00C6013A /* Future.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Future.swift; path = Swifter/Future.swift; sourceTree = "<group>"; };
 		0B65E46B1953642300C6013A /* Promise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Promise.swift; path = Swifter/Promise.swift; sourceTree = "<group>"; };
 		0B69E0A11958C0B3002CE96D /* Try.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Try.swift; sourceTree = "<group>"; };
+		0B6AA73C19757621002A11F9 /* NSLock+FunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSLock+FunctionalTests.swift"; sourceTree = "<group>"; };
 		0BC26D401961EA5D0033ECE0 /* Executable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Executable.swift; path = Swifter/Executable.swift; sourceTree = "<group>"; };
 		0BC26D45196320BB0033ECE0 /* Awaitable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Awaitable.swift; path = Swifter/Awaitable.swift; sourceTree = "<group>"; };
 		0BC26D4819634A520033ECE0 /* CallbackNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallbackNotification.swift; path = Swifter/CallbackNotification.swift; sourceTree = "<group>"; };
 		0BD34F931954821400460556 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Log.swift; path = Swifter/Log.swift; sourceTree = "<group>"; };
 		0BDA8EAE1952442C005760CF /* Array+Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Functional.swift"; sourceTree = "<group>"; };
 		0BDBC66F195CAB4700F79900 /* LinkedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
+		0BE8F8D41974732500734D1C /* NSLock+Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "NSLock+Functional.swift"; path = "Swifter/NSLock+Functional.swift"; sourceTree = "<group>"; };
+		0BE8F8D9197487DA00734D1C /* LockedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LockedList.swift; path = Swifter/LockedList.swift; sourceTree = "<group>"; };
 		0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSTimer+Functional.swift"; sourceTree = "<group>"; };
 		0BFF8291196F014C00D2AFE3 /* Timer+FunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Timer+FunctionalTests.swift"; sourceTree = "<group>"; };
 		FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialFunctionTests.swift; sourceTree = "<group>"; };
@@ -141,6 +149,7 @@
 			children = (
 				0B4418BD1964953A00BF7BFA /* ExecutableTests.swift */,
 				0B39C58E1953766D0014C2DE /* FutureTests.swift */,
+				0B6AA73C19757621002A11F9 /* NSLock+FunctionalTests.swift */,
 				0B65E46419535E3100C6013A /* PromiseTests.swift */,
 			);
 			name = Concurrency;
@@ -166,6 +175,8 @@
 				0BC26D4819634A520033ECE0 /* CallbackNotification.swift */,
 				0BC26D401961EA5D0033ECE0 /* Executable.swift */,
 				0B65E469195363FD00C6013A /* Future.swift */,
+				0BE8F8D9197487DA00734D1C /* LockedList.swift */,
+				0BE8F8D41974732500734D1C /* NSLock+Functional.swift */,
 				0B65E46B1953642300C6013A /* Promise.swift */,
 				0B39C59019538CA20014C2DE /* Scheduler.swift */,
 			);
@@ -346,9 +357,11 @@
 				0BC26D471963261F0033ECE0 /* Awaitable.swift in Sources */,
 				0BDBC670195CAB4700F79900 /* LinkedList.swift in Sources */,
 				0BFF828F196EF0DA00D2AFE3 /* NSTimer+Functional.swift in Sources */,
+				0BE8F8DA197487DA00734D1C /* LockedList.swift in Sources */,
 				0B31693619634E2500BC1C62 /* CallbackNotification.swift in Sources */,
 				FC603923193E740D000538B1 /* PartialFunction.swift in Sources */,
 				0B39C59119538CA20014C2DE /* Scheduler.swift in Sources */,
+				0BE8F8D51974732500734D1C /* NSLock+Functional.swift in Sources */,
 				0B1AD18F195CBBBF004E61DB /* Try.swift in Sources */,
 				0B0CDDE7196DDBD900743482 /* Promise.swift in Sources */,
 				0B0CDDE9196DDBE100743482 /* Future.swift in Sources */,
@@ -361,6 +374,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BE8F8D8197477EC00734D1C /* NSLock+Functional.swift in Sources */,
+				0BE8F8DB197487DA00734D1C /* LockedList.swift in Sources */,
+				0B6AA73D19757621002A11F9 /* NSLock+FunctionalTests.swift in Sources */,
 				0B1AD196195CC22C004E61DB /* PartialFunction.swift in Sources */,
 				0B0CDDEA196DDBE100743482 /* Future.swift in Sources */,
 				0BFF8293196F024300D2AFE3 /* NSTimer+Functional.swift in Sources */,

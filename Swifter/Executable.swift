@@ -32,7 +32,7 @@ class Executable<T> {
     func executeWithValue(value: Try<T>) -> () {
         Log(.Executable, "Executing with \(value) on \(self.thread)")
         self.value = value
-        self.thread.addOperationWithBlock { self.task(self.value); return () }
+        self.thread.addOperationWithBlock { _ = self.task(self.value) }
     }
     
 }

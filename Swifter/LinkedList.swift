@@ -23,9 +23,14 @@ class LinkedList<T> {
     var next: LinkedList<T>?
     var prev: LinkedList<T>?
     
-    init(this: T) {
+    init() {
+        _this = [nil]
+        self.next = nil
+        self.prev = nil
+    }
+    
+    init(this: T!) {
         _this = [this]
-        self.this = this
         self.next = nil
         self.prev = nil
     }
@@ -53,7 +58,7 @@ class LinkedList<T> {
     }
     
     func isEmpty() -> Bool {
-        return self.this ? true : false
+        return self.this ? false : true
     }
     
 }
