@@ -91,7 +91,7 @@ extension LinkedList : Sequence {
     
     typealias Generator = LinkedListGenerator<T>
     
-    func generate() -> Generator {
+    public func generate() -> Generator {
         return Generator(linkedList: self)
     }
     

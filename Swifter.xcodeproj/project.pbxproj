@@ -18,18 +18,26 @@
 		0B1AD195195CC22A004E61DB /* Array+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDA8EAE1952442C005760CF /* Array+Functional.swift */; };
 		0B1AD196195CC22C004E61DB /* PartialFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC603922193E740D000538B1 /* PartialFunction.swift */; };
 		0B1AD197195CC22E004E61DB /* Try.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B69E0A11958C0B3002CE96D /* Try.swift */; };
-		0B2568A01970371900577846 /* Timer+FunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BFF8291196F014C00D2AFE3 /* Timer+FunctionalTests.swift */; };
+		0B314959197F12B2000E7E51 /* ListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD033E0197EBE64007D31FE /* ListTests.swift */; };
+		0B314962197F15CF000E7E51 /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B314961197F15CF000E7E51 /* Tree.swift */; };
+		0B314963197F1DA8000E7E51 /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B314961197F15CF000E7E51 /* Tree.swift */; };
 		0B31693819634E2900BC1C62 /* Awaitable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D45196320BB0033ECE0 /* Awaitable.swift */; };
 		0B39C59119538CA20014C2DE /* Scheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B39C59019538CA20014C2DE /* Scheduler.swift */; };
-		0B601A7919705CF9006C1D16 /* PromiseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B65E46419535E3100C6013A /* PromiseTests.swift */; };
-		0B601A7A19706ED3006C1D16 /* TryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B3C73A1195A0DC90019ADBA /* TryTests.swift */; };
-		0B601A7B19706ED7006C1D16 /* PartialFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */; };
-		0B601A7C19706ED9006C1D16 /* LinkedListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6083D2195CB3AB00FDA568 /* LinkedListTests.swift */; };
-		0B601A7D19706EDB006C1D16 /* Array+FunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4418BF1964955E00BF7BFA /* Array+FunctionalTests.swift */; };
-		0B601A7E19706EDF006C1D16 /* FutureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B39C58E1953766D0014C2DE /* FutureTests.swift */; };
-		0B601A7F19706EE1006C1D16 /* ExecutableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4418BD1964953A00BF7BFA /* ExecutableTests.swift */; };
+		0B3F567F197DB99100696F9E /* Awaitable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D45196320BB0033ECE0 /* Awaitable.swift */; };
+		0B3F5680197DB99100696F9E /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D401961EA5D0033ECE0 /* Executable.swift */; };
+		0B3F5681197DB99100696F9E /* Future.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B65E469195363FD00C6013A /* Future.swift */; };
+		0B3F5682197DB99100696F9E /* NSLock+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE8F8D41974732500734D1C /* NSLock+Functional.swift */; };
+		0B3F5683197DB99100696F9E /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B65E46B1953642300C6013A /* Promise.swift */; };
+		0B3F5684197DB99100696F9E /* Scheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B39C59019538CA20014C2DE /* Scheduler.swift */; };
+		0B3F5685197DB99400696F9E /* Array+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDA8EAE1952442C005760CF /* Array+Functional.swift */; };
+		0B3F5686197DB99400696F9E /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDBC66F195CAB4700F79900 /* LinkedList.swift */; };
+		0B3F5687197DB99400696F9E /* List.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBB135F19797B7200C34D10 /* List.swift */; };
+		0B3F5688197DB99400696F9E /* NSTimer+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */; };
+		0B3F5689197DB99400696F9E /* PersistentDataStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBB136019797B7200C34D10 /* PersistentDataStructure.swift */; };
+		0B3F568A197DB99400696F9E /* PartialFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC603922193E740D000538B1 /* PartialFunction.swift */; };
+		0B3F568B197DB99400696F9E /* Try.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B69E0A11958C0B3002CE96D /* Try.swift */; };
+		0B3F568C197DB99700696F9E /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD34F931954821400460556 /* Log.swift */; };
 		0B6933751954A1EE004837D2 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD34F931954821400460556 /* Log.swift */; };
-		0B6AA73D19757621002A11F9 /* NSLock+FunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6AA73C19757621002A11F9 /* NSLock+FunctionalTests.swift */; };
 		0B6AA761197597D2002A11F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6AA760197597D2002A11F9 /* AppDelegate.swift */; };
 		0B6AA763197597D2002A11F9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6AA762197597D2002A11F9 /* ViewController.swift */; };
 		0B6AA766197597D2002A11F9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0B6AA764197597D2002A11F9 /* Main.storyboard */; };
@@ -39,6 +47,7 @@
 		0BC26D411961EA5D0033ECE0 /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D401961EA5D0033ECE0 /* Executable.swift */; };
 		0BC26D421961EA5D0033ECE0 /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D401961EA5D0033ECE0 /* Executable.swift */; };
 		0BC26D471963261F0033ECE0 /* Awaitable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC26D45196320BB0033ECE0 /* Awaitable.swift */; };
+		0BD033E2197EBEC8007D31FE /* List.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBB135F19797B7200C34D10 /* List.swift */; };
 		0BD34F941954821400460556 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD34F931954821400460556 /* Log.swift */; };
 		0BDA8EAF1952442C005760CF /* Array+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDA8EAE1952442C005760CF /* Array+Functional.swift */; };
 		0BDBC670195CAB4700F79900 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDBC66F195CAB4700F79900 /* LinkedList.swift */; };
@@ -154,10 +163,10 @@
 
 /* Begin PBXFileReference section */
 		0B119BFB196AF94C00CC82E4 /* SwiftTestUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftTestUtilities.swift; sourceTree = "<group>"; };
+		0B314961197F15CF000E7E51 /* Tree.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
 		0B39C58E1953766D0014C2DE /* FutureTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FutureTests.swift; sourceTree = "<group>"; };
 		0B39C59019538CA20014C2DE /* Scheduler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Scheduler.swift; path = Swifter/Scheduler.swift; sourceTree = "<group>"; };
 		0B3C73A1195A0DC90019ADBA /* TryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TryTests.swift; sourceTree = "<group>"; };
-		0B4418BC1964951700BF7BFA /* PartialFunctionPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = PartialFunctionPlayground.playground; sourceTree = "<group>"; };
 		0B4418BD1964953A00BF7BFA /* ExecutableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExecutableTests.swift; sourceTree = "<group>"; };
 		0B4418BF1964955E00BF7BFA /* Array+FunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+FunctionalTests.swift"; sourceTree = "<group>"; };
 		0B6083D2195CB3AB00FDA568 /* LinkedListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedListTests.swift; sourceTree = "<group>"; };
@@ -172,10 +181,12 @@
 		0B6AA762197597D2002A11F9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		0B6AA765197597D2002A11F9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0B6AA767197597D2002A11F9 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		0B82AD3C197FF8FB00AD683C /* TreeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TreeTests.swift; sourceTree = "<group>"; };
 		0BBB135F19797B7200C34D10 /* List.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = List.swift; sourceTree = "<group>"; };
 		0BBB136019797B7200C34D10 /* PersistentDataStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistentDataStructure.swift; sourceTree = "<group>"; };
 		0BC26D401961EA5D0033ECE0 /* Executable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Executable.swift; path = Swifter/Executable.swift; sourceTree = "<group>"; };
 		0BC26D45196320BB0033ECE0 /* Awaitable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Awaitable.swift; path = Swifter/Awaitable.swift; sourceTree = "<group>"; };
+		0BD033E0197EBE64007D31FE /* ListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListTests.swift; sourceTree = "<group>"; };
 		0BD34F931954821400460556 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Log.swift; path = Swifter/Log.swift; sourceTree = "<group>"; };
 		0BDA8EAE1952442C005760CF /* Array+Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Functional.swift"; sourceTree = "<group>"; };
 		0BDBC66F195CAB4700F79900 /* LinkedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
@@ -226,6 +237,7 @@
 				0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */,
 				0BBB136019797B7200C34D10 /* PersistentDataStructure.swift */,
 				FC603922193E740D000538B1 /* PartialFunction.swift */,
+				0B314961197F15CF000E7E51 /* Tree.swift */,
 				0B69E0A11958C0B3002CE96D /* Try.swift */,
 			);
 			name = Utility;
@@ -247,9 +259,10 @@
 			children = (
 				0B4418BF1964955E00BF7BFA /* Array+FunctionalTests.swift */,
 				0B6083D2195CB3AB00FDA568 /* LinkedListTests.swift */,
+				0BD033E0197EBE64007D31FE /* ListTests.swift */,
 				FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */,
-				0B4418BC1964951700BF7BFA /* PartialFunctionPlayground.playground */,
 				0BFF8291196F014C00D2AFE3 /* Timer+FunctionalTests.swift */,
+				0B82AD3C197FF8FB00AD683C /* TreeTests.swift */,
 				0B3C73A1195A0DC90019ADBA /* TryTests.swift */,
 			);
 			name = Utility;
@@ -500,16 +513,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0B94FCF51975BB35004B1653 /* Future.swift in Sources */,
-				0B94FCFD1975BB38004B1653 /* PartialFunction.swift in Sources */,
+				0B3F5682197DB99100696F9E /* NSLock+Functional.swift in Sources */,
+				0B3F568A197DB99400696F9E /* PartialFunction.swift in Sources */,
+				0B3F5684197DB99100696F9E /* Scheduler.swift in Sources */,
+				0B3F5686197DB99400696F9E /* LinkedList.swift in Sources */,
 				0B6AA763197597D2002A11F9 /* ViewController.swift in Sources */,
-				0B94FCFC1975BB38004B1653 /* NSTimer+Functional.swift in Sources */,
-				0B94FCF71975BB35004B1653 /* NSLock+Functional.swift in Sources */,
-				0B94FCF91975BB35004B1653 /* Scheduler.swift in Sources */,
-				0B94FCFF1975BB45004B1653 /* Log.swift in Sources */,
-				0B94FCFA1975BB38004B1653 /* Array+Functional.swift in Sources */,
-				0B94FCFB1975BB38004B1653 /* LinkedList.swift in Sources */,
+				0B3F5689197DB99400696F9E /* PersistentDataStructure.swift in Sources */,
+				0B3F568C197DB99700696F9E /* Log.swift in Sources */,
+				0B3F5683197DB99100696F9E /* Promise.swift in Sources */,
+				0B3F5680197DB99100696F9E /* Executable.swift in Sources */,
+				0B3F5687197DB99400696F9E /* List.swift in Sources */,
+				0B3F5688197DB99400696F9E /* NSTimer+Functional.swift in Sources */,
 				0B6AA761197597D2002A11F9 /* AppDelegate.swift in Sources */,
+				0B3F5681197DB99100696F9E /* Future.swift in Sources */,
+				0B3F568B197DB99400696F9E /* Try.swift in Sources */,
+				0B3F567F197DB99100696F9E /* Awaitable.swift in Sources */,
+				0B3F5685197DB99400696F9E /* Array+Functional.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -517,12 +536,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B314962197F15CF000E7E51 /* Tree.swift in Sources */,
 				0BDA8EAF1952442C005760CF /* Array+Functional.swift in Sources */,
 				0BBB136219797B7200C34D10 /* PersistentDataStructure.swift in Sources */,
 				0BC26D471963261F0033ECE0 /* Awaitable.swift in Sources */,
 				0BDBC670195CAB4700F79900 /* LinkedList.swift in Sources */,
 				0BFF828F196EF0DA00D2AFE3 /* NSTimer+Functional.swift in Sources */,
-				0B31693619634E2500BC1C62 /* CallbackNotification.swift in Sources */,
 				FC603923193E740D000538B1 /* PartialFunction.swift in Sources */,
 				0B39C59119538CA20014C2DE /* Scheduler.swift in Sources */,
 				0BE8F8D51974732500734D1C /* NSLock+Functional.swift in Sources */,
@@ -540,25 +559,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				0BE8F8D8197477EC00734D1C /* NSLock+Functional.swift in Sources */,
-				0B6AA73D19757621002A11F9 /* NSLock+FunctionalTests.swift in Sources */,
 				0B1AD196195CC22C004E61DB /* PartialFunction.swift in Sources */,
+				0B314963197F1DA8000E7E51 /* Tree.swift in Sources */,
 				0B0CDDEA196DDBE100743482 /* Future.swift in Sources */,
 				0BFF8293196F024300D2AFE3 /* NSTimer+Functional.swift in Sources */,
 				0B1AD193195CC226004E61DB /* Scheduler.swift in Sources */,
 				0BC26D421961EA5D0033ECE0 /* Executable.swift in Sources */,
-				0B601A7F19706EE1006C1D16 /* ExecutableTests.swift in Sources */,
+				0B314959197F12B2000E7E51 /* ListTests.swift in Sources */,
 				0B31693819634E2900BC1C62 /* Awaitable.swift in Sources */,
-				0B601A7D19706EDB006C1D16 /* Array+FunctionalTests.swift in Sources */,
-				0B601A7919705CF9006C1D16 /* PromiseTests.swift in Sources */,
 				0B1AD197195CC22E004E61DB /* Try.swift in Sources */,
-				0B601A7E19706EDF006C1D16 /* FutureTests.swift in Sources */,
 				0B1AD195195CC22A004E61DB /* Array+Functional.swift in Sources */,
-				0B601A7C19706ED9006C1D16 /* LinkedListTests.swift in Sources */,
 				0B1AD194195CC228004E61DB /* LinkedList.swift in Sources */,
-				0B601A7B19706ED7006C1D16 /* PartialFunctionTests.swift in Sources */,
-				0B601A7A19706ED3006C1D16 /* TryTests.swift in Sources */,
+				0BD033E2197EBEC8007D31FE /* List.swift in Sources */,
 				0B6933751954A1EE004837D2 /* Log.swift in Sources */,
-				0B2568A01970371900577846 /* Timer+FunctionalTests.swift in Sources */,
 				0B119BFC196AF94C00CC82E4 /* SwiftTestUtilities.swift in Sources */,
 				0B0CDDE8196DDBDA00743482 /* Promise.swift in Sources */,
 			);

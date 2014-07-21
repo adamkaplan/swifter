@@ -10,11 +10,10 @@ import XCTest
 
 let STALL = Int.max/100
 
-//let mainRunLoop = NSRunLoop.mainRunLoop()
-
 func assertNil<T>(expression: T?, _ message: String = "") -> () {
-    let isSome = expression ? true : false
-    XCTAssertFalse(isSome, message)
+    if expression {
+        XCTFail("assertNil: expression is not nil")
+    }
 }
 
 func assertArraysEqual<T: Equatable>(one: [T], two: [T]) -> () {

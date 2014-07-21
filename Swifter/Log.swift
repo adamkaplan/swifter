@@ -20,6 +20,7 @@ internal enum LogCategory: String, LogicValue {
     case PromiseMade = "PromiseMade"
     case PromiseFulfilled = "PromiseFulfilled"
     case LinkedList = "LinkedList"
+    case List = "List"
     
     func getLogicValue() -> Bool {
         switch self {
@@ -44,6 +45,8 @@ internal enum LogCategory: String, LogicValue {
         case .PromiseFulfilled:
             return true
         case .LinkedList:
+            return true
+        case .List:
             return true
         }
     }
@@ -76,7 +79,7 @@ internal func DLog(category: LogCategory) -> () {
 internal func DLog(category: LogCategory, string: String) -> () {
     #if DEBUG
         if category {
-        NSLog(string)
+            NSLog(string)
         }
     #endif
 }

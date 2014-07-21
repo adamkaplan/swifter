@@ -24,7 +24,7 @@ extension NSTimer {
         }
         
         @objc(executeClosure:) func executeClosure(timer: NSTimer!) {
-            Log(.Timer, "Executing SwifterTimerExecturo.closure")
+            Log(.Timer, "Executing SwifterTimerExecutor.closure")
             self.closure(timer)
         }
     }

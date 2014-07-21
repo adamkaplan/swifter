@@ -22,24 +22,10 @@ class ViewController: UIViewController {
                 }
                 return v
             }
-            self.testMemory()
             self.testFuture()
             })
         
         // Do any additional setup after loading the view, typically from a nib.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        NSLog("Hello")
-        // Dispose of any resources that can be recreated.
-    }
-    
-    func testMemory() -> () {
-        let ll = LinkedList<Int>()
-        while true {
-            ll.push(10)
-        }
     }
     
     func testFuture() -> () {
