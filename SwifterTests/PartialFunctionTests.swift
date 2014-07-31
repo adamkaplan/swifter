@@ -162,28 +162,30 @@ class PartialFunctionTests: XCTestCase {
         // | n when n % 2 == 0 && n <= 10 -> Some +n
         // | n when n % 2 != 0 && n <= 10 -> Some -n
         // | _ -> None
-        let patternMatch1: PartialFunction<Int,Int> =
-            PartialFunction<Int,Int>( { (i: Int, _) in
+        let patternMatch: PartialFunction<Int,Int> =
+            PartialFunction<Int,Int>( {
+                (i: Int, _) in
                 if i % 2 == 0 && i <= 10 {
                     return .Defined(+i)
                 } else {
                     return .Undefined
                 }
                 }) |
-            PartialFunction<Int,Int>( { (i: Int, _) in
+            PartialFunction<Int,Int>( {
+                (i: Int, _) in
                 if i % 2 != 0 && i <= 10 {
                     return .Defined(-i)
                 } else {
                     return .Undefined
                 }
-                }) //|
+                }) //| // TODO REMOVE WORKAROUND
 //            ({ $0 % 2 == 0 && $0 <= 10 } =|= { +$0 }) |
 //            ({ $0 % 2 != 0 && $0 <= 10 } =|= { -$0 })
 
-        XCTAssertEqual((-5 ~|> patternMatch1)!, 05, "Second case")
-        XCTAssertEqual((04 ~|> patternMatch1)!, 04, "First case")
-        XCTAssertEqual((match (10) { patternMatch1 })!, 10, "First case")
-        assertNil(match (11) { patternMatch1 })
+        XCTAssertEqual(match(-5) { patternMatch }!, 05, "Second case")
+        XCTAssertEqual(match(04) { patternMatch }!, 04, "First case")
+        XCTAssertEqual(match(10) { patternMatch }!, 10, "First case")
+        assertNil(match(11) { patternMatch})
     }
     
     func testPatternMatch2() -> () {
@@ -195,19 +197,19 @@ class PartialFunctionTests: XCTestCase {
         let case1: PartialFunction<[Int],String> = { $0[0] == 1 && $0[1] == 2 && $0.count >= 3 } =|= { _ in "Hello" }
         let case2: PartialFunction<[Int],String> = { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } =|= { _ in "Goodbye" }
         let case3: PartialFunction<[Int],String> = { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } =|= { "\(5 * $0[1])" }
-        let patternMatch2: PartialFunction<[Int],String> =
+        let patternMatch: PartialFunction<[Int],String> =
             case1 |
             case2 |
-            case3 //|
+            case3 //| // TODO REMOVE WORKAROUND
 //            { $0[0] == 1 && $0[1] == 2 && $0.count >= 3 } =|= { _ in "Hello" } |
 //            { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } =|= { _ in "Goodbye" } |
 //            { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } =|= { "\(5 * $0[1])" }
         
-        assertNil([1, 2] ~|> patternMatch2)
-        XCTAssertEqual(([1, 2, 3] ~|> patternMatch2)!, "Hello")
-        XCTAssertEqual(([0, 1, 2, 3, 4, 5] ~|> patternMatch2)!, "Goodbye")
-        XCTAssertEqual((match ([3, 20, 5]) { patternMatch2 })!, "100")
-        XCTAssertEqual((match ([3, 0, 5]) { patternMatch2 })!, "0")
-        assertNil(match ([3, 4, 5, 6]) { patternMatch2 })
+        assertNil(match([1, 2]) { patternMatch })
+        XCTAssertEqual(match([1, 2, 3]) { patternMatch }!, "Hello")
+        XCTAssertEqual(match([0, 1, 2, 3, 4, 5]) { patternMatch }!, "Goodbye")
+        XCTAssertEqual(match([3, 20, 5]) { patternMatch }!, "100")
+        XCTAssertEqual(match([3, 0, 5]) { patternMatch }!, "0")
+        assertNil(match([3, 4, 5, 6]) { patternMatch })
     }
 }

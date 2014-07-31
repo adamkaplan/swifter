@@ -8,6 +8,22 @@
 
 import Foundation
 
+/* This protocol is adopted by any entity that is to be encapsulated by Try.Failure. */
+public protocol TryFailure {
+
+    /* Performs some side effect when the Try.Failure is unwrapped (e.g., NSException.raise()) */
+    func fail() -> ()
+
+}
+
+extension NSException : TryFailure {
+    
+    public func fail() -> () {
+        self.raise()
+    }
+    
+}
+
 public class PredicateNotSatisfiedException : NSException {
     
     init() {
@@ -33,16 +49,16 @@ public class TryDidNotFailException : NSException {
 }
 
 /* A Try<T> represents a successful computation of a T as a .Success(T),
- * or a failure to correctly compute the value as a .Failure(E). */
-public enum Try<T> : Printable {
+ * or a failure to correctly compute the value as a .Failure(E). 
+ * Try is implemented as an enum to allow easy construction, to mandate
+ * pattern matching against both cases in switch statements, and because Try is
+ * an immutable state. 
+ * Try is used as an alternative to the exception try-catch paradigm; the user
+ * is responsible for coding all possible exceptions as .Failures. */
+public enum Try<T> : Printable { // TODO REFACTOR TO TRY<T,E>
     
-    public typealias E = NSException
-    typealias PNSE = PredicateNotSatisfiedException
-    typealias TDFE = TryDidFailException
-    typealias TDNFE = TryDidNotFailException
-    
-    case Success([T])
-    case Failure(E)
+    case Success([T]) // TODO REMOVE WORKAROUND [T] -> T
+    case Failure(TryFailure)
     
     public var description: String {
     get {
@@ -51,7 +67,7 @@ public enum Try<T> : Printable {
     }
     
     /* Applies success to a .Success(T) and failure to a .Failure(E). */
-    public func fold<S>(success: ((T) -> S), failure: ((E) -> S)) -> S {
+    public func fold<S>(success: T -> S, failure: TryFailure -> S) -> S {
         switch self {
         case .Success(let s):
             return success(s[0])
@@ -86,7 +102,7 @@ public enum Try<T> : Printable {
     /* Converts a .Success(T) to a Failure(PNSE) if p is not satisfied, or otherwise
      * propagates the Try. */
     public func filter(p: ((T) -> Bool)) -> Try<T> {
-        return self.fold({ p($0) ? self : .Failure(PNSE()) }, { _ in self })
+        return self.fold({ p($0) ? self : .Failure(PredicateNotSatisfiedException()) }, { _ in self })
     }
     
     /* Gets the value of this Try if it is a .Success(T), or otherwise defaultT. */
@@ -101,32 +117,32 @@ public enum Try<T> : Printable {
 
     /* Applies f to the value of this Try if it is a .Success(T), or otherwise
      * propagates the .Failure(E). */
-    public func map<S>(f: ((T) -> S)) -> Try<S> {
+    public func map<S>(f: T -> S) -> Try<S> {
         return self.fold({ .Success([f($0)]) }, { .Failure($0) })
     }
     
     /* Applies f to the value of this Try if it is a .Success(T), or otherwise
      * raises a TryDidFailException. */
-    public func onSuccess<S>(f: ((T) -> S)) -> Try<S> {
-        return self.fold({ .Success([f($0)]) }, { _ in .Failure(TDFE()) })
+    public func onSuccess<S>(f: T -> S) -> Try<S> {
+        return self.fold({ .Success([f($0)]) }, { _ in .Failure(TryDidFailException()) })
     }
 
     /* Applies f to the value of this Try if it is a .Failure(E), or otherwise
     * raises a TryDidFailException. */
-    public func onFailure<S>(f: ((E) -> S)) -> Try<S> {
-        return self.fold({ _ in .Failure(TDNFE()) }, { .Success([f($0)]) })
+    public func onFailure<S>(f: TryFailure -> S) -> Try<S> {
+        return self.fold({ _ in .Failure(TryDidNotFailException()) }, { .Success([f($0)]) })
     }
     
     /* Applies f to the value of this Try if it is a .Success(T), or otherwise
      * propagates the .Failure(E). */
-    public func bind<S>(f: ((T) -> Try<S>)) -> Try<S> {
+    public func bind<S>(f: T -> Try<S>) -> Try<S> {
         return self.fold({ f($0) }, { .Failure($0) })
     }
     
     /* Returns this Try if it is a .Success(T), or otherwise attempts to recover
      * the .Failure(E) by applying pf. */
-    public func recover(pf: PartialFunction<E,T>) -> Try<T> {
-        return self.fold({ _ in self }, {
+    public func recover(pf: PartialFunction<TryFailure,T>) -> Try<T> {
+        return self.fold( { _ in self }, {
             if pf.isDefinedAt($0) {
                 return .Success([pf.apply($0)!])
             } else {
@@ -141,13 +157,7 @@ public enum Try<T> : Printable {
     
 }
 
-public class TryObject<T> : Printable {
-    
-    public var description: String {
-    get {
-        return self.tryEnum.description
-    }
-    }
+public class TryObject<T>  {
     
     private let tryEnum: Try<T>
     

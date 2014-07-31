@@ -8,11 +8,11 @@
 
 import XCTest
 
-private let t0: Tree<Int> = Leaf()
-private let t1: Tree<Int> = Node(t0, 1, t0)
-private let t2: Tree<Int> = Node(t1, 2, t1)
-private let t3: Tree<Int> = Node(t1, 3, t2)
-private let t4: Tree<Int> = Node(t3, 4, Leaf())
+private let t0 = Leaf<Int>()
+private let t1 = Node(t0, 1, t0)
+private let t2 = Node(t1, 2, t1)
+private let t3 = Node(t1, 3, t2)
+private let t4 = Node(t3, 4, t0)
 
 class TreeTests: XCTestCase {
 

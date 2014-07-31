@@ -8,7 +8,7 @@
 
 import Foundation
 
-/* A generic, functional/persistent binary tree. */
+/* A generic, immutable binary tree. */
 class Tree<T> : LogicValue {
     
     func getLogicValue() -> Bool  {
@@ -100,7 +100,7 @@ class Node<T> : Tree<T> {
         }
     }
     
-    override func leftSubtree() -> Tree<T> {
+    override func leftSubtree() -> Tree<T>? {
         let (left, _, _) = self.data
         return left
     }

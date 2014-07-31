@@ -24,17 +24,17 @@ public class UndefinedArgumentException : NSException {
 public class PartialFunction<A,B> {
     
     typealias PF = PartialFunction<A,B>
-    
     typealias Z = B // The final return type, provided to be overriden
-    
     typealias DefaultPF = PartialFunction<A,Z>
-    
-    typealias UAE = UndefinedArgumentException
     
     private let applyOrCheck: (A, Bool) -> DefinedResult<Z>
     
     init(f: (A, Bool) -> DefinedResult<Z>) {
         self.applyOrCheck = f
+    }
+    
+    deinit {
+        DLog(.PartialFunction, "Deinitializing PartialFunction")
     }
     
     /* Optionally applies this PartialFunction to `a` if it is in the domain. */
@@ -65,7 +65,7 @@ public class PartialFunction<A,B> {
         case .Defined(let p):
             return .Success([p])
         case .Undefined:
-            return .Failure(UAE())
+            return .Failure(UndefinedArgumentException())
         }
     }
     
@@ -90,10 +90,7 @@ public class PartialFunction<A,B> {
     public func andThen<C>(nextPF: PartialFunction<B,C>) -> PartialFunction<A,C> {
         return AndThen<A,B,C>(f1: self, f2: nextPF)
     }
-    
-//    // class constants are not yet available with generic classes
-//    class let null: PartialFunction<Any,Any> = PartialFunction( { _ in .Undefined } )
-//    class let iden: PartialFunction<A,A> = PartialFunction( { .Defined($0.0) } )
+
 }
 
 private class OrElse<A,B> : PartialFunction<A,B> {
@@ -104,7 +101,8 @@ private class OrElse<A,B> : PartialFunction<A,B> {
         self.f1 = f1
         self.f2 = f2
         
-        super.init( { [unowned self] (a, checkOnly) in
+        super.init( {
+            [unowned self] (a, checkOnly) in
             let result1 = self.f1.applyOrCheck(a, checkOnly)
             switch result1 {
             case .Defined(_):
@@ -113,6 +111,10 @@ private class OrElse<A,B> : PartialFunction<A,B> {
                 return self.f2.applyOrCheck(a, checkOnly)
             }
             })
+    }
+    
+    deinit {
+        DLog(.PartialFunction, "Deinitializing OrElse")
     }
     
     override func isDefinedAt(a: A) -> Bool {
@@ -142,18 +144,17 @@ private class OrElse<A,B> : PartialFunction<A,B> {
 private class AndThen<A,B,C> : PartialFunction<A,C> {
     
     typealias NextPF = PartialFunction<B,C>
-    
     typealias Z = C
     
     let f1: PartialFunction<A,B>
-    
     let f2: NextPF
     
     init(f1: PartialFunction<A,B>, f2: NextPF) {
         self.f1 = f1
         self.f2 = f2
         
-        super.init( { [unowned self] (a, checkOnly) in
+        super.init( {
+            [unowned self] (a, checkOnly) in
             let result1 = self.f1.applyOrCheck(a, checkOnly)
             switch result1 {
             case .Defined(let r1):
@@ -168,6 +169,10 @@ private class AndThen<A,B,C> : PartialFunction<A,C> {
                 return .Undefined
             }
             })
+    }
+    
+    deinit {
+        DLog(.PartialFunction, "Deinitializing AndThen")
     }
     
     override func applyOrElse(a: A, defaultPF: DefaultPF) -> Z? {
@@ -204,13 +209,21 @@ operator infix | {precedence 64 associativity left}
     return pf.orElse(otherPF)
 }
 
-/* Applies a value to the PartialFunction. */
-operator infix ~|> {precedence 32}
-@infix func ~|> <A,B> (value: A, pf: PartialFunction<A,B>) -> B? {
-    return pf.apply(value)
+/* Returns whether the input value is an instance of the input type.
+ * Example usage:
+ *   5 ~~ Int.self // true
+ *   5 ~~ String.self // false */
+operator infix ~~ {precedence 128}
+@infix func ~~ <T> (value: Any, type: T.Type) -> Bool {
+    return (value as? T).getLogicValue()
 }
 
-/* Matches the value with the PartialFunction. */
-func match<A,B>(value: A, patternMatch: (() -> PartialFunction<A,B>)) -> B? {
+/* Matches the value with the PartialFunction. 
+ * Example usage:
+ *   match(5) {
+ *     { $0 ~~ String.self } =|= { "Kitty says " + $0 }
+ *     { $0 ~~ Int.self } =|= { "This is an integer: \($0)" }
+ *   } // returns "This is an integer: 5" */
+func match<A,B>(value: A, patternMatch: () -> PartialFunction<A,B>) -> B? {
     return patternMatch().apply(value)
 }
