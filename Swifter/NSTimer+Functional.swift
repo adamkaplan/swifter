@@ -12,9 +12,9 @@ extension NSTimer {
     
     private class SwifterTimerExecutor {
         
-        let closure: ((NSTimer!) -> ())
+        let closure: NSTimer! -> ()
         
-        init(closure: ((NSTimer!) -> ())) {
+        init(closure: NSTimer! -> ()) {
             Log(.Timer, "SwifterTimerExecutor initialized")
             self.closure = closure
         }
@@ -29,8 +29,19 @@ extension NSTimer {
         }
     }
     
-    public class func scheduledTimerWithTimeInterval(interval: NSTimeInterval, userInfo: AnyObject!, repeats: Bool, closure: ((NSTimer!) -> ())) -> NSTimer! {
-        return NSTimer.scheduledTimerWithTimeInterval(interval, target: SwifterTimerExecutor(closure), selector: "executeClosure:", userInfo: userInfo, repeats: repeats)
+    public class func scheduledTimerWithTimeInterval(interval: NSTimeInterval,
+        userInfo: AnyObject!, repeats: Bool, closure: NSTimer! -> ()) -> NSTimer {
+            return NSTimer.scheduledTimerWithTimeInterval(interval, target: SwifterTimerExecutor(closure),
+            selector: "executeClosure:", userInfo: userInfo, repeats: repeats)
+    }
+
+    public func hasFired() -> Bool {
+        switch self.fireDate.compare(NSDate()) {
+        case .OrderedDescending:
+            return false
+        case .OrderedSame, .OrderedAscending:
+            return true
+        }
     }
     
 }

@@ -44,42 +44,34 @@ class NSLock_FunctionalTests: XCTestCase {
         
         // Unlocked (>1:1 correspondence between counter and status)
         let unlockedTester = LockTester()
-        let unlockedBlock: (() -> ()) = {
+        let unlockedBlock: () -> () = {
             while unlockedTester.status < maxStatus {
                 unlockedTester.status++
             }
         }
-        
         queue1.addOperationWithBlock(unlockedBlock)
         queue2.addOperationWithBlock(unlockedBlock)
         queue3.addOperationWithBlock(unlockedBlock)
-        
         queue1.waitUntilAllOperationsAreFinished()
         queue2.waitUntilAllOperationsAreFinished()
         queue3.waitUntilAllOperationsAreFinished()
-
-        DLog(.Lock, "(unlockedTester.counter, unlockedTester.status, maxStatus) = (\(unlockedTester.counter), \(unlockedTester.status), \(maxStatus))")
         XCTAssert(unlockedTester.counter >= maxStatus)
         
         // Locked (1:1 correspondence between counter and status)
         let lockedTester = LockTester()
-        let lockedBlock: (() -> ()) = {
+        let lockedBlock: () -> () = {
             lock.perform {
                 while lockedTester.status < maxStatus {
                     lockedTester.status++
                 }
             }
         }
-        
         queue1.addOperationWithBlock(lockedBlock)
         queue2.addOperationWithBlock(lockedBlock)
         queue3.addOperationWithBlock(lockedBlock)
-     
         queue1.waitUntilAllOperationsAreFinished()
         queue2.waitUntilAllOperationsAreFinished()
         queue3.waitUntilAllOperationsAreFinished()
-        
-        DLog(.Lock, "(lockedTester.counter, lockedTester.status, maxStatus) = (\(lockedTester.counter), \(lockedTester.status), \(maxStatus))")
         XCTAssert(lockedTester.counter == maxStatus)
     }
 

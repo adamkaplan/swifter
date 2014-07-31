@@ -8,8 +8,6 @@
 
 import XCTest
 
-let STALL = Int.max/100
-
 func assertNil<T>(expression: T?, _ message: String = "") -> () {
     if expression {
         XCTFail("assertNil: expression is not nil")
@@ -17,40 +15,11 @@ func assertNil<T>(expression: T?, _ message: String = "") -> () {
 }
 
 func assertArraysEqual<T: Equatable>(one: [T], two: [T]) -> () {
-    XCTAssertTrue(one ==== two)
-} 
-
-operator infix ==== {}
-public func ==== <T: Equatable> (left: Array<T>, right: Array<T>) -> Bool {
-    return left.reduce((left.count == right.count, 0)) {
-        (acc: (Bool, Int), leftElem: T) in
+    let initEq = (one.count - two.count) == 0
+    XCTAssertTrue(one.reduce((initEq, 0)) {
+        (acc: (Bool, Int), fstElem: T) in
         let (eq, id) = acc
-        let rightElem = right[id]
-        return (eq && (leftElem == rightElem), id + 1)
-        }.0
-}
-
-class UtilitiesTests: XCTestCase {
-    
-    func testAssertNil1() -> () {
-        let nilInt: Int? = nil
-        assertNil(nilInt)
-    }
-    
-//    func testAssertNil2() -> () {
-//        assertNil(5)
-//    }
-    
-    func testAssertEqualArrays1() -> () {
-        assertArraysEqual([1], [1])
-    }
-    
-//    func testAssertEqualArrays2() -> () {
-//        assertArraysEqual([1], [1,2])
-//    }
-//    
-//    func testAssertEqualArrays3() -> () {
-//        assertArraysEqual([1,3],[1,2])
-//    }
-    
+        let sndElem = two[id]
+        return (eq && (fstElem == sndElem), id + 1)
+        }.0)
 }

@@ -6,72 +6,49 @@
 //  Copyright (c) 2014 Yahoo! Inc. All rights reserved.
 //
 
+// This file contains utility functions to log the performance of the Swifter
+// framework in the Debug and Logging build configurations. These functions
+// do nothing in the Release build configuration, but may or may not be optimized
+// away during compilation.
+
 import Foundation
 
-internal enum LogCategory: String, LogicValue {
-    case Executable = "Executable"
-    case OnceExecutable = "OnceExecutable"
-    case Lock = "Lock"
-    case Timer = "Timer"
-    case Callback = "Callback"
-    case Future = "Future"
-    case FutureFolded = "FutureMapped"
-    case Promise = "Promise"
-    case PromiseMade = "PromiseMade"
-    case PromiseFulfilled = "PromiseFulfilled"
-    case LinkedList = "LinkedList"
-    case List = "List"
+internal enum LogCategory: LogicValue {
+    case Executable
+    case Future
+    case LinkedList
+    case List
+    case Lock
+    case PartialFunction
+    case Promise
+    case Timer
     
     func getLogicValue() -> Bool {
         switch self {
         case .Executable:
             return true
-        case .OnceExecutable:
-            return true
-        case .Lock:
-            return true
-        case .Timer:
-            return true
-        case .Callback:
-            return true
         case .Future:
-            return true
-        case .FutureFolded:
-            return true
-        case .Promise:
-            return true
-        case .PromiseMade:
-            return true
-        case .PromiseFulfilled:
             return true
         case .LinkedList:
             return true
         case .List:
             return true
+        case .Lock:
+            return true
+        case .PartialFunction:
+            return true
+        case .Promise:
+            return true
+        case .Timer:
+            return true
         }
     }
-}
-
-internal func Log(category: LogCategory) -> () {
-    #if LOGGING
-        if category {
-            NSLog(category.toRaw())
-        }
-    #endif
 }
 
 internal func Log(category: LogCategory, string: String) -> () {
     #if LOGGING
         if category {
             NSLog(string)
-        }
-    #endif
-}
-
-internal func DLog(category: LogCategory) -> () {
-    #if DEBUG
-        if category {
-            NSLog(category.toRaw())
         }
     #endif
 }
