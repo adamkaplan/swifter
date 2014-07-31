@@ -9,83 +9,98 @@
 import XCTest
 
 private let l0 = List<Int>()
-private let l1 = List<Int>(1, l0)
-private let l2 = List<Int>(2, l1)
-private let l3 = List<Int>(3, l1)
-private let l4 = List<Int>(4, l3)
+private let l1 = List(1, l0)
+private let l2 = List(2, l1)
+private let l3 = List(3, l1)
+private let l4 = List(4, l3)
 
 class ListTests: XCTestCase {
     
     func testLeftFold() -> () {
-        let fold = l4.leftFold(0) {
-            (fold: Int, elem: Int) -> Int in
-            return -fold + elem
-        }
-        XCTAssertEqual(fold, 2)
+        let fold: List<Int> -> Int = { $0.leftFold(0, { NSLog("(\($0.acc), \($0.elem), \(-$0.acc + $0.elem))"); return -$0.acc + $0.elem } ) }
+        XCTAssertEqual(fold(l0), 00)
+        XCTAssertEqual(fold(l1), 01)
+        XCTAssertEqual(fold(l2), -1)
+        XCTAssertEqual(fold(l3), -2)
+        XCTAssertEqual(fold(l4), 02)
     }
     
     func testRightFold() -> () {
-        let fold = l4.rightFold(0) {
-            (elem: Int, fold: Int) -> Int in
-            return -elem + fold
-        }
-        XCTAssertEqual(fold, -8)
+        let fold: List<Int> -> Int = { $0.leftFold(0, { -$0.elem + $0.acc } ) }
+        XCTAssertEqual(fold(l0), 00)
+        XCTAssertEqual(fold(l1), -1)
+        XCTAssertEqual(fold(l2), -3)
+        XCTAssertEqual(fold(l3), -4)
+        XCTAssertEqual(fold(l4), -8)
     }
     
     func testHead() -> () {
         assertNil(l0.head())
+        XCTAssertEqual(l1.head()!, 1)
+        XCTAssertEqual(l2.head()!, 2)
         XCTAssertEqual(l3.head()!, 3)
+        XCTAssertEqual(l4.head()!, 4)
     }
     
     func testTail() -> () {
         assertNil(l0.tail())
-        XCTAssertEqual(l4.tail()!.head()!, l3.head()!)
+        assertNil(l1.tail()!.head())
+        XCTAssertEqual(l2.tail()!.head()!, 1)
+        XCTAssertEqual(l3.tail()!.head()!, 1)
+        XCTAssertEqual(l4.tail()!.head()!, 3)
     }
     
     func testIsEmpty() -> () {
         XCTAssertTrue(l0.isEmpty())
+        XCTAssertFalse(l1.isEmpty())
         XCTAssertFalse(l2.isEmpty())
+        XCTAssertFalse(l3.isEmpty())
+        XCTAssertFalse(l4.isEmpty())
     }
     
     func testReverse() -> () {
-        assertNil(l0.reverse().head())
-        XCTAssertEqual(l1.reverse().head()!, 1)
-        XCTAssertEqual(l3.reverse().head()!, 1)
+        XCTAssertTrue(l0.reverse().equal(l0, ==))
+        XCTAssertTrue(l1.reverse().equal(l1, ==))
+        XCTAssertTrue(l2.reverse().equal(1^^2, ==))
+        XCTAssertTrue(l3.reverse().equal(1^^3, ==))
+        XCTAssertTrue(l4.reverse().equal(1^^3^^4, ==))
     }
     
     func testReverseMap() -> () {
-        assertNil(l0.reverseMap { $0 * 10 }.head())
-        XCTAssertEqual(l1.reverseMap { $0 * 10 }.head()!, 10)
-        XCTAssertEqual(l3.reverseMap { $0 * 10 }.head()!, 10)
+        XCTAssertTrue(l0.reverseMap { $0 * 10 }.equal(l0, ==))
+        XCTAssertTrue(l1.reverseMap { $0 * 10 }.equal(10^^l0, ==))
+        XCTAssertTrue(l2.reverseMap { $0 * 10 }.equal(10^^20, ==))
+        XCTAssertTrue(l3.reverseMap { $0 * 10 }.equal(10^^30, ==))
+        XCTAssertTrue(l4.reverseMap { $0 * 10 }.equal(10^^30^^40, ==))
     }
     
     func testMap() -> () {
-        assertNil(l0.map { $0 * 10 }.head())
-        XCTAssertEqual(l1.map { $0 * 10 }.head()!, 10)
-        XCTAssertEqual(l3.map { $0 * 10 }.head()!, 30)
-        let sum: List<Int> -> Int = { $0.leftFold(0, +) }
-        XCTAssertEqual(sum(l2.map { $0 * 10}), 10 * sum(l2))
+        XCTAssertTrue(l0.map { $0 * 10 }.equal(l0, ==))
+        XCTAssertTrue(l1.map { $0 * 10 }.equal(10^^l0, ==))
+        XCTAssertTrue(l2.map { $0 * 10 }.equal(20^^10, ==))
+        XCTAssertTrue(l3.map { $0 * 10 }.equal(30^^10, ==))
+        XCTAssertTrue(l4.map { $0 * 10 }.equal(40^^30^^10, ==))
     }
     
     func testReverseFilter() -> () {
-        assertNil(l0.reverseFilter { _ in true }.head())
-        assertNil(l1.reverseFilter { $0 % 2 == 0 }.head())
-        XCTAssertEqual(l1.reverseFilter { $0 % 2 == 1 }.head()!, 1)
-        XCTAssertEqual(l2.reverseFilter { $0 % 2 == 0 }.head()!, 2)
-        XCTAssertEqual(l2.reverseFilter { $0 % 2 == 1 }.head()!, 1)
+        XCTAssertTrue(l0.reverseFilter { _ in true }.equal(l0, eq: ==))
+        XCTAssertTrue(l1.reverseFilter { $0 % 2 == 0 }.equal(l0, eq: ==))
+        XCTAssertTrue(l1.reverseFilter { $0 % 2 == 1 }.equal(^[1], eq: ==))
+        XCTAssertTrue(l2.reverseFilter { $0 % 2 == 0 }.equal(^[2], eq: ==))
+        XCTAssertTrue(l2.reverseFilter { $0 % 2 == 1 }.equal(^[1], eq: ==))
         XCTAssertEqual(l2.reverseFilter { $0 % 2 == 0 }.length(), 1)
-        XCTAssertEqual(l3.reverseFilter { $0 % 2 == 1 }.head()!, 1)
+        XCTAssertTrue(l3.reverseFilter { $0 % 2 == 1 }.equal(^[1, 3], eq: ==))
         XCTAssertEqual(l3.reverseFilter { $0 % 2 == 1 }.length(), 2)
     }
     
     func testFilter() -> () {
-        assertNil(l0.filter { _ in true }.head())
-        assertNil(l1.filter { $0 % 2 == 0 }.head())
-        XCTAssertEqual(l1.filter { $0 % 2 == 1 }.head()!, 1)
-        XCTAssertEqual(l2.filter { $0 % 2 == 0 }.head()!, 2)
-        XCTAssertEqual(l2.filter { $0 % 2 == 1 }.head()!, 1)
+        XCTAssertTrue(l0.filter { _ in true }.equal(l0, eq: ==))
+        XCTAssertTrue(l1.filter { $0 % 2 == 0 }.equal(l0, eq: ==))
+        XCTAssertTrue(l1.filter { $0 % 2 == 1 }.equal(^[1], eq: ==))
+        XCTAssertTrue(l2.filter { $0 % 2 == 0 }.equal(^[2], eq: ==))
+        XCTAssertTrue(l2.filter { $0 % 2 == 1 }.equal(^[1], eq: ==))
         XCTAssertEqual(l2.filter { $0 % 2 == 0 }.length(), 1)
-        XCTAssertEqual(l3.filter { $0 % 2 == 1 }.head()!, 3)
+        XCTAssertTrue(l3.filter { $0 % 2 == 1 }.equal(^[3, 1], eq: ==))
         XCTAssertEqual(l3.filter { $0 % 2 == 1 }.length(), 2)
     }
     
@@ -102,7 +117,6 @@ class ListTests: XCTestCase {
         XCTAssertEqual(l5.head()!, 1)
         XCTAssertEqual(l5.last()!, 1)
         XCTAssertEqual(l5.nth(1)!, 4)
-        
         XCTAssertEqual(l6.leftFold(0, +), 18)
         XCTAssertEqual(l6.length(), 8)
         XCTAssertTrue(l6.equal(1^^4^^3^^1^^1^^4^^3^^1, ==))
@@ -150,6 +164,24 @@ class ListTests: XCTestCase {
         XCTAssertTrue(l3.equal(l4.tail()!, ==))
     }
     
+    func testReversePartition() -> () {
+        let (l0trues, l0falses) = l0.reversePartition { $0 % 2 == 0 }
+        let (l1trues, l1falses) = l1.reversePartition { $0 % 2 == 0 }
+        let (l2trues, l2falses) = l2.reversePartition { $0 % 2 == 0 }
+        let (l3trues, l3falses) = l3.reversePartition { $0 % 2 == 0 }
+        let (l4trues, l4falses) = l4.reversePartition { $0 % 2 == 0 }
+        
+        XCTAssertTrue(l0trues.isEmpty())
+        XCTAssertTrue(l0falses.isEmpty())
+        XCTAssertTrue(l1trues.isEmpty())
+        XCTAssertTrue(l1falses.equal(l1, ==))
+        XCTAssertEqual(l2trues.nth(0)!, 2)
+        XCTAssertEqual(l2trues.length(), 1)
+        XCTAssertTrue(l2falses.equal(l1, ==))
+        XCTAssertTrue(l4trues.equal(^[4], ==))
+        XCTAssertTrue(l4falses.equal(1^^3, ==))
+    }
+    
     func testPartition() -> () {
         let (l0trues, l0falses) = l0.partition { $0 % 2 == 0 }
         let (l1trues, l1falses) = l1.partition { $0 % 2 == 0 }
@@ -164,8 +196,8 @@ class ListTests: XCTestCase {
         XCTAssertEqual(l2trues.nth(0)!, 2)
         XCTAssertEqual(l2trues.length(), 1)
         XCTAssertTrue(l2falses.equal(l1, ==))
-        XCTAssertTrue(l4trues.equal(List(4, List()), ==))
-        XCTAssertTrue(l4falses.equal(List(3, List(1, List())), ==))
+        XCTAssertTrue(l4trues.equal(^[4], ==))
+        XCTAssertTrue(l4falses.equal(3^^1, ==))
     }
 
 }

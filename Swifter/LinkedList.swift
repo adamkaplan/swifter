@@ -6,10 +6,11 @@
 //  Copyright (c) 2014 Yahoo!. All rights reserved.
 //
 
-// TODO: make functional/persistent
-class LinkedList<T> {
+/* This is a mutable implementation of a linked list and is not recommended to be
+ * used in a functional paradigm. */
+public class LinkedList<T> {
     
-    var _this: [T!]
+    var _this: [T!] // TODO REMOVE WORKAROUND [T!] -> T, _this -> this
     var this: T! {
     get
     {
@@ -55,6 +56,24 @@ class LinkedList<T> {
             self.next!.prev = self
         }
         return t
+    }
+    
+    private func lastElement() -> LinkedList<T> {
+        var list: LinkedList<T> = self
+        while list.next {
+            list = list.next!
+        }
+        return list
+    }
+    
+    public func append(list: LinkedList<T>) {
+        let last = self.lastElement()
+        last.next = list
+        list.prev = last
+    }
+    
+    public func append(last: T) {
+        self.append(LinkedList(this: last))
     }
     
     public func isEmpty() -> Bool {
