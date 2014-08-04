@@ -51,7 +51,7 @@ internal class PersistentData<T> {
     }
     
     func set(sndValue: T) -> PersistentData<T>? {
-        if self.sndValue {
+        if self.version != nil {
             return PersistentData<T>(sndValue)
         } else {
             self.version = Version()

@@ -85,17 +85,22 @@ public enum Try<T> { // TODO REFACTOR TO TRY<T,E>
         return self.fold({ $0 }, { _ in nil })
     }
     
-    /** Forcedly unwraps this Try, throwing the exception contained in .Failure(E). */
+    /** Forcedly unwraps this Try, failing the TryFailure contained in .Failure(E). */
     public func unwrap() -> T {
         return self.fold({ $0 }, {
-            ($0 as NSException).raise();
+            $0.fail()
             return self.toOption()!
             })
     }
     
+    /** Optionally returns the TryFailure contained in this .Failure. */
+    public func getFailure() -> TryFailure! {
+        return self.fold({ _ in nil }, { $0 })
+    }
+    
     /** Converts a .Success(T) to a Failure(PNSE) if p is not satisfied, or otherwise
         propagates the Try. */
-    public func filter(p: ((T) -> Bool)) -> Try<T> {
+    public func filter(p: T -> Bool) -> Try<T> {
         return self.fold({ p($0) ? self : .Failure(PredicateNotSatisfiedException()) }, { _ in self })
     }
     
@@ -145,10 +150,6 @@ public enum Try<T> { // TODO REFACTOR TO TRY<T,E>
             })
     }
     
-    public func toObject() -> TryObject<T> {
-        return TryObject<T>(try: self)
-    }
-    
 }
 
 extension Try : Printable {
@@ -169,18 +170,4 @@ extension Try : BooleanType {
         }
     }
 
-}
-
-public class TryObject<T>  {
-    
-    private let tryEnum: Try<T>
-    
-    init(try: Try<T>) {
-        self.tryEnum = try
-    }
-    
-    public func toEnum() -> Try<T> {
-        return self.tryEnum
-    }
-    
 }

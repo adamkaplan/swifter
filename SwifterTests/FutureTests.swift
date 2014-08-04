@@ -83,8 +83,8 @@ class FutureTests: XCTestCase {
         var onSuccess = false
         var onFailure = false
         let pf: PartialFunction<Try<Int>,Try<Int>> =
-            { $0.isSuccess() } =|= { _ in onSuccess = !onSuccess; return Try.Success([5]) } |
-            { $0.isFailure() } =|= { _ in onFailure = !onFailure; return Try.Success([5]) }
+            { $0.isSuccess() } >< { _ in onSuccess = !onSuccess; return Try.Success([5]) } |
+            { $0.isFailure() } >< { _ in onFailure = !onFailure; return Try.Success([5]) }
         
         let p1 = Promise<Try<Int>>(.Success([100]))
         let f1 = Future(linkedPromise: p1)
@@ -101,9 +101,9 @@ class FutureTests: XCTestCase {
     
     func testAndThen() -> () {
         let pf: PartialFunction<Try<Int>,String> =
-            { $0 ? $0.unwrap() > 25 :  false } =|= { _ in "G" } |
-            { $0 ? $0.unwrap() < 25 :  false } =|= { _ in "L" } |
-            { _ in true } =|= { _ in "Default" }
+            { $0 ? $0.unwrap() > 25 : false } >< { _ in "G" } |
+            { $0 ? $0.unwrap() < 25 : false } >< { _ in "L" } |
+            { _ in true } >< { _ in "Default" }
         
         let p1 = Promise<Try<Int>>(.Success([100]))
         let f1 = Future(linkedPromise: p1)
@@ -158,12 +158,12 @@ class FutureTests: XCTestCase {
         XCTAssertEqual(f2.value!, "Hello")
     }
     
-//    func testAwait() -> () { // TODO REMOVE WORKAR
-//        let f1 = Future<String> {
-//            sleep(1)
-//            return "Hello"
-//        }
-//        XCTAssertEqual(f1.await().value!, "Hello")
-//    }
+    func testAwait() -> () { // TODO REMOVE WORKAR
+        let f1 = Future<String> {
+            sleep(1)
+            return "Hello"
+        }
+        XCTAssertEqual(f1.await().value!, "Hello")
+    }
     
 }

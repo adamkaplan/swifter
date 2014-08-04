@@ -183,11 +183,12 @@ private class AndThen<A,B,C> : PartialFunction<A,C> {
     }
 }
 
-/** Creates a non-side-effect PartialFunction from body for a specific domain. */
-infix operator  =|= {precedence 255}
- func =|= <A,B> (domain: ((a: A) -> Bool), body: ((a: A) -> B)) -> PartialFunction<A,B> {
-    return PartialFunction<A,B>( { (a: A, _) in
-        if domain(a:a) {
+/* Creates a non-side-effect PartialFunction from body for a specific domain. */
+infix operator  >< {precedence 255}
+func >< <A,B> (domain: (a: A) -> Bool, body: (a: A) -> B) -> PartialFunction<A,B> {
+    return PartialFunction<A,B>( {
+        (a: A, _) in
+        if domain(a: a) {
             return .Defined(body(a: a))
         } else {
             return .Undefined
@@ -197,23 +198,14 @@ infix operator  =|= {precedence 255}
 
 /** Joins two PartialFunctions via PartialFunction.andThen(). */
 infix operator  => {precedence 128 associativity left}
- func => <A,B,C> (pf: PartialFunction<A, B>, nextPF: PartialFunction<B,C>) -> PartialFunction<A,C>{
+func => <A,B,C> (pf: PartialFunction<A, B>, nextPF: PartialFunction<B,C>) -> PartialFunction<A,C>{
     return pf.andThen(nextPF)
 }
 
 /** Joins two PartialFunctions via PartialFunction.orElse(). */
 infix operator  | {precedence 64 associativity left}
- func | <A,B> (pf: PartialFunction<A,B>, otherPF: PartialFunction<A,B>) -> PartialFunction<A,B> {
+func | <A,B> (pf: PartialFunction<A,B>, otherPF: PartialFunction<A,B>) -> PartialFunction<A,B> {
     return pf.orElse(otherPF)
-}
-
-/** Returns whether the input value is an instance of the input type.
-    Example usage:
-        5 ~~ Int.self // true
-        5 ~~ String.self // false */
-infix operator  ~~ {precedence 128}
-func ~~ <T> (value: Any, type: T.Type) -> Bool {
-    return (value as? T) != nil
 }
 
 /** Matches the value with the PartialFunction.

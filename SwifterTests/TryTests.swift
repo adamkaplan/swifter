@@ -51,6 +51,14 @@ class TryTests: XCTestCase {
         XCTAssertEqual(s.unwrap(), "Kitten")
     }
     
+    func testGetFailure() -> () {
+        let s: Try<Int> = .Success([10])
+        let f: Try<Int> = .Failure(PredicateNotSatisfiedException())
+        XCTAssertTrue(s.getFailure() == nil)
+        XCTAssertTrue(f.getFailure() is PredicateNotSatisfiedException)
+        XCTAssertFalse(f.getFailure() is TryDidFailException)
+    }
+    
     func testFilter() -> () {
         let s: Try<Int> = .Success([10])
         XCTAssertEqual(s.filter( { $0 % 2 == 0 } ).toOption()!, 10)
@@ -148,7 +156,7 @@ class TryTests: XCTestCase {
         let successTry: Try<Int> = .Success([10])
         let failureTry: Try<Int> = .Failure(NSException())
         
-        let pf: PartialFunction<TryFailure, Int> = { _ in true } =|= {
+        let pf: PartialFunction<TryFailure, Int> = { _ in true } >< {
             (_: TryFailure) -> Int in
             onFailure = true
             return 25

@@ -179,8 +179,8 @@ class PartialFunctionTests: XCTestCase {
                     return .Undefined
                 }
                 }) //| // TODO REMOVE WORKAROUND
-//            ({ $0 % 2 == 0 && $0 <= 10 } =|= { +$0 }) |
-//            ({ $0 % 2 != 0 && $0 <= 10 } =|= { -$0 })
+//            ({ $0 % 2 == 0 && $0 <= 10 } >< { +$0 }) |
+//            ({ $0 % 2 != 0 && $0 <= 10 } >< { -$0 })
 
         XCTAssertEqual(match(-5) { patternMatch }!, 05, "Second case")
         XCTAssertEqual(match(04) { patternMatch }!, 04, "First case")
@@ -194,16 +194,16 @@ class PartialFunctionTests: XCTestCase {
          // | 0::1::_ -> Some "Goodbye"
          // | [3, a, 5] -> Some (string_of_int (5 * a))
          // | _ -> None
-        let case1: PartialFunction<[Int],String> = { $0[0] == 1 && $0[1] == 2 && $0.count >= 3 } =|= { _ in "Hello" }
-        let case2: PartialFunction<[Int],String> = { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } =|= { _ in "Goodbye" }
-        let case3: PartialFunction<[Int],String> = { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } =|= { "\(5 * $0[1])" }
+        let case1: PartialFunction<[Int],String> = { $0[0] == 1 && $0[1] == 2 && $0.count >= 3 } >< { _ in "Hello" }
+        let case2: PartialFunction<[Int],String> = { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } >< { _ in "Goodbye" }
+        let case3: PartialFunction<[Int],String> = { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } >< { "\(5 * $0[1])" }
         let patternMatch: PartialFunction<[Int],String> =
             case1 |
             case2 |
             case3 //| // TODO REMOVE WORKAROUND
-//            { $0[0] == 1 && $0[1] == 2 && $0.count >= 3 } =|= { _ in "Hello" } |
-//            { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } =|= { _ in "Goodbye" } |
-//            { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } =|= { "\(5 * $0[1])" }
+//            { $0[0] == 1 && $0[1] == 2 && $0.count >= 3 } >< { _ in "Hello" } |
+//            { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } >< { _ in "Goodbye" } |
+//            { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } >< { "\(5 * $0[1])" }
         
         XCTAssertNil(match([1, 2]) { patternMatch })
         XCTAssertEqual(match([1, 2, 3]) { patternMatch }!, "Hello")
@@ -212,4 +212,5 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertEqual(match([3, 0, 5]) { patternMatch }!, "0")
         XCTAssertNil(match([3, 4, 5, 6]) { patternMatch })
     }
+    
 }
