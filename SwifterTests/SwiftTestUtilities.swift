@@ -8,12 +8,6 @@
 
 import XCTest
 
-func assertNil<T>(expression: T?, _ message: String = "") -> () {
-    if expression {
-        XCTFail("assertNil: expression is not nil")
-    }
-}
-
 func assertArraysEqual<T: Equatable>(one: [T], two: [T]) -> () {
     let initEq = (one.count - two.count) == 0
     XCTAssertTrue(one.reduce((initEq, 0)) {

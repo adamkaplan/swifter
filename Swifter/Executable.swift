@@ -8,7 +8,7 @@
 
 import Foundation
 
-/* An Executable is a wrapped action (Task) and queue on which to be executed. */
+/** An Executable is a wrapped action (Task) and queue on which to be executed. */
 public class Executable<T> {
     
     typealias Task = T -> ()

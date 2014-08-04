@@ -8,12 +8,8 @@
 
 import Foundation
 
-/* A generic, immutable binary tree. */
-class Tree<T> : LogicValue {
-    
-    func getLogicValue() -> Bool  {
-        return false
-    }
+/** A generic, immutable binary tree. */
+class Tree<T> {
     
     func fold<L>(leafValue: L, f: (L,T,L) -> L) -> L {
         return leafValue
@@ -68,10 +64,6 @@ class Tree<T> : LogicValue {
 class Leaf<T> : Tree<T> {}
 
 class Node<T> : Tree<T> {
-    
-    override func getLogicValue() -> Bool  {
-        return true
-    }
     
     typealias Data = (Tree<T>, T, Tree<T>)
     

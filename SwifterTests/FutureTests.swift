@@ -20,23 +20,23 @@ class FutureTests: XCTestCase {
             return "f1 is finished"
         }
         while !onComplete {
-            assertNil(f1.value)
+            XCTAssertNil(f1.value)
         }
-        do {} while !f1.value
+        do {} while f1.value == nil
         XCTAssertEqual(f1.value!, "f1 is finished")
         
         let p2 = Promise<Int>()
         let f2 = Future(linkedPromise: p2)
-        assertNil(f2.value)
+        XCTAssertNil(f2.value)
         p2.tryFulfill(25)
-        do {} while !f2.value
+        do {} while f2.value == nil
         XCTAssertEqual(f2.value!, 25)
         
         let p3 = Promise<String>()
         let f3 = Future(copiedPromise: p3)
         XCTAssertFalse(p3 === f3.promise)
         p3.tryFulfill("Copy this.")
-        do {} while !f3.value
+        do {} while f3.value == nil
         XCTAssertEqual(f3.value!, "Copy this.")
     }
     
@@ -55,14 +55,14 @@ class FutureTests: XCTestCase {
             }
             return result
         }
-        do {} while !f1m.value
+        do {} while f1m.value == nil
         XCTAssertTrue(f1m.value!)
 
         let p2 = Promise<Int>()
         let f2 = Future(linkedPromise: p2)
         let f2m = f2.map { "\($0)" }
         p2.tryFulfill(100)
-        do {} while !f2m.value
+        do {} while f2m.value == nil
         XCTAssertEqual(f2m.value!, "100")
     }
 
@@ -75,7 +75,7 @@ class FutureTests: XCTestCase {
             sleep(1);
             return Future(-$0)
         }
-        do {} while !f2.value
+        do {} while f2.value == nil
         XCTAssertEqual(f2.value!, -100)
     }
     
@@ -101,26 +101,26 @@ class FutureTests: XCTestCase {
     
     func testAndThen() -> () {
         let pf: PartialFunction<Try<Int>,String> =
-            { $0.toOption() ? $0.unwrap() > 25 : false } =|= { _ in "G" } |
-            { $0.toOption() ? $0.unwrap() < 25 : false } =|= { _ in "L" } |
+            { $0 ? $0.unwrap() > 25 :  false } =|= { _ in "G" } |
+            { $0 ? $0.unwrap() < 25 :  false } =|= { _ in "L" } |
             { _ in true } =|= { _ in "Default" }
         
         let p1 = Promise<Try<Int>>(.Success([100]))
         let f1 = Future(linkedPromise: p1)
         let f1at = f1.andThen(pf)
-        do {} while !f1at.value
+        do {} while f1at.value == nil
         XCTAssertEqual(f1at.value!.unwrap(), "G")
         
         let p2 = Promise<Try<Int>>(.Success([20]))
         let f2 = Future(linkedPromise: p2)
         let f2at = f2.andThen(pf)
-        do {} while !f2at.value
+        do {} while f2at.value == nil
         XCTAssertEqual(f2at.value!.unwrap(), "L")
         
         let p3 = Promise<Try<Int>>(.Failure(NSException()))
         let f3 = Future(linkedPromise: p3)
         let f3at = f3.andThen(pf)
-        do {} while !f3at.value
+        do {} while f3at.value == nil
         XCTAssertEqual(f3at.value!.unwrap(), "Default")
     }
 
@@ -134,7 +134,7 @@ class FutureTests: XCTestCase {
             return "Hello"
         }
         let f3 = f1.and(f2)
-        do {} while !f3.value
+        do {} while f3.value == nil
         let v1 = f3.value!
         XCTAssertEqual(v1.0, 100)
         XCTAssertEqual(v1.1, "Hello")

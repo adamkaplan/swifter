@@ -22,9 +22,9 @@ class Timer_FunctionalTests: XCTestCase {
     }
  
     func testHasFired() -> () {
-        let timer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval.infinity, userInfo: nil, repeats: true) { _ in () }
+        let timer = NSTimer.scheduledTimerWithTimeInterval(2, userInfo: nil, repeats: true) { _ in () }
         XCTAssertFalse(timer.hasFired())
-        timer.fire()
+        sleep(2)
         XCTAssertTrue(timer.hasFired())
     }
     

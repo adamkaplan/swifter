@@ -8,26 +8,26 @@
 
 import Foundation
 
-/* A Future is an entity that will be some value in the future. Futures encapsulate
- * the scheduling and memory management of the calculation of these values and allow
- * operations to be performed, at some point in the future, based on this future value. */
+/** A Future is an entity that will be some value in the future. Futures encapsulate
+    the scheduling and memory management of the calculation of these values and allow
+    operations to be performed, at some point in the future, based on this future value. */
 public class Future<T> {
     
     internal let promise: Promise<T>
     
-    /* Optionally returns the current value of the Future, dependent on its completion status. */
+    /** Optionally returns the current value of the Future, dependent on its completion status. */
     public var value: T? {
     get {
         return self.promise.value
     }
     }
     
-    /* Creates a Future already completed with `value`. */
+    /** Creates a Future already completed with `value`. */
     init(_ value: T) {
         self.promise = Promise<T>(value)
     }
     
-    /* Creates a Future whose value will be determined from the completion of `task`. */
+    /** Creates a Future whose value will be determined from the completion of `task`. */
     init(_ task: () -> T) {
         self.promise = Promise<T>()
         Executable(queue: Scheduler.assignQueue()) {
@@ -35,13 +35,13 @@ public class Future<T> {
         }.executeWithValue()
     }
     
-    /* Creates a Future whose status is directly linked to the state of the Promise. */
+    /** Creates a Future whose status is directly linked to the state of the Promise. */
     init(linkedPromise: Promise<T>) {
         self.promise = linkedPromise
     }
     
-    /* Creates a copied Promise, bound to the original, that will be used as the
-     * state of this Future. */
+    /** Creates a copied Promise, bound to the original, that will be used as the
+        state of this Future. */
     init(copiedPromise: Promise<T>) {
         self.promise = Promise<T>()
         copiedPromise.alsoFulfill(self.promise)
@@ -51,7 +51,7 @@ public class Future<T> {
         DLog(.Future, "Deinitializing Future")
     }
     
-    /* Creates a new Future from the application of `f` to the resulting PromiseState. */
+    /** Creates a new Future from the application of `f` to the resulting PromiseState. */
     public func map<S>(f: T -> S) -> Future<S> {
         Log(.Future, "Future is mapped to a new Future")
         
@@ -64,8 +64,7 @@ public class Future<T> {
         return Future<S>(linkedPromise: promise)
     }
     
-    /* Creates a new Future from the application of `f` to the result of this
-     * Future. */
+    /** Creates a new Future from the application of `f` to the result of this Future. */
     public func bind<S>(f: T -> Future<S>) -> Future<S> {
         Log(.Future, "Future is bound to a new Future")
         
@@ -78,19 +77,19 @@ public class Future<T> {
         return Future<S>(linkedPromise: promise)
     }
  
-    /* Applies the PartialFunction to the completed result of this Future. */
+    /** Applies the PartialFunction to the completed result of this Future. */
     public func onComplete<S>(pf: PartialFunction<T,S>) -> () {
         self.map(pf.tryApply)
     }
     
-    /* Applies the PartialFunction to the result of this Future, and returns a new 
-     * Future with the result of this Future. */
+    /** Applies the PartialFunction to the result of this Future, and returns a new
+        Future with the result of this Future. */
     public func andThen<S>(pf: PartialFunction<T,S>) -> Future<Try<S>> {
         return self.map { pf.tryApply($0) }
     }
     
-    /* Returns a single Future whose value, when completed, will be a tuple of the 
-     * completed values of the two Futures. */
+    /** Returns a single Future whose value, when completed, will be a tuple of the
+        completed values of the two Futures. */
     public func and<S>(other: Future<S>) -> Future<(T,S)> {
         return self.bind {
             (first: T) -> Future<(T,S)> in
@@ -131,14 +130,14 @@ extension Future : Awaitable {
     
 }
 
-/* The mapping operator. */
-operator infix >>| {associativity left}
-@infix func >>| <T,S> (future: Future<T>, f: T -> S) -> Future<S> {
+/** The mapping operator. */
+infix operator  >>| {associativity left}
+ func >>| <T,S> (future: Future<T>, f: T -> S) -> Future<S> {
     return future.map(f)
 }
 
-/* The binding operator. */
-operator infix >>= {associativity left}
-@infix func >>= <T,S> (future: Future<T>, f: T -> Future<S>) -> Future<S> {
+/** The binding operator. */
+infix operator  >>= {associativity left}
+ func >>= <T,S> (future: Future<T>, f: T -> Future<S>) -> Future<S> {
     return future.bind(f)
 }

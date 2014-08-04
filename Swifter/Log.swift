@@ -6,14 +6,14 @@
 //  Copyright (c) 2014 Yahoo! Inc. All rights reserved.
 //
 
-// This file contains utility functions to log the performance of the Swifter
-// framework in the Debug and Logging build configurations. These functions
-// do nothing in the Release build configuration, but may or may not be optimized
-// away during compilation.
+/// This file contains utility functions to log the performance of the Swifter
+/// framework in the Debug and Logging build configurations. These functions
+/// do nothing in the Release build configuration, but may or may not be optimized
+/// away during compilation.
 
 import Foundation
 
-internal enum LogCategory: LogicValue {
+internal enum LogCategory: BooleanType {
     case Executable
     case Future
     case LinkedList
@@ -23,24 +23,26 @@ internal enum LogCategory: LogicValue {
     case Promise
     case Timer
     
-    func getLogicValue() -> Bool {
-        switch self {
-        case .Executable:
-            return true
-        case .Future:
-            return true
-        case .LinkedList:
-            return true
-        case .List:
-            return true
-        case .Lock:
-            return true
-        case .PartialFunction:
-            return true
-        case .Promise:
-            return true
-        case .Timer:
-            return true
+    var boolValue: Bool {
+        get {
+            switch self {
+            case .Executable:
+                return true
+            case .Future:
+                return true
+            case .LinkedList:
+                return true
+            case .List:
+                return true
+            case .Lock:
+                return true
+            case .PartialFunction:
+                return true
+            case .Promise:
+                return true
+            case .Timer:
+                return true
+            }
         }
     }
 }

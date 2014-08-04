@@ -8,8 +8,8 @@
 
 import Foundation
 
-/* A PromiseState encapsulates all possible states of the Promise: .Pending,
- * or .Fulfilled with either a .Success(T) or a .Failure(E). */
+/** A PromiseState encapsulates all possible states of the Promise: .Pending,
+    or .Fulfilled with either a .Success(T) or a .Failure(E). */
 private enum PromiseState<T> {
     case Fulfilled([T]) // TODO: REMOVE WORKAROUND [T] -> T
     case Pending
@@ -27,9 +27,9 @@ private enum PromiseState<T> {
     
 }
 
-/* A Promise is an object that contains only a state of an asynchronous computation:
- * it is either .Pending or .Fulfilled with a value. Promises themselves do not
- * enact computation, but act as state endpoints in a computation. */
+/** A Promise is an object that contains only a state of an asynchronous computation:
+    it is either .Pending or .Fulfilled with a value. Promises themselves do not
+    enact computation, but act as state endpoints in a computation. */
 public class Promise<T> {
     
     private var state: PromiseState<T>
@@ -63,7 +63,7 @@ public class Promise<T> {
         DLog(.Promise, "Deinitializing Promise")
     }
     
-    /* Applies fulfilled to a .Fufilled(Try<T>) and pending to a .Pending. */
+    /** Applies fulfilled to a .Fufilled(Try<T>) and pending to a .Pending. */
     public func fold<S>(fulfilled: T -> S, pending: () -> S) -> S {
         return self.lock.perform {
 //            [unowned self] () -> S in // TODO Is this necessary? It doesn't matter if it's owned?
@@ -76,8 +76,8 @@ public class Promise<T> {
         }
     }
     
-    /* Attempts to change the state of the Promise to a .Fulfilled(Try<T>), and
-     * returns whether or not the state change occured. */
+    /** Attempts to change the state of the Promise to a .Fulfilled(Try<T>), and
+        returns whether or not the state change occured. */
     public func tryFulfill(value: T) -> Bool {
         return self.fold({
                 _ in
@@ -91,12 +91,12 @@ public class Promise<T> {
             })
     }
     
-    /* Returns whether the Promise has reached a .Fulfilled(T) state. */
+    /** Returns whether the Promise has reached a .Fulfilled(T) state. */
     public func isFulfilled() -> Bool {
         return self.fold({ _ in true }, { false })
     }
     
-    /* Fulfills the Promise simultaneously with this Promise. */
+    /** Fulfills the Promise simultaneously with this Promise. */
     public func alsoFulfill(promise: Promise<T>) -> () {
         self.executeOrMap(Executable<T>(queue: Scheduler.assignQueue()) { _ = promise.tryFulfill($0) })
     }
@@ -105,14 +105,14 @@ public class Promise<T> {
         self.callbacks.iter { $0.executeWithValue(self.value!) }
     }
     
-    /* Executes the Executable with the value of the .Fulfilled promise, or
-     * otherwise schedules the Executable to be executed after the Promise reaches
-     * the .Fulfilled state. */
+    /** Executes the Executable with the value of the .Fulfilled promise, or
+        otherwise schedules the Executable to be executed after the Promise reaches
+        the .Fulfilled state. */
     internal func executeOrMap(exec: Executable<T>) -> () {
         self.fold({ exec.executeWithValue($0) }, { self.callbacks = exec^^self.callbacks })
     }
     
-    /* Schedules the Task to be executed for when the Promise is .Fulfilled. */
+    /** Schedules the Task to be executed for when the Promise is .Fulfilled. */
     public func onComplete(task: T -> ()) -> () {
         self.executeOrMap(Executable(queue: Scheduler.assignQueue(), task: task))
     }
@@ -140,20 +140,19 @@ extension Promise : Awaitable {
     }
 
     public func await(time: NSTimeInterval, timeout: (Promise<T> -> Promise<T>)!) -> Promise<T> {
-//        let timer = NSTimer.scheduledTimerWithTimeInterval(time, userInfo: nil, repeats: false) { // TODO REMOVE WORKAROUND
-//            _ in
-//            Log(.Timer, "Timing out")
-//            if !self.isComplete() {
-//                timeout(self)
-//            }
-//        }
-//        do {} while !self.isComplete() && !timer.hasFired()
-//        if self.isComplete() {
-//            return self
-//        } else {
-//            return timeout(self)
-//        }
-        return self
+        let timer = NSTimer.scheduledTimerWithTimeInterval(time, userInfo: nil, repeats: false) {
+            _ in
+            Log(.Timer, "Timing out")
+            if !self.isComplete() {
+                timeout(self)
+            }
+        }
+        do {} while !self.isComplete() && !timer.hasFired()
+        if self.isComplete() {
+            return self
+        } else {
+            return timeout(self)
+        }
     }
     
 }

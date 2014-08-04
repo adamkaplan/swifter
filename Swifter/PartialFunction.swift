@@ -13,10 +13,10 @@ public enum DefinedResult<Z> {
     case Undefined
 }
 
-public class UndefinedArgumentException : NSException {
+public class UndefinedArgumentException : TryFailure {
     
-    init() {
-        super.init(name: "UndefinedArgumentException", reason: nil, userInfo: nil)
+    public func fail() -> () {
+        NSException(name: "UndefinedArgumentException", reason: nil, userInfo: nil).raise()
     }
     
 }
@@ -37,7 +37,7 @@ public class PartialFunction<A,B> {
         DLog(.PartialFunction, "Deinitializing PartialFunction")
     }
     
-    /* Optionally applies this PartialFunction to `a` if it is in the domain. */
+    /** Optionally applies this PartialFunction to `a` if it is in the domain. */
     public func apply(a: A) -> B? {
         switch applyOrCheck(a, false) {
         case .Defined(let p):
@@ -47,8 +47,8 @@ public class PartialFunction<A,B> {
         }
     }
     
-    /* Applies this PartialFunction to `a`, and in the case that 'a' is undefined
-     * for the function, applies defaultPF to `a`. */
+    /** Applies this PartialFunction to `a`, and in the case that 'a' is undefined
+        for the function, applies defaultPF to `a`. */
     public func applyOrElse(a: A, defaultPF: DefaultPF) -> Z? {
         switch applyOrCheck(a, false) {
         case .Defined(let p):
@@ -58,8 +58,7 @@ public class PartialFunction<A,B> {
         }
     }
     
-    /* Attempts to apply this PartialFunction to `a` and returns a Try of the 
-     * attempt. */
+    /** Attempts to apply this PartialFunction to `a` and returns a Try of the attempt. */
     public func tryApply(a: A) -> Try<B> {
         switch applyOrCheck(a, false) {
         case .Defined(let p):
@@ -69,7 +68,7 @@ public class PartialFunction<A,B> {
         }
     }
     
-    /* Returns true if this PartialFunction can be applied to `a` */
+    /** Returns true if this PartialFunction can be applied to `a` */
     public func isDefinedAt(a: A) -> Bool {
         switch applyOrCheck(a, true) {
         case .Defined(_):
@@ -79,14 +78,13 @@ public class PartialFunction<A,B> {
         }
     }
     
-    /* Returns a PartialFunction that first applies this function, or else applies 
-     * otherPF. */
+    /** Returns a PartialFunction that first applies this function, or else applies otherPF. */
     public func orElse(otherPF: PF) -> PF {
         return OrElse(f1: self, f2: otherPF)
     }
     
-    /* Returns a PartialFunction that first applies this function, and if successful,
-     * next applies nextPF. */
+    /** Returns a PartialFunction that first applies this function, and if successful,
+        next applies nextPF. */
     public func andThen<C>(nextPF: PartialFunction<B,C>) -> PartialFunction<A,C> {
         return AndThen<A,B,C>(f1: self, f2: nextPF)
     }
@@ -185,9 +183,9 @@ private class AndThen<A,B,C> : PartialFunction<A,C> {
     }
 }
 
-/* Creates a non-side-effect PartialFunction from body for a specific domain. */
-operator infix =|= {precedence 255}
-@infix func =|= <A,B> (domain: ((a: A) -> Bool), body: ((a: A) -> B)) -> PartialFunction<A,B> {
+/** Creates a non-side-effect PartialFunction from body for a specific domain. */
+infix operator  =|= {precedence 255}
+ func =|= <A,B> (domain: ((a: A) -> Bool), body: ((a: A) -> B)) -> PartialFunction<A,B> {
     return PartialFunction<A,B>( { (a: A, _) in
         if domain(a:a) {
             return .Defined(body(a: a))
@@ -197,33 +195,33 @@ operator infix =|= {precedence 255}
         })
 }
 
-/* Joins two PartialFunctions via PartialFunction.andThen(). */
-operator infix => {precedence 128 associativity left}
-@infix func => <A,B,C> (pf: PartialFunction<A, B>, nextPF: PartialFunction<B,C>) -> PartialFunction<A,C>{
+/** Joins two PartialFunctions via PartialFunction.andThen(). */
+infix operator  => {precedence 128 associativity left}
+ func => <A,B,C> (pf: PartialFunction<A, B>, nextPF: PartialFunction<B,C>) -> PartialFunction<A,C>{
     return pf.andThen(nextPF)
 }
 
-/* Joins two PartialFunctions via PartialFunction.orElse(). */
-operator infix | {precedence 64 associativity left}
-@infix func | <A,B> (pf: PartialFunction<A,B>, otherPF: PartialFunction<A,B>) -> PartialFunction<A,B> {
+/** Joins two PartialFunctions via PartialFunction.orElse(). */
+infix operator  | {precedence 64 associativity left}
+ func | <A,B> (pf: PartialFunction<A,B>, otherPF: PartialFunction<A,B>) -> PartialFunction<A,B> {
     return pf.orElse(otherPF)
 }
 
-/* Returns whether the input value is an instance of the input type.
- * Example usage:
- *   5 ~~ Int.self // true
- *   5 ~~ String.self // false */
-operator infix ~~ {precedence 128}
-@infix func ~~ <T> (value: Any, type: T.Type) -> Bool {
-    return (value as? T).getLogicValue()
+/** Returns whether the input value is an instance of the input type.
+    Example usage:
+        5 ~~ Int.self // true
+        5 ~~ String.self // false */
+infix operator  ~~ {precedence 128}
+func ~~ <T> (value: Any, type: T.Type) -> Bool {
+    return (value as? T) != nil
 }
 
-/* Matches the value with the PartialFunction. 
- * Example usage:
- *   match(5) {
- *     { $0 ~~ String.self } =|= { "Kitty says " + $0 }
- *     { $0 ~~ Int.self } =|= { "This is an integer: \($0)" }
- *   } // returns "This is an integer: 5" */
+/** Matches the value with the PartialFunction.
+    Example usage:
+        match(5) {
+            { $0 ~~ String.self } =|= { "Kitty says " + $0 }
+            { $0 ~~ Int.self } =|= { "This is an integer: \($0)" }
+        } // returns "This is an integer: 5" */
 func match<A,B>(value: A, patternMatch: () -> PartialFunction<A,B>) -> B? {
     return patternMatch().apply(value)
 }

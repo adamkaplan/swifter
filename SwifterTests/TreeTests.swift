@@ -25,7 +25,7 @@ class TreeTests: XCTestCase {
     }
     
     func testNode() -> () {
-        assertNil(t0.node())
+        XCTAssertNil(t0.node())
         XCTAssertEqual(t3.node()!, 3)
     }
     
@@ -35,7 +35,7 @@ class TreeTests: XCTestCase {
     }
     
     func testMap() -> () {
-        assertNil(t0.map { $0 * 10 }.node())
+        XCTAssertNil(t0.map { $0 * 10 }.node())
         XCTAssertEqual(t1.map { $0 * 10 }.node()!, 10)
         XCTAssertEqual(t3.map { $0 * 10 }.node()!, 30)
         let sum: Tree<Int> -> Int = { $0.fold(0) { $0 + $1 + $2 } }

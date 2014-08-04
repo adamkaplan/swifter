@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B36D64419900B5900E89C26 /* NSTimer+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */; };
+		0B36D64519900B5F00E89C26 /* NSTimer+Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */; };
+		0B36D64619900B8900E89C26 /* NSTimer+FunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BFF8291196F014C00D2AFE3 /* NSTimer+FunctionalTests.swift */; };
 		0B6933751954A1EE004837D2 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD34F931954821400460556 /* Log.swift */; };
 		0B6E3C24198A956A00349286 /* SwiftTestUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B119BFB196AF94C00CC82E4 /* SwiftTestUtilities.swift */; };
 		0BBDDAE9198AC2FB00D580BF /* TryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B3C73A1195A0DC90019ADBA /* TryTests.swift */; };
@@ -168,30 +171,30 @@
 /* Begin PBXFileReference section */
 		0B119BFB196AF94C00CC82E4 /* SwiftTestUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftTestUtilities.swift; sourceTree = "<group>"; };
 		0B314961197F15CF000E7E51 /* Tree.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
-		0B39C58E1953766D0014C2DE /* FutureTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FutureTests.swift; sourceTree = "<group>"; };
+		0B39C58E1953766D0014C2DE /* FutureTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FutureTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		0B39C59019538CA20014C2DE /* Scheduler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Scheduler.swift; path = Swifter/Scheduler.swift; sourceTree = "<group>"; };
-		0B3C73A1195A0DC90019ADBA /* TryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TryTests.swift; sourceTree = "<group>"; };
+		0B3C73A1195A0DC90019ADBA /* TryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TryTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		0B4418BD1964953A00BF7BFA /* ExecutableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExecutableTests.swift; sourceTree = "<group>"; };
 		0B4418BF1964955E00BF7BFA /* Array+FunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+FunctionalTests.swift"; sourceTree = "<group>"; };
-		0B6083D2195CB3AB00FDA568 /* LinkedListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedListTests.swift; sourceTree = "<group>"; };
+		0B6083D2195CB3AB00FDA568 /* LinkedListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = LinkedListTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		0B65E46419535E3100C6013A /* PromiseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromiseTests.swift; sourceTree = "<group>"; };
 		0B65E469195363FD00C6013A /* Future.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Future.swift; path = Swifter/Future.swift; sourceTree = "<group>"; };
 		0B65E46B1953642300C6013A /* Promise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Promise.swift; path = Swifter/Promise.swift; sourceTree = "<group>"; };
 		0B69E0A11958C0B3002CE96D /* Try.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Try.swift; sourceTree = "<group>"; };
 		0B6AA73C19757621002A11F9 /* NSLock+FunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSLock+FunctionalTests.swift"; sourceTree = "<group>"; };
-		0B82AD3C197FF8FB00AD683C /* TreeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TreeTests.swift; sourceTree = "<group>"; };
+		0B82AD3C197FF8FB00AD683C /* TreeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TreeTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		0BBB135F19797B7200C34D10 /* List.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = List.swift; sourceTree = "<group>"; };
 		0BBB136019797B7200C34D10 /* PersistentDataStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistentDataStructure.swift; sourceTree = "<group>"; };
 		0BC26D401961EA5D0033ECE0 /* Executable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Executable.swift; path = Swifter/Executable.swift; sourceTree = "<group>"; };
 		0BC26D45196320BB0033ECE0 /* Awaitable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Awaitable.swift; path = Swifter/Awaitable.swift; sourceTree = "<group>"; };
-		0BD033E0197EBE64007D31FE /* ListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListTests.swift; sourceTree = "<group>"; };
+		0BD033E0197EBE64007D31FE /* ListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ListTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		0BD34F931954821400460556 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Log.swift; path = Swifter/Log.swift; sourceTree = "<group>"; };
 		0BDA8EAE1952442C005760CF /* Array+Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Functional.swift"; sourceTree = "<group>"; };
 		0BDBC66F195CAB4700F79900 /* LinkedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
 		0BE8F8D41974732500734D1C /* NSLock+Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "NSLock+Functional.swift"; path = "Swifter/NSLock+Functional.swift"; sourceTree = "<group>"; };
 		0BFF828E196EF0DA00D2AFE3 /* NSTimer+Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSTimer+Functional.swift"; sourceTree = "<group>"; };
 		0BFF8291196F014C00D2AFE3 /* NSTimer+FunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSTimer+FunctionalTests.swift"; sourceTree = "<group>"; };
-		FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialFunctionTests.swift; sourceTree = "<group>"; };
+		FC2CDB171940E33600176A81 /* PartialFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PartialFunctionTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		FC603922193E740D000538B1 /* PartialFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialFunction.swift; sourceTree = "<group>"; };
 		FC7A0EBB193E72710045F66D /* Swifter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Swifter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC7A0EBF193E72710045F66D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -457,6 +460,7 @@
 				0BBDDB0E198AC92B00D580BF /* Future.swift in Sources */,
 				0BBDDAF9198AC6ED00D580BF /* LinkedList.swift in Sources */,
 				0BBDDB09198AC8EB00D580BF /* Awaitable.swift in Sources */,
+				0B36D64419900B5900E89C26 /* NSTimer+Functional.swift in Sources */,
 				0BBDDAEC198AC30800D580BF /* PartialFunction.swift in Sources */,
 				0BBDDAFA198AC6ED00D580BF /* List.swift in Sources */,
 				0BBDDB0D198AC92B00D580BF /* Executable.swift in Sources */,
@@ -475,6 +479,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0BBDDB08198AC8EB00D580BF /* Awaitable.swift in Sources */,
+				0B36D64619900B8900E89C26 /* NSTimer+FunctionalTests.swift in Sources */,
 				0B6933751954A1EE004837D2 /* Log.swift in Sources */,
 				0BBDDB14198AC92F00D580BF /* FutureTests.swift in Sources */,
 				0BBDDB04198AC6FD00D580BF /* PersistentDataStructure.swift in Sources */,
@@ -489,6 +494,7 @@
 				0BBDDAED198AC30900D580BF /* PartialFunction.swift in Sources */,
 				0BBDDAFD198AC6ED00D580BF /* List.swift in Sources */,
 				0BBDDB06198AC8E100D580BF /* Scheduler.swift in Sources */,
+				0B36D64519900B5F00E89C26 /* NSTimer+Functional.swift in Sources */,
 				0BBDDAF0198AC31600D580BF /* Tree.swift in Sources */,
 				0BBDDB15198AC92F00D580BF /* PromiseTests.swift in Sources */,
 				0BBDDB0A198AC8EF00D580BF /* NSLock+Functional.swift in Sources */,

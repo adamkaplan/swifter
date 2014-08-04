@@ -35,6 +35,7 @@ extension NSTimer {
             selector: "executeClosure:", userInfo: userInfo, repeats: repeats)
     }
 
+    /** Returns whether the NSTimer has fired as scheduled. Does not account for manual firing. */
     public func hasFired() -> Bool {
         switch self.fireDate.compare(NSDate()) {
         case .OrderedDescending:

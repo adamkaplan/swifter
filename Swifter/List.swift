@@ -8,8 +8,8 @@
 
 import Foundation
 
-/* A generic, functional, persistent/immutable linked list based on the algorithm
- * designed by Sleator, Tarjan, et al. */
+/** A generic, functional, persistent/immutable linked list based on the algorithm
+    designed by Sleator, Tarjan, et al. */
 class List<T> {
     
     typealias Version = PersistentData<T>.Version
@@ -140,7 +140,7 @@ class List<T> {
     
     func equal(other: List<T>, eq: (T, T) -> Bool) -> Bool {
         let fold2Result = self.leftFold2(other, acc: true) { $0.acc && eq($0.one, $0.two) }
-        return fold2Result ? fold2Result! : false
+        return fold2Result ?? false
     }
     
     func append(end: List<T>) -> List<T> {
@@ -173,6 +173,11 @@ enum AppendChange<T> {
     case NewVersion(List<T>.Version)
 }
 
+/** The internal implementation of the List. It is made of three clusers: Nil, Cons,
+    and Appension. A Nil node is the end of a list. A Cons joins an element to a
+    list tail, using the version of the List as the version of the overall Cons. An
+    Appension is a wrapper for a List that causes the traversal version of the List to
+    be used, without regard to the previous traversal versions. */
 class ListImpl<T> {
     
     typealias Version = List<T>.Version
@@ -263,7 +268,7 @@ class Cons<T> : ListImpl<T> {
                 return .NewVersion(self.data.version!)
             }
         case .NewVersion(let version): // CHECK TODO
-            if self.data.version {
+            if (self.data.version != nil) {
                 switch self.data.version!.compare(version) {
                 case .OrderedDescending:
                     return .NewVersion(version)
@@ -329,9 +334,9 @@ class Appension<T> : ListImpl<T> {
     
 }
 
-/* Constructs a List from an Array. */
-operator prefix ^ {}
-@prefix func ^ <T> (arr: [T]) -> List<T> {
+/** Constructs a List from an Array. */
+prefix operator  ^ {}
+prefix func ^ <T> (arr: [T]) -> List<T> {
     var list = List<T>()
     for i in 1...arr.count {
         NSLog("\(i) " + list.description)
@@ -340,17 +345,17 @@ operator prefix ^ {}
     return list
 }
 
-/* Constructs a List from a head and a tail. */
-operator infix ^^ {associativity right}
-@infix func ^^ <T> (head: T, tail: T) -> List<T> {
+/** Constructs a List from a head and a tail. */
+infix operator  ^^ {associativity right}
+func ^^ <T> (head: T, tail: T) -> List<T> {
     return List<T>(head, List<T>(tail, List<T>()))
 }
-@infix func ^^ <T> (head: T, tail: List<T>) -> List<T> {
+func ^^ <T> (head: T, tail: List<T>) -> List<T> {
     return List<T>(head, tail)
 }
 
-/* Appends two Lists in order. */
-operator infix ^&^ {associativity left}
-@infix func ^&^ <T> (front: List<T>, end: List<T>) -> List<T> {
+/** Appends two Lists in order. */
+infix operator  ^&^ {associativity right}
+func ^&^ <T> (front: List<T>, end: List<T>) -> List<T> {
     return front.append(end)
 }

@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Yahoo!. All rights reserved.
 //
 
-/* This is a mutable implementation of a linked list and is not recommended to be
- * used in a functional paradigm. */
+/** This is a mutable implementation of a linked list and is not recommended to be
+    used in a functional paradigm. */
 public class LinkedList<T> {
     
     var _this: [T!] // TODO REMOVE WORKAROUND [T!] -> T, _this -> this
@@ -52,7 +52,7 @@ public class LinkedList<T> {
         let t = self.this
         self.this = self.next?.this
         self.next = self.next?.next
-        if self.next {
+        if self.next != nil {
             self.next!.prev = self
         }
         return t
@@ -60,7 +60,7 @@ public class LinkedList<T> {
     
     private func lastElement() -> LinkedList<T> {
         var list: LinkedList<T> = self
-        while list.next {
+        while (list.next != nil) {
             list = list.next!
         }
         return list
@@ -82,7 +82,7 @@ public class LinkedList<T> {
     
 }
 
-public class LinkedListGenerator<T> : Generator {
+public class LinkedListGenerator<T> : GeneratorType {
     
     typealias Element = T
     
@@ -98,7 +98,7 @@ public class LinkedListGenerator<T> : Generator {
     public func next() -> Element? {
         let next = current?.this
         current = current?.next
-        if current {
+        if current != nil {
             current!.prev = nil
         }
         return next
@@ -106,12 +106,14 @@ public class LinkedListGenerator<T> : Generator {
     
 }
 
-extension LinkedList : Sequence {
-    
-    typealias Generator = LinkedListGenerator<T>
-    
-    public func generate() -> Generator {
-        return Generator(linkedList: self)
-    }
-    
-}
+//extension LinkedList : SequenceType { // TODO REMOVE COMMENTS
+//    
+//    typealias Generator = LinkedListGenerator<T>
+//
+//    typealias Generator = LinkedListGenerator<T>
+//    
+//    public func generate() -> Generator {
+//        return Generator(linkedList: self)
+//    }
+//    
+//}

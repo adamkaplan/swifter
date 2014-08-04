@@ -31,7 +31,7 @@ class PartialFunctionTests: XCTestCase {
             }
         }
         
-        assertNil(acceptEven.apply(1), "1 is not even")
+        XCTAssertNil(acceptEven.apply(1), "1 is not even")
         XCTAssertEqual(acceptEven.apply(2)!, "even", "2 is even")
     }
     
@@ -104,7 +104,7 @@ class PartialFunctionTests: XCTestCase {
         
         let none = first.orElse(first).apply(0)
         XCTAssertEqual(numCalls, 2, "First partial function should be called twice (not accepting)")
-        assertNil(none, "The result should be nil when neither left or right accept")
+        XCTAssertNil(none, "The result should be nil when neither left or right accept")
         
     }
     
@@ -146,7 +146,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertTrue(rejectCalled, "Reject partial function should be called")
         XCTAssertFalse(firstCalled, "First partial function should not be called")
         XCTAssertFalse(secondCalled, "Second partial function should not be called")
-        assertNil(fail, "Reject should not accept")
+        XCTAssertNil(fail, "Reject should not accept")
         
         firstCalled = false
         secondCalled = false
@@ -154,7 +154,7 @@ class PartialFunctionTests: XCTestCase {
         
         let failTwice = reject.andThen(reject).apply(0)
         XCTAssertTrue(rejectCalled, "Reject partial function should be called")
-        assertNil(failTwice, "Reject should not accept")
+        XCTAssertNil(failTwice, "Reject should not accept")
     }
     
     func testPatternMatch1() -> () {
@@ -185,7 +185,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertEqual(match(-5) { patternMatch }!, 05, "Second case")
         XCTAssertEqual(match(04) { patternMatch }!, 04, "First case")
         XCTAssertEqual(match(10) { patternMatch }!, 10, "First case")
-        assertNil(match(11) { patternMatch})
+        XCTAssertNil(match(11) { patternMatch})
     }
     
     func testPatternMatch2() -> () {
@@ -205,11 +205,11 @@ class PartialFunctionTests: XCTestCase {
 //            { $0[0] == 0 && $0[1] == 1 && $0.count >= 3 } =|= { _ in "Goodbye" } |
 //            { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } =|= { "\(5 * $0[1])" }
         
-        assertNil(match([1, 2]) { patternMatch })
+        XCTAssertNil(match([1, 2]) { patternMatch })
         XCTAssertEqual(match([1, 2, 3]) { patternMatch }!, "Hello")
         XCTAssertEqual(match([0, 1, 2, 3, 4, 5]) { patternMatch }!, "Goodbye")
         XCTAssertEqual(match([3, 20, 5]) { patternMatch }!, "100")
         XCTAssertEqual(match([3, 0, 5]) { patternMatch }!, "0")
-        assertNil(match([3, 4, 5, 6]) { patternMatch })
+        XCTAssertNil(match([3, 4, 5, 6]) { patternMatch })
     }
 }

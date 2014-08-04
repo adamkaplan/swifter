@@ -51,14 +51,14 @@ class PromiseTests: XCTestCase {
         p1.alsoFulfill(p2)
         p1.tryFulfill(10)
         XCTAssertEqual(p1.value!, 10)
-        do {} while !p2.value
+        do {} while p2.value == nil
         XCTAssertEqual(p2.value!, 10)
         
         let p3 = Promise<String>("Hello")
         let p4 = Promise<String>()
         p3.alsoFulfill(p4)
         XCTAssertEqual(p3.value!, "Hello")
-        do {} while !p4.value
+        do {} while p4.value == nil
         XCTAssertEqual(p4.value!, "Hello")
     }
     
@@ -99,18 +99,18 @@ class PromiseTests: XCTestCase {
         do {} while !onComplete
     }
     
-//    func testAwait() -> () { // TODO REMOVE WORKAROUND
-//        var finishedExecuting = false
-//        let p1 = Promise<Int>()
-//        let p2 = Promise<Int>()
-//        let e1 = Executable<Int>(queue: NSOperationQueue()) {
-//            sleep(1)
-//            finishedExecuting = true
-//            _ = p2.tryFulfill($0 + 125)
-//        }
-//        p1.executeOrMap(e1)
-//        p1.tryFulfill(0)
-//        XCTAssertEqual(p2.await().value!, 125)
-//        XCTAssertTrue(finishedExecuting)
-//    }
+    func testAwait() -> () {
+        var finishedExecuting = false
+        let p1 = Promise<Int>()
+        let p2 = Promise<Int>()
+        let e1 = Executable<Int>(queue: NSOperationQueue()) {
+            sleep(1)
+            finishedExecuting = true
+            _ = p2.tryFulfill($0 + 125)
+        }
+        p1.executeOrMap(e1)
+        p1.tryFulfill(0)
+        XCTAssertEqual(p2.await().value!, 125)
+        XCTAssertTrue(finishedExecuting)
+    }
 }

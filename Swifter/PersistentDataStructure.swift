@@ -22,8 +22,8 @@
 
 import Foundation
 
-/* PersistentData is the 'modification box' that stores the immutable data for
- * a particular data structure. */
+/** PersistentData is the 'modification box' that stores the immutable data for
+    a particular data structure. */
 internal class PersistentData<T> {
     
     typealias Version = NSDate
@@ -38,7 +38,7 @@ internal class PersistentData<T> {
     }
     
     func get(version: Version) -> T {
-        if self.version {
+        if self.version != nil {
             switch self.version!.compare(version) {
             case .OrderedDescending:
                 return self.fstValue

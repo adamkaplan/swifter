@@ -35,7 +35,7 @@ class ListTests: XCTestCase {
     }
     
     func testHead() -> () {
-        assertNil(l0.head())
+        XCTAssertNil(l0.head())
         XCTAssertEqual(l1.head()!, 1)
         XCTAssertEqual(l2.head()!, 2)
         XCTAssertEqual(l3.head()!, 3)
@@ -43,8 +43,8 @@ class ListTests: XCTestCase {
     }
     
     func testTail() -> () {
-        assertNil(l0.tail())
-        assertNil(l1.tail()!.head())
+        XCTAssertNil(l0.tail())
+        XCTAssertNil(l1.tail()!.head())
         XCTAssertEqual(l2.tail()!.head()!, 1)
         XCTAssertEqual(l3.tail()!.head()!, 1)
         XCTAssertEqual(l4.tail()!.head()!, 3)
@@ -132,10 +132,10 @@ class ListTests: XCTestCase {
     }
     
     func testNth() -> () {
-        assertNil(l0.nth(0))
-        assertNil(l0.nth(1))
+        XCTAssertNil(l0.nth(0))
+        XCTAssertNil(l0.nth(1))
         XCTAssertEqual(l1.nth(0)!, 1)
-        assertNil(l1.nth(1))
+        XCTAssertNil(l1.nth(1))
         XCTAssertEqual(l4.nth(0)!, 4)
         XCTAssertEqual(l4.nth(2)!, 1)
     }
@@ -149,7 +149,7 @@ class ListTests: XCTestCase {
     }
     
     func testLast() -> () {
-        assertNil(l0.last())
+        XCTAssertNil(l0.last())
         XCTAssertEqual(l1.last()!, 1)
         XCTAssertEqual(l2.last()!, 1)
         XCTAssertEqual(l3.last()!, 1)
