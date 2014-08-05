@@ -3,8 +3,10 @@
 
 import Foundation
 
-// Implementation
-// Try
+//
+// IMPLEMENTATION
+//
+
 public protocol TryFailure {
     
     /** Performs some side effect when the Try.Failure is unwrapped (e.g., NSException.raise()) */
@@ -80,6 +82,11 @@ public enum Try<T> { // TODO REFACTOR TO TRY<T,E>
             ($0 as NSException).raise();
             return self.toOption()!
         })
+    }
+    
+    /** Optionally returns the TryFailure contained in this .Failure. */
+    public func getFailure() -> TryFailure! {
+        return self.fold({ _ in nil }, { $0 })
     }
     
     /** Converts a .Success(T) to a Failure(PNSE) if p is not satisfied, or otherwise
@@ -342,11 +349,6 @@ func | <A,B> (pf: PartialFunction<A,B>, otherPF: PartialFunction<A,B>) -> Partia
     return pf.orElse(otherPF)
 }
 
-infix operator  ~~ {precedence 128}
-func ~~ <T> (value: Any, type: T.Type) -> Bool {
-    return (value as? T) != nil
-}
-
 func match<A,B>(value: A, patternMatch: () -> PartialFunction<A,B>) -> B? {
     return patternMatch().apply(value)
 }
@@ -360,8 +362,11 @@ extension Array {
     
 }
 
-// Simulation
-// PartialFunction, Optional, Custom Operators
+//
+// DEMONSTRATION
+//
+
+// PartialFunction and custom operators
 infix operator  /~ {}
 func /~ (num: Int, denom: Int) -> Int? {
     let divide = PartialFunction<(Int, Int), Int>( {
@@ -415,6 +420,7 @@ sample.collect(acceptNoNaturalNumbers)
 6 /~ 05
 6 /~ 15
 
+// Pattern matching
 // match with
 // | n when n % 2 == 0 && n <= 10 -> Some +n
 // | n when n % 2 != 0 && n <= 10 -> Some -n
@@ -427,19 +433,77 @@ match(04) { patt1 | patt2 }
 match(10) { patt1 | patt2 }
 match(11) { patt1 | patt2 }
 
-let patt3: PartialFunction<Any,String> = { $0 ~~ String.self } >< { $0 as String }
-let patt4: PartialFunction<Any,String> = { $0 ~~ Int.self } >< { "\($0)" }
-let patt5: PartialFunction<Any,String> = { $0 ~~ Bool.self } >< { $0 as Bool ? "true" : "false" }
+let patt3: PartialFunction<Any,String> = { $0 is String } >< { $0 as String }
+let patt4: PartialFunction<Any,String> = { $0 is Int } >< { "\($0)" }
+let patt5: PartialFunction<Any,String> = { $0 is Bool } >< { $0 as Bool ? "true" : "false" }
 
-func toString(elem: Any) -> String {
-    return match(elem) {
-        patt3 |
-        patt4 |
-        patt5 }!
+class NoMatch : TryFailure {
+    
+    func fail() -> () {
+        NSException(name: "NoMatch", reason: "There was not a match in the pattern", userInfo: nil).raise()
+    }
+    
 }
-// Include: apply, andThen, orElse, =>, |, match, ><, ~~ Class.self
 
-// Pattern matching
-// Exception paradigm switch
-// Collection
-// Try + PatternMatch failures ~~
+let patt6: PartialFunction<Int,Try<Int>> = { $0 % 2 != 0 } >< { .Success([$0]) }
+let patt7: PartialFunction<Int,Try<Int>> = { $0 % 2 == 0 && $0 < 10 } >< { .Success([$0 + 1]) }
+let patt8: PartialFunction<Int,Try<Int>> = { _ in true } >< { _ in .Failure(NoMatch()) }
+
+let patt9: PartialFunction<Try<Int>,Int> = { $0.isSuccess() } >< { $0.unwrap() }
+let patt10: PartialFunction<Try<Int>,TryFailure> = { $0.isFailure() } >< { $0.getFailure() }
+let patt11: PartialFunction<TryFailure,Int> = { $0 is PredicateNotSatisfiedException } >< { _ in 100 }
+let patt12: PartialFunction<TryFailure,Int> = { $0 is NoMatch } >< { _ in 200 }
+let patt13: PartialFunction<TryFailure,Int> = { _ in true } >< { _ in 300 }
+
+let matchInt = {
+    match( match($0) { patt6 | patt7 | patt8 }! ) {
+        patt9 | patt10 => (patt11 | patt12 | patt13)
+    }!
+}
+
+matchInt(4) // even -> 4 + 1 = 5
+matchInt(5) // odd -> 5
+matchInt(10) // NoMatch -> 200
+
+// Try and failure handling
+enum Exceptions :  TryFailure {
+    case NotParseableAsInt
+    case IndexOutOfBounds
+    
+    func fail() -> () {}
+}
+
+let f1: String -> Try<Int> = {
+    if let i = $0.toInt() {
+        return .Success([i])
+    } else {
+        return .Failure(Exceptions.NotParseableAsInt)
+    }
+}
+let f2: Int -> Try<[Int]> = {
+    let arr = [10, 45]
+    if $0 >= 0 && $0 < arr.count {
+        return .Success([[arr[$0]]])
+    } else {
+        return .Failure(Exceptions.IndexOutOfBounds)
+    }
+}
+let f3: [Int] -> String = {
+    return "\($0[0])"
+}
+let f: String -> String = {
+    (str: String) -> String in
+    return f1(str).bind(f2).map(f3).fold( { $0 }, {
+        switch $0 as Exceptions {
+        case .NotParseableAsInt:
+            return "'" + str + "' isn't parseable as an int"
+        case .IndexOutOfBounds:
+            return "\(str.toInt()!) isn't a valid index into [10, 45]"
+        }
+    })
+}
+
+f("0") // "10"
+f("1") // "45"
+f("2") // "2 isn't a valid index into [10, 45]"
+f("Hello") // "'Hello' isn't parseable as an int"
