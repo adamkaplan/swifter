@@ -8,9 +8,9 @@
 
 import Foundation
 
-class Scheduler {
+public class Scheduler {
     
-    class func assignThread() -> NSOperationQueue {
+    public class func assignThread() -> NSOperationQueue {
         return NSOperationQueue()
     }
     

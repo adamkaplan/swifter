@@ -9,32 +9,6 @@
 import XCTest
 
 class PromiseTests: XCTestCase {
-
-    func testInit() -> () {
-        let promise1 = Promise<Int>()
-        switch promise1.state {
-        case .Fulfilled(_):
-            XCTFail("Promise initialized without a value is .Fulfilled", file: "PromiseTests.swift", line: 17)
-        default:
-            ()
-        }
-        
-        let promise2 = Promise<Int>(value: .Success([10]))
-        switch promise2.state {
-        case .Fulfilled(.Success([10])):
-            ()
-        default:
-            XCTFail("Promise is not .Fulfilled(.Success([10]))", file: "PromiseTests.swift", line: 27)
-        }
-        
-        let promise3 = Promise<Int>(value: .Failure(NSException()))
-        switch promise3.state {
-        case .Fulfilled(.Failure(_)):
-            ()
-        default:
-            XCTFail("Promise is not .Fulfilled(.Failure(NSException))", file: "PromiseTests.swift", line: 35)
-        }
-    }
     
     func testFold() -> () {
         var onPending: Bool = false
@@ -60,7 +34,7 @@ class PromiseTests: XCTestCase {
     
         let promise2 = Promise<String>(value: .Success(["Hello"]))
         XCTAssertFalse(promise2.tryFulfill(.Success(["Goodbye"])))
-        XCTAssertEqualObjects(promise2.value!.toOption()!, "Hello")
+        XCTAssertEqual(promise2.value!.toOption()!, "Hello")
     }
     
     func testIsFulfilled() -> () {
@@ -71,9 +45,7 @@ class PromiseTests: XCTestCase {
         XCTAssertTrue(promise2.isFulfilled())
     }
     
-    func testAlsoFulfill() -> () {
-        // func alsoFulfill(promise: Promise<T>) -> ()
-        
+    func testAlsoFulfill() -> () {        
         let promise1 = Promise<Int>()
         let promise2 = Promise<Int>()
         promise1.alsoFulfill(promise2)
@@ -85,9 +57,9 @@ class PromiseTests: XCTestCase {
         let promise3 = Promise<String>(value: .Success(["Hello"]))
         let promise4 = Promise<String>()
         promise3.alsoFulfill(promise4)
-        XCTAssertEqualObjects(promise3.value!.toOption()!, "Hello")
+        XCTAssertEqual(promise3.value!.toOption()!, "Hello")
         do {} while !promise4.value
-        XCTAssertEqualObjects(promise4.value!.toOption()!, "Hello")
+        XCTAssertEqual(promise4.value!.toOption()!, "Hello")
     }
     
     func testExecuteOrMap() -> () {
@@ -99,7 +71,7 @@ class PromiseTests: XCTestCase {
             var i = ti.toOption()!
             do { j++ } while i++ < STALL
             finishedExecuting = true
-            }, thread: NSOperationQueue())//, observed: promise1)
+            }, thread: NSOperationQueue())
         promise1.executeOrMap(exec1)
         promise1.tryFulfill(.Success([0]))
         while (j < STALL/2) {

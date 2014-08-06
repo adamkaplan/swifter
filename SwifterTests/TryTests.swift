@@ -52,7 +52,7 @@ class TryTests: XCTestCase {
     func testUnwrap() -> () {
         let s: Try<String> = .Success(["Kitten"])
         
-        XCTAssertEqualObjects(s.unwrap(), "Kitten")
+        XCTAssertEqual(s.unwrap(), "Kitten")
     }
     
     func testFilter() -> () {
@@ -66,8 +66,8 @@ class TryTests: XCTestCase {
         let s: Try<[Int]> = .Success([[1]])
         let f: Try<[Int]> = .Failure(NSException())
         
-        XCTAssertEqualObjects(s.getOrElse([]), [1])
-        XCTAssertEqualObjects(f.getOrElse([]), [])
+        assertArraysEqual(s.getOrElse([]), [1])
+        assertArraysEqual(f.getOrElse([]), [])
     }
     
     func testOrElse() -> () {

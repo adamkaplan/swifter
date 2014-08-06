@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Yahoo!. All rights reserved.
 //
 
-// TODO: make a functional version; conform to Sequence. is this necessary?
+// TODO: make functional/persistent
 class LinkedList<T> {
     
     var _this: [T!]
@@ -39,7 +39,7 @@ class LinkedList<T> {
         DLog(.LinkedList, "Deinitializing LinkedList")
     }
     
-    func push(t: T) -> () {
+    public func push(t: T) -> () {
         let next = LinkedList<T>(this: self.this)
         next.prev = self
         next.next = self.next
@@ -47,7 +47,7 @@ class LinkedList<T> {
         self.next = next
     }
     
-    func pop() -> T? {
+    public func pop() -> T? {
         let t = self.this
         self.this = self.next?.this
         self.next = self.next?.next
@@ -57,8 +57,42 @@ class LinkedList<T> {
         return t
     }
     
-    func isEmpty() -> Bool {
+    public func isEmpty() -> Bool {
         return self.this ? false : true
+    }
+    
+}
+
+public class LinkedListGenerator<T> : Generator {
+    
+    typealias Element = T
+    
+    var current: LinkedList<T>?
+    
+    init(linkedList: LinkedList<T>) {
+        self.current = LinkedList<T>()
+        self.current!.this = linkedList.this
+        self.current!.next = linkedList.next
+        self.current!.prev = linkedList.prev
+    }
+    
+    public func next() -> Element? {
+        let next = current?.this
+        current = current?.next
+        if current {
+            current!.prev = nil
+        }
+        return next
+    }
+    
+}
+
+extension LinkedList : Sequence {
+    
+    typealias Generator = LinkedListGenerator<T>
+    
+    func generate() -> Generator {
+        return Generator(linkedList: self)
     }
     
 }

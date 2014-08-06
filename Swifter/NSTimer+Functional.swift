@@ -10,7 +10,7 @@ import Foundation
 
 extension NSTimer {
     
-    class SwifterTimerExecutor {
+    private class SwifterTimerExecutor {
         
         let closure: ((NSTimer!) -> ())
         
@@ -29,7 +29,7 @@ extension NSTimer {
         }
     }
     
-    class func scheduledTimerWithTimeInterval(interval: NSTimeInterval, userInfo: AnyObject!, repeats: Bool, closure: ((NSTimer!) -> ())) -> NSTimer! {
+    public class func scheduledTimerWithTimeInterval(interval: NSTimeInterval, userInfo: AnyObject!, repeats: Bool, closure: ((NSTimer!) -> ())) -> NSTimer! {
         return NSTimer.scheduledTimerWithTimeInterval(interval, target: SwifterTimerExecutor(closure), selector: "executeClosure:", userInfo: userInfo, repeats: repeats)
     }
     

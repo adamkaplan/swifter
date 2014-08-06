@@ -8,12 +8,12 @@
 
 import Foundation
 
-enum DefinedResult<Z> {
+public enum DefinedResult<Z> {
     case Defined(Z)
     case Undefined
 }
 
-class UndefinedArgumentException : NSException {
+public class UndefinedArgumentException : NSException {
     
     init() {
         super.init(name: "UndefinedArgumentException", reason: nil, userInfo: nil)
@@ -21,7 +21,7 @@ class UndefinedArgumentException : NSException {
     
 }
 
-class PartialFunction<A,B> {
+public class PartialFunction<A,B> {
     
     typealias PF = PartialFunction<A,B>
     
@@ -31,14 +31,14 @@ class PartialFunction<A,B> {
     
     typealias UAE = UndefinedArgumentException
     
-    let applyOrCheck: (A, Bool) -> DefinedResult<Z>
+    private let applyOrCheck: (A, Bool) -> DefinedResult<Z>
     
     init(f: (A, Bool) -> DefinedResult<Z>) {
         self.applyOrCheck = f
     }
     
     /* Optionally applies this PartialFunction to `a` if it is in the domain. */
-    func apply(a: A) -> B? {
+    public func apply(a: A) -> B? {
         switch applyOrCheck(a, false) {
         case .Defined(let p):
             return p
@@ -49,7 +49,7 @@ class PartialFunction<A,B> {
     
     /* Applies this PartialFunction to `a`, and in the case that 'a' is undefined
      * for the function, applies defaultPF to `a`. */
-    func applyOrElse(a: A, defaultPF: DefaultPF) -> Z? {
+    public func applyOrElse(a: A, defaultPF: DefaultPF) -> Z? {
         switch applyOrCheck(a, false) {
         case .Defined(let p):
             return p
@@ -60,7 +60,7 @@ class PartialFunction<A,B> {
     
     /* Attempts to apply this PartialFunction to `a` and returns a Try of the 
      * attempt. */
-    func tryApply(a: A) -> Try<B> {
+    public func tryApply(a: A) -> Try<B> {
         switch applyOrCheck(a, false) {
         case .Defined(let p):
             return .Success([p])
@@ -70,7 +70,7 @@ class PartialFunction<A,B> {
     }
     
     /* Returns true if this PartialFunction can be applied to `a` */
-    func isDefinedAt(a: A) -> Bool {
+    public func isDefinedAt(a: A) -> Bool {
         switch applyOrCheck(a, true) {
         case .Defined(_):
             return true
@@ -81,13 +81,13 @@ class PartialFunction<A,B> {
     
     /* Returns a PartialFunction that first applies this function, or else applies 
      * otherPF. */
-    func orElse(otherPF: PF) -> PF {
+    public func orElse(otherPF: PF) -> PF {
         return OrElse(f1: self, f2: otherPF)
     }
     
     /* Returns a PartialFunction that first applies this function, and if successful,
      * next applies nextPF. */
-    func andThen<C>(nextPF: PartialFunction<B,C>) -> PartialFunction<A,C> {
+    public func andThen<C>(nextPF: PartialFunction<B,C>) -> PartialFunction<A,C> {
         return AndThen<A,B,C>(f1: self, f2: nextPF)
     }
     
@@ -96,8 +96,7 @@ class PartialFunction<A,B> {
 //    class let iden: PartialFunction<A,A> = PartialFunction( { .Defined($0.0) } )
 }
 
-/* TODO: make this private. Apple has promised Swift will get access modifiers */
-class OrElse<A,B> : PartialFunction<A,B> {
+private class OrElse<A,B> : PartialFunction<A,B> {
     
     let f1, f2: PF
     
@@ -140,8 +139,7 @@ class OrElse<A,B> : PartialFunction<A,B> {
     }
 }
 
-/* TODO: make this private. Apple has promised Swift will get access modifiers */
-class AndThen<A,B,C> : PartialFunction<A,C> {
+private class AndThen<A,B,C> : PartialFunction<A,C> {
     
     typealias NextPF = PartialFunction<B,C>
     

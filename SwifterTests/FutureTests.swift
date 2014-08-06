@@ -25,7 +25,7 @@ class FutureTests: XCTestCase {
             assertNil(f2.value)
         }
         do {} while !f2.value
-        XCTAssertEqualObjects(f2.value!.unwrap(), "f2 is finished")
+        XCTAssertEqual(f2.value!.unwrap(), "f2 is finished")
         
         let p1 = Promise<Int>()
         let f3 = Future<Int>(linkedPromise: p1)
@@ -39,7 +39,7 @@ class FutureTests: XCTestCase {
         assertNil(f4.value)
         p2.trySuccess("Copy this.")
         do {} while !f4.value
-        XCTAssertEqualObjects(f4.value!.unwrap(), "Copy this.")
+        XCTAssertEqual(f4.value!.unwrap(), "Copy this.")
     }
     
     func testFold() -> () {
@@ -70,7 +70,7 @@ class FutureTests: XCTestCase {
         let f1m = f1.map { "\($0)" }
         p1.trySuccess(100)
         do {} while !f1m.value
-        XCTAssertEqualObjects(f1m.value!.unwrap(), "100")
+        XCTAssertEqual(f1m.value!.unwrap(), "100")
 
         var onComplete: Bool = false
         let p2 = Promise<Bool>()
@@ -207,19 +207,19 @@ class FutureTests: XCTestCase {
         let f1 = Future<Int>(linkedPromise: p1)
         let f1at = f1.andThen(pf)
         do {} while !f1at.value
-        XCTAssertEqualObjects(f1at.value!.unwrap(), "G")
+        XCTAssertEqual(f1at.value!.unwrap(), "G")
         
         let p2 = Promise<Int>(value: .Success([20]))
         let f2 = Future<Int>(linkedPromise: p2)
         let f2at = f2.andThen(pf)
         do {} while !f2at.value
-        XCTAssertEqualObjects(f2at.value!.unwrap(), "L")
+        XCTAssertEqual(f2at.value!.unwrap(), "L")
         
         let p3 = Promise<Int>(value: .Failure(NSException()))
         let f3 = Future<Int>(linkedPromise: p3)
         let f3at = f3.andThen(pf)
         do {} while !f3at.value
-        XCTAssertEqualObjects(f3at.value!.unwrap(), "Default")
+        XCTAssertEqual(f3at.value!.unwrap(), "Default")
     }
 
     func testAnd() -> () {
@@ -236,8 +236,8 @@ class FutureTests: XCTestCase {
         let f3 = f1.and(f2)
         do {} while !f3.value
         let v1 = f3.value!.unwrap()
-        XCTAssertEqualObjects(v1.0, 100)
-        XCTAssertEqualObjects(v1.1, "Hello")
+        XCTAssertEqual(v1.0, 100)
+        XCTAssertEqual(v1.1, "Hello")
     }
     
     func testCompletedResult() -> () {
@@ -256,7 +256,7 @@ class FutureTests: XCTestCase {
             return "Hello"
             })
         do {} while !f2.isComplete()
-        XCTAssertEqualObjects(f2.value!.unwrap(), "Hello")
+        XCTAssertEqual(f2.value!.unwrap(), "Hello")
     }
     
     func testAwait() -> () {
@@ -266,7 +266,7 @@ class FutureTests: XCTestCase {
             return "Hello"
             })
         f1.await()
-        XCTAssertEqualObjects(f1.value!.unwrap(), "Hello")
+        XCTAssertEqual(f1.value!.unwrap(), "Hello")
     }
     
 }

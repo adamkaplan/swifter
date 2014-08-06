@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum LogCategory: String, LogicValue {
+internal enum LogCategory: String, LogicValue {
     case Executable = "Executable"
     case OnceExecutable = "OnceExecutable"
     case Lock = "Lock"
@@ -49,7 +49,7 @@ enum LogCategory: String, LogicValue {
     }
 }
 
-func Log(category: LogCategory) -> () {
+internal func Log(category: LogCategory) -> () {
     #if LOGGING
         if category {
             NSLog(category.toRaw())
@@ -57,15 +57,15 @@ func Log(category: LogCategory) -> () {
     #endif
 }
 
-func Log(category: LogCategory, format: String, args: Any...) -> () {
+internal func Log(category: LogCategory, string: String) -> () {
     #if LOGGING
         if category {
-            NSLog(format, args)
+            NSLog(string)
         }
     #endif
 }
 
-func DLog(category: LogCategory) -> () {
+internal func DLog(category: LogCategory) -> () {
     #if DEBUG
         if category {
             NSLog(category.toRaw())
@@ -73,10 +73,10 @@ func DLog(category: LogCategory) -> () {
     #endif
 }
 
-func DLog(category: LogCategory, format: String, args: Any...) -> () {
+internal func DLog(category: LogCategory, string: String) -> () {
     #if DEBUG
         if category {
-            NSLog(format, args)
+        NSLog(string)
         }
     #endif
 }

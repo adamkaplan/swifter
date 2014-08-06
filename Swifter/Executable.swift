@@ -9,13 +9,14 @@
 import Foundation
 
 /* An Executable is a wrapped computation (Task) and thread on which to be executed. */
-class Executable<T> {
+public class Executable<T> {
     
+    // TODO: change Task to T -> ()
     typealias Task = ((Try<T>) -> ())
     
     let task: Task
     let thread: NSOperationQueue
-    var value: Try<T>!
+    private var value: Try<T>!
 
     /* Creates an Executable to run a Task on an NSOperationQueue, optionally
      * triggered by a CallbackNotification sent from `observed`. */
@@ -29,7 +30,7 @@ class Executable<T> {
     }
     
     /* Executes the Executable by running its Task on the NSOperationQueue with `value`. */
-    func executeWithValue(value: Try<T>) -> () {
+    public func executeWithValue(value: Try<T>) -> () {
         Log(.Executable, "Executing with \(value) on \(self.thread)")
         self.value = value
         self.thread.addOperationWithBlock { _ = self.task(self.value) }
@@ -39,7 +40,7 @@ class Executable<T> {
 
 /* A OnlyExecutableOnceException indicates that the Executable was attempted to 
  * be executed more than once. */
-class OnlyExecutableOnceException: NSException {
+public class OnlyExecutableOnceException: NSException {
     
     init() {
         super.init(name: "OnlyExecutableOnceException", reason: nil, userInfo: nil)

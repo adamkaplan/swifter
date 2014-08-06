@@ -9,7 +9,7 @@
 import Foundation
 
 /* A TimeoutException indicates the Awaitable timed out. */
-class TimeoutException : NSException {
+public class TimeoutException : NSException {
     
     init(time: NSTimeInterval) {
         super.init(name: "TimeoutException", reason: "Computation exceeded \(time)", userInfo: nil)
@@ -18,7 +18,7 @@ class TimeoutException : NSException {
 }
 
 /* An asynchronous action that can be awaited. */
-protocol Awaitable {
+public protocol Awaitable {
     
     /* An exception indicating the computation timed out. */
     typealias TE = TimeoutException

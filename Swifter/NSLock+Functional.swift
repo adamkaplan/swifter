@@ -10,7 +10,7 @@ import Foundation
 
 extension NSLock {
     
-    func perform<T>(block: (() -> T)) -> T {
+    public func perform<T>(block: (() -> T)) -> T {
         self.lock()
         let result = block()
         self.unlock()

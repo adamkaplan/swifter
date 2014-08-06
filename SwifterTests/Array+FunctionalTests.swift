@@ -29,11 +29,11 @@ class Array_FunctionalTests: XCTestCase {
             }
         }
         
-        XCTAssertEqualObjects(sample.collect(acceptEven), [0, 2, 4, 6, 8])
-        XCTAssertEqualObjects(sample.collect(acceptOdd), [1, 3, 5, 7])
-        XCTAssertEqualObjects(sample.filter(acceptOdd.isDefinedAt), sample.collect(acceptOdd))
-        XCTAssertEqualObjects(sample.collect(acceptEven.orElse(acceptOdd)), sample)
-        XCTAssertEqualObjects(sample.collect(acceptEven.andThen(acceptOdd)), [])
+        assertArraysEqual(sample.collect(acceptEven), [0, 2, 4, 6, 8])
+        assertArraysEqual(sample.collect(acceptOdd), [1, 3, 5, 7])
+        assertArraysEqual(sample.filter(acceptOdd.isDefinedAt), sample.collect(acceptOdd))
+        assertArraysEqual(sample.collect(acceptEven.orElse(acceptOdd)), sample)
+        assertArraysEqual(sample.collect(acceptEven.andThen(acceptOdd)), [])
     }
 
 }

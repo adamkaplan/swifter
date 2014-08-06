@@ -32,7 +32,7 @@ class PartialFunctionTests: XCTestCase {
         }
         
         assertNil(acceptEven.apply(1), "1 is not even")
-        XCTAssertEqualObjects(acceptEven.apply(2), "even", "2 is even")
+        XCTAssertEqual(acceptEven.apply(2)!, "even", "2 is even")
     }
     
     func testApplyOrElse() -> () {
@@ -53,7 +53,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertTrue(pf1Called, "First partial function in applyOrElse was called")
         XCTAssertTrue(pf2Called, "Second partial function in applyOrElse was called")
         XCTAssertTrue(pf1CalledBeforePf2, "The first partial function must be called before the second in applyOrElse")
-        XCTAssertEqualObjects(result1, "accepted", "The result should be `accept`")
+        XCTAssertEqual(result1!, "accepted", "The result should be `accept`")
         
         var acceptFirst = PartialFunction<Int, String> { (Int, Bool) in
             pf2Called = true
@@ -62,7 +62,7 @@ class PartialFunctionTests: XCTestCase {
         }
         
         let result2 = acceptFirst.applyOrElse(0, defaultPF: accept)
-        XCTAssertEqualObjects(result2, "bam!", "The result should be `accept`")
+        XCTAssertEqual(result2!, "bam!", "The result should be `accept`")
     }
     
     func testOrElse() -> () {
@@ -86,7 +86,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertTrue(firstCalled, "First partial function in orElse was called")
         XCTAssertTrue(secondCalled, "Second partial function in orElse was called")
         XCTAssertTrue(firstCalledBeforeSecond, "The first partial function must be called before the second in orElse")
-        XCTAssertEqualObjects(right, "second", "The result should be `second`")
+        XCTAssertEqual(right!, "second", "The result should be `second`")
         
         firstCalled = false
         secondCalled = false
@@ -95,7 +95,7 @@ class PartialFunctionTests: XCTestCase {
         let left = second.orElse(first).apply(0)
         XCTAssertFalse(firstCalled, "First partial function should not be called")
         XCTAssertTrue(secondCalled, "Second partial function should be called")
-        XCTAssertEqualObjects(left, "second", "The result should be `second`")
+        XCTAssertEqual(left!, "second", "The result should be `second`")
         
         numCalls = 0
         firstCalled = false
@@ -136,7 +136,7 @@ class PartialFunctionTests: XCTestCase {
         XCTAssertTrue(firstCalled, "First partial function in applyOrElse was called")
         XCTAssertTrue(secondCalled, "Second partial function in applyOrElse was called")
         XCTAssertTrue(firstCalledBeforeSecond, "The first partial function should be called before the second in applyOrElse")
-        XCTAssertEqualObjects(success, "second", "The result should be `second`")
+        XCTAssertEqual(success!, "second", "The result should be `second`")
         
         firstCalled = false
         secondCalled = false
@@ -180,9 +180,9 @@ class PartialFunctionTests: XCTestCase {
 //            ({ $0 % 2 == 0 && $0 <= 10 } =|= { +$0 }) |
 //            ({ $0 % 2 != 0 && $0 <= 10 } =|= { -$0 })
 
-        XCTAssertEqualObjects((-5 ~|> patternMatch1)!, 05, "Second case")
-        XCTAssertEqualObjects((04 ~|> patternMatch1)!, 04, "First case")
-        XCTAssertEqualObjects((match (10) { patternMatch1 })!, 10, "First case")
+        XCTAssertEqual((-5 ~|> patternMatch1)!, 05, "Second case")
+        XCTAssertEqual((04 ~|> patternMatch1)!, 04, "First case")
+        XCTAssertEqual((match (10) { patternMatch1 })!, 10, "First case")
         assertNil(match (11) { patternMatch1 })
     }
     
@@ -204,10 +204,10 @@ class PartialFunctionTests: XCTestCase {
 //            { $0[0] == 3 && $0[2] == 5 && $0.count == 3 } =|= { "\(5 * $0[1])" }
         
         assertNil([1, 2] ~|> patternMatch2)
-        XCTAssertEqualObjects(([1, 2, 3] ~|> patternMatch2)!, "Hello")
-        XCTAssertEqualObjects(([0, 1, 2, 3, 4, 5] ~|> patternMatch2)!, "Goodbye")
-        XCTAssertEqualObjects((match ([3, 20, 5]) { patternMatch2 })!, "100")
-        XCTAssertEqualObjects((match ([3, 0, 5]) { patternMatch2 })!, "0")
+        XCTAssertEqual(([1, 2, 3] ~|> patternMatch2)!, "Hello")
+        XCTAssertEqual(([0, 1, 2, 3, 4, 5] ~|> patternMatch2)!, "Goodbye")
+        XCTAssertEqual((match ([3, 20, 5]) { patternMatch2 })!, "100")
+        XCTAssertEqual((match ([3, 0, 5]) { patternMatch2 })!, "0")
         assertNil(match ([3, 4, 5, 6]) { patternMatch2 })
     }
 }

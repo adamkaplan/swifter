@@ -12,7 +12,7 @@ class LinkedListTests: XCTestCase {
 
     func testInit() {
         let li = LinkedList<Int>(this: 10)
-        XCTAssertEqualObjects(li.this!, 10)
+        XCTAssertEqual(li.this!, 10)
         assertNil(li.next)
         assertNil(li.prev)
     }
@@ -20,9 +20,9 @@ class LinkedListTests: XCTestCase {
     func testPush() {
         let ls = LinkedList<String>(this: "Cat")
         ls.push("Kitten")
-        XCTAssertEqualObjects(ls.this!, "Kitten")
-        XCTAssertEqualObjects(ls.next!.this!, "Cat")
-        XCTAssertEqualObjects(ls.next!.prev!.this, "Kitten")
+        XCTAssertEqual(ls.this!, "Kitten")
+        XCTAssertEqual(ls.next!.this!, "Cat")
+        XCTAssertEqual(ls.next!.prev!.this!, "Kitten")
         assertNil(ls.next!.next)
         assertNil(ls.prev)
     }
@@ -31,10 +31,10 @@ class LinkedListTests: XCTestCase {
         let ls = LinkedList<String>(this: "Cat")
         ls.push("Kitten")
         ls.push("Kitty")
-        XCTAssertEqualObjects(ls.pop(), "Kitty")
-        XCTAssertEqualObjects(ls.next!.prev!.this, "Kitten")
-        XCTAssertEqualObjects(ls.this!, "Kitten")
-        XCTAssertEqualObjects(ls.next!.this!, "Cat")
+        XCTAssertEqual(ls.pop()!, "Kitty")
+        XCTAssertEqual(ls.next!.prev!.this!, "Kitten")
+        XCTAssertEqual(ls.this!, "Kitten")
+        XCTAssertEqual(ls.next!.this!, "Cat")
         assertNil(ls.next!.next)
         assertNil(ls.prev)
     }
@@ -47,6 +47,25 @@ class LinkedListTests: XCTestCase {
         XCTAssertFalse(l2.isEmpty())
         l2.pop()
         XCTAssertTrue(l2.isEmpty())
+    }
+    
+    func testSequence() {
+        let ll = LinkedList<Int>()
+        ll.push(3)
+        ll.push(2)
+        ll.push(1)
+        ll.push(0)
+        
+        var counter: Int = 0
+        for i in ll {
+            XCTAssertEqual(i, counter++)
+        }
+        
+        XCTAssertEqual(ll.pop()!, 0)
+        XCTAssertEqual(ll.pop()!, 1)
+        XCTAssertEqual(ll.pop()!, 2)
+        XCTAssertEqual(ll.pop()!, 3)
+        XCTAssertTrue(ll.isEmpty())
     }
 
 }

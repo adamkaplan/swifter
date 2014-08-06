@@ -8,16 +8,15 @@
 
 import Foundation
 
-class Future<T> {
+public class Future<T> {
     
-    typealias E = NSException
+    public typealias E = NSException
     typealias PNSE = PredicateNotSatisfiedException
     
-    // TODO: make protected
-    let promise: Promise<T>
+    internal let promise: Promise<T>
     
     /* Optionally returns the current value of the Future, dependent on its completion status. */
-    var value: Try<T>? {
+    public var value: Try<T>? {
     get {
         return self.promise.value
     }
@@ -30,7 +29,7 @@ class Future<T> {
     
     /* Creates a Future whose value will be determined from the completion of task. */
     init(task: (() -> T)) {
-        // TODO: refactor to Try<T>
+        // TODO: refactor to Try<T> and refactor Executable to not execute with Try
         self.promise = Promise<T>()
         Executable(task: { _ in self.promise.success(task()) }, thread: NSOperationQueue()).executeWithValue(.Success([10]))
     }
@@ -52,7 +51,7 @@ class Future<T> {
     }
     
     /* Creates a new future from the application of `f` to the resulting PromiseState. */
-    func fold<S>(f: ((Try<T>) -> Try<S>)) -> Future<S> {
+    public func fold<S>(f: ((Try<T>) -> Try<S>)) -> Future<S> {
         let promise = Promise<S>()
         
         self.promise.executeOrMap(Executable<T>(task: {
@@ -65,14 +64,14 @@ class Future<T> {
     
     /* Creates a new Future whose value is the application of `f` to the result
      * of this Future. */
-    func map<S>(f: ((T) -> S)) -> Future<S> {
+    public func map<S>(f: ((T) -> S)) -> Future<S> {
         Log(.FutureFolded, "Future is mapped to a new Future")
         return self.fold { $0.map(f) }
     }
     
     /* Creates a new Future from the application of `f` to the result of this
      * Future. */
-    func bind<S>(f: ((T) -> Future<S>)) -> Future<S> {
+    public func bind<S>(f: ((T) -> Future<S>)) -> Future<S> {
         Log(.FutureFolded, "Future is bound to a new Future")
         
         let promise = Promise<S>()
@@ -90,41 +89,41 @@ class Future<T> {
     
     /* Creates a new future by filtering the value of the current Future with a
      * predicate. */
-    func filter(p: ((T) -> Bool)) -> Future<T> {
+    public func filter(p: ((T) -> Bool)) -> Future<T> {
         Log(.FutureFolded, "Future is filtered.")
         return self.fold { $0.filter(p) }
     }
     
     /* Applies the PartialFunction to the successful result of this Future. */
-    func onSuccess<S>(pf: PartialFunction<T,S>) -> () {
+    public func onSuccess<S>(pf: PartialFunction<T,S>) -> () {
         self.fold { $0.onSuccess(pf.tryApply) }
     }
 
     /* Applies the PartialFunction to the failure of this Future. */
-    func onFailure<S>(pf: PartialFunction<E,S>) -> () {
+    public func onFailure<S>(pf: PartialFunction<E,S>) -> () {
         self.fold { $0.onFailure(pf.tryApply) }
     }
  
     /* Applies the PartialFunction to the completed result of this Future. */
-    func onComplete<S>(pf: PartialFunction<Try<T>,S>) -> () {
+    public func onComplete<S>(pf: PartialFunction<Try<T>,S>) -> () {
         self.fold(pf.tryApply)
     }
    
     /* Creates a new future that will handle any matching throwable that this 
      * future might contain. */
-    func recover(pf: PartialFunction<E,T>) -> Future<T> {
+    public func recover(pf: PartialFunction<E,T>) -> Future<T> {
         return self.fold { $0.recover(pf) }
     }
     
     /* Applies the PartialFunction to the result of this Future, and returns a new 
      * Future with the result of this Future. */
-    func andThen<S>(pf: PartialFunction<Try<T>,S>) -> Future<S> {
+    public func andThen<S>(pf: PartialFunction<Try<T>,S>) -> Future<S> {
         return self.fold { pf.tryApply($0) }
     }
     
     /* Returns a single Future whose value, when completed, will be a tuple of the 
      * completed values of the two Futures. */
-    func and<S>(other: Future<S>) -> Future<(T,S)> {
+    public func and<S>(other: Future<S>) -> Future<(T,S)> {
         // Fix mapping and binding.
         return self.bind {
             (first: T) -> Future<(T,S)> in
@@ -145,7 +144,7 @@ extension Future : Awaitable {
     typealias CompletedResult = T
     
     /* The result of the awaited action at completion. */
-    var completedResult: T {
+    public var completedResult: T {
     get {
         self.await()
         return self.value!.toOption()!
@@ -153,17 +152,17 @@ extension Future : Awaitable {
     }
     
     /* Returns if the awaited action has completed. */
-    func isComplete() -> Bool {
+    public func isComplete() -> Bool {
         return self.promise.isFulfilled()
     }
     
     /* Awaits indefinitely until the action has completed. */
-    func await() -> Future<T> {
+    public func await() -> Future<T> {
         return self.await(NSTimeInterval.infinity)
     }
     
     /* Returns an attempt at awaiting the action for an NSTimeInterval duration. */
-    func await(time: NSTimeInterval) -> Future<T> {
+    public func await(time: NSTimeInterval) -> Future<T> {
         let future = Future<T>(copiedPromise: self.promise)
         future.promise.await(time)
         return future
