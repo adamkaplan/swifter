@@ -14,25 +14,24 @@ class ExecutableTests: XCTestCase {
         var onComplete: Bool = false
         let task: (Try<Int> -> ()) = {
             var j: Int = 0;
-            do {} while j++ < Int.max
+            do {} while j++ < Int.max/100
             onComplete = true
             XCTAssertEqual($0.unwrap(), 10)
         }
         let exec = Executable<Int>(task: task, thread: NSOperationQueue(), observed: self)
-        
-        notificationCenter.postNotification(CallbackNotification(value: 10))
+        let callbackValue = (Try<Int>.Success([10])).toObject()
+        notificationCenter.postNotificationName(canExecuteNotification, object: self, userInfo: ["callbackValue" : callbackValue])
         do {} while !onComplete
     }
     
     func testExecuteWithValue() -> () {
         var onComplete: Bool = false
-        let task: (Any -> ()) = {
-            _ in
+        let task: (Try<Int> -> ()) = {
             var j: Int = 0;
-            do {} while j++ < Int.max
-            onComplete = true
+            do {} while j++ < Int.max/100
+            onComplete = $0.isSuccess()
         }
-        let exec = Executable<Any>(task: task, thread: NSOperationQueue(), observed: nil)
+        let exec = Executable<Int>(task: task, thread: NSOperationQueue(), observed: nil)
         
         exec.executeWithValue(.Success([10]))
         do {} while !onComplete
@@ -46,24 +45,23 @@ class OnceExecutableTests: XCTestCase {
         var onComplete: Bool = false
         let task: (Try<Int> -> ()) = {
             var j: Int = 0;
-            do {} while j++ < Int.max
+            do {} while j++ < Int.max/100
             onComplete = true
             XCTAssertEqual($0.unwrap(), 10)
         }
         let exec = Executable<Int>(task: task, thread: NSOperationQueue(), observed: self)
-        
-        notificationCenter.postNotification(CallbackNotification(value: 10))
+        let callbackValue = (Try<Int>.Success([10])).toObject()
+        notificationCenter.postNotificationName(canExecuteNotification, object: self, userInfo: ["callbackValue" : callbackValue])
         do {} while !onComplete
-        notificationCenter.postNotification(CallbackNotification(value: 10))
+        notificationCenter.postNotificationName(canExecuteNotification, object: self, userInfo: ["callbackValue" : callbackValue])
     }
     
     func testExecuteWithValue() -> () {
         var onComplete: Bool = false
-        let task: (Any -> ()) = {
-            _ in
+        let task: (Try<Int> -> ()) = {
             var j: Int = 0;
-            do {} while j++ < Int.max
-            onComplete = true
+            do {} while j++ < Int.max/100
+            onComplete = $0.isSuccess()
         }
         let exec = Executable<Int>(task: task, thread: NSOperationQueue(), observed: nil)
         
@@ -71,5 +69,13 @@ class OnceExecutableTests: XCTestCase {
         do {} while !onComplete
         // Test exception TODO
     }
-    
+ 
+    func test() -> () {
+        measureBlock {
+            var onComplete: Bool = false
+            var j: Int = 0;
+            do {} while j++ < Int.max/100
+            onComplete = !onComplete
+        }
+    }
 }

@@ -31,7 +31,7 @@ class Future<T> {
     /* Creates a Future whose value will be determined from the completion of task. */
     init(task: (() -> T)) {
         self.promise = Promise<T>()
-        self.promise.executeOrMap(Executable<T>(task: { _ in task }, thread: NSOperationQueue(), observed: self.promise)) // TODO
+        self.promise.executeOrMap(Executable<T>(task: { _ in task() }, thread: NSOperationQueue(), observed: self.promise)) // TODO
     }
     
     /* Creates a Future whose status is directly linked to the state of the Promise. */

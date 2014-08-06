@@ -34,7 +34,7 @@ class TryDidNotFailException : NSException {
 
 /* A Try<T> represents a successful computation of a T as a .Success(T),
  * or a failure to correctly compute the value as a .Failure(E). */
-enum Try<T> {
+enum Try<T> : Printable {
     
     typealias E = NSException
     typealias PNSE = PredicateNotSatisfiedException
@@ -43,6 +43,12 @@ enum Try<T> {
     
     case Success([T])
     case Failure(E)
+    
+    var description: String {
+    get {
+        return self.fold({ ".Success(\($0))" }, { ".Failure(\($0))" })
+    }
+    }
     
     /* Applies success to a .Success(T) and failure to a .Failure(E). */
     func fold<S>(success: ((T) -> S), failure: ((E) -> S)) -> S {
@@ -127,6 +133,30 @@ enum Try<T> {
                 return self
             }
             })
+    }
+    
+    func toObject() -> TryObject<T> {
+        return TryObject<T>(try: self)
+    }
+    
+}
+
+class TryObject<T> : Printable {
+    
+    var description: String {
+    get {
+        return self.tryEnum.description
+    }
+    }
+    
+    let tryEnum: Try<T>
+    
+    init(try: Try<T>) {
+        self.tryEnum = try
+    }
+    
+    func toEnum() -> Try<T> {
+        return self.tryEnum
     }
     
 }

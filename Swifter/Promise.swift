@@ -83,14 +83,16 @@ class Promise<T> {
     /* Attempts to change the state of the Promise to a .Fulfilled(Try<T>), and
      * returns whether or not the state change occured. */
     func tryFulfill(value: Try<T>) -> Bool {
-        return self.stateFold({ _ in
-            Log(.Promise, "Attempted to fulfill an already-fulfilled promise (\(self.state)).")
-            return false
+        return self.stateFold({
+                _ in
+                Log(.Promise, "Attempted to fulfill an already-fulfilled promise (\(self.state)).")
+                return false
             }, {
-            Log(.PromiseFulfilled, "Fulfilled with \(value)")
-            self.state = .Fulfilled(value)
-            NSNotificationCenter.defaultCenter().postNotification(CallbackNotification(value: value))
-            return true
+                Log(.PromiseFulfilled, "Fulfilled with \(value)")
+                self.state = .Fulfilled(value)
+                let userInfo = ["callbackValue" : value]
+                NSNotificationCenter.defaultCenter().postNotification(name: canExecuteNotification, object: self, userInfo: userInfo)
+                return true
             })
     }
     
@@ -148,7 +150,7 @@ class Promise<T> {
         self.stateFold({
             exec.executeWithValue($0)
             }, {
-                // Create callback.
+                // TODOCreate callback.
         })
     }
     

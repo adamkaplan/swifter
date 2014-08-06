@@ -37,9 +37,12 @@ class LinkedList<T> {
     }
     
     func push(t: T) -> () {
-        let head = LinkedList<T>(this: t)
-        head.next = self
-        self.prev = head
+        // Head is not referenced after returning; the old cell still is
+        let next = LinkedList<T>(this: self.this)
+        next.prev = self
+        next.next = self.next
+        self.this = t
+        self.next = next
     }
     
     func pop() -> T? {

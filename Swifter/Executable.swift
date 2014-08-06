@@ -14,15 +14,16 @@ let notificationCenter = NSNotificationCenter.defaultCenter()
 /* An Executable is a wrapped computation (Task) and thread on which to be executed. */
 class Executable<T> {
     
-    typealias Task = ((Try<T>) -> Any)
+    typealias Task = ((Try<T>) -> ())
     
     let task: Task
     
     let thread: NSOperationQueue
     
+    let observer: AnyObject!
     let observed: AnyObject!
     
-    var value: Try<T>?
+    var value: Try<T>!
 
     /* Creates an Executable to run a Task on an NSOperationQueue, optionally
      * triggered by a CallbackNotification sent from `observed`. */
@@ -30,8 +31,14 @@ class Executable<T> {
         self.task = task
         self.thread = thread
         self.observed = observed
-        notificationCenter.addObserver(self, selector: "receiveNotification:",
-            name: canExecuteNotification, object: observed) // TODO check receiveNotification: selector
+        self.observer = notificationCenter.addObserverForName(canExecuteNotification,
+            object: observed,
+            queue: thread,
+            usingBlock: {
+                NSLog(
+                    "in usingBlock")
+                self.receiveNotification($0)
+            })
     }
     
     deinit {
@@ -41,18 +48,19 @@ class Executable<T> {
     
     /* The selector called when the notification center receives a CanExecuteNotification. */
     func receiveNotification(notification: NSNotification) -> () {
-        Log(.Executable, "Received notification: \(notification)")
+        Log(.Executable, "Received notification")
         
-        let note = notification as CallbackNotification<Try<T>>
-        
-        self.executeWithValue(note.value)
+        if let tryObject = (notification.userInfo["callbackValue"] as? TryObject<T>) {
+            let value = tryObject.toEnum()
+            self.executeWithValue(value)
+        }
     }
     
     /* Executes the Executable by running its Task on the NSOperationQueue with `value`. */
     func executeWithValue(value: Try<T>) -> () {
         Log(.Executable, "Executing with \(value) on \(self.thread)")
         self.value = value
-        dispatch_async(self.thread) { self.task(value); return () }
+        self.thread.addOperationWithBlock { self.task(self.value); return () }
     }
     
 }
@@ -87,12 +95,12 @@ class OnceExecutable<T> : Executable<T> {
      * The OnceExecutable implementation removes the Executable from the notification center
      * dispatch table to minimize callbacks to execute more than once. */
     override func receiveNotification(notification: NSNotification) -> () {
-        let note = notification as CallbackNotification<Try<T>>
+        super.receiveNotification(notification)
         
-        notificationCenter.removeObserver(self)
-        Log(.OnceExecutable, "Removed the OnceExecutable from the notification center dispatch table.")
-        
-        self.executeWithValue(note.value)
+        if (self.value) {
+            notificationCenter.removeObserver(self.observer)
+            Log(.OnceExecutable, "Removed the OnceExecutable from the notification center dispatch table.")
+        }
     }
     
     /* Executes the Executable by running its Task on the NSOperationQueue with `value`. 

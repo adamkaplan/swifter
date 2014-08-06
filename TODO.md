@@ -7,11 +7,13 @@ Swifter makes Swift even Swifter by adding specialized functional extensions: su
 TODO NOW
 =======
 
-Update README.md
+TESTING:
+Using NSNotification with @"callbackValue"
+Using TryObject<T>
+Time for operation.
+Multiple NSNotificationCenter calls.
 
 Choose consistent paradigm of failing vs. returning Boolean
-
-Test branch
 
 Ensure Callbacks are synchronous
 
@@ -24,9 +26,3 @@ Implement functional/persistent and concurrent data structures
 Implement an Actors framework
 
 Implement infix operators
-
-
-TODO AS POSSIBLE
-=======
-Implement Swift NSException catching in Executable and Try
-Test Swifter when newest Swift compiler is released

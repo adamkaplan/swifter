@@ -17,7 +17,7 @@ class FutureTests: XCTestCase {
         var onComplete: Bool = false
         let f2 = Future<String>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max
+            do {} while j++ < Int.max/10
             onComplete = true;
             return "f2 is finished"
             })
@@ -45,7 +45,7 @@ class FutureTests: XCTestCase {
         var onComplete: Bool = false
         let f1 = Future<String>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max
+            do {} while j++ < Int.max/10
             return "f1 is finished"
             })
         let f1f: Future<Int> = f1.fold({
@@ -91,14 +91,14 @@ class FutureTests: XCTestCase {
     func testBind() -> () {
         let f1 = Future<Int>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max
+            do {} while j++ < Int.max/10
             return 100
             })
         let f2: Future<Int> = f1.bind {
             (i: Int) -> Future<Int> in
             return Future<Int>(task: {
                 var j: Int = 0;
-                do {} while j++ < Int.max
+                do {} while j++ < Int.max/10
                 return -i
             })
         }
@@ -111,7 +111,7 @@ class FutureTests: XCTestCase {
             (i: Int) -> Future<Int> in
             return Future<Int>(task: {
                 var j: Int = 0;
-                do {} while j++ < Int.max
+                do {} while j++ < Int.max/10
                 return -i
                 })
         }
@@ -121,7 +121,7 @@ class FutureTests: XCTestCase {
     func testFilter() -> () {
         let f1 = Future<Int>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max
+            do {} while j++ < Int.max/10
             return 100
             })
         
@@ -221,13 +221,13 @@ class FutureTests: XCTestCase {
 
     func testAnd() -> () {
         let f1 = Future<Int>(task: {
-            var j: Int = 0;
-            do {} while j++ < Int.max
+//            var j: Int = 0;
+//            do {} while j++ < Int.max/10
             return 100
             })
         let f2 = Future<String>(task: {
-            var j: Int = 0;
-            do {} while j++ < Int.max
+//            var j: Int = 0;
+//            do {} while j++ < Int.max/10
             return "Hello"
             })
         let f3 = f1.and(f2)
@@ -249,7 +249,7 @@ class FutureTests: XCTestCase {
         
         let f2 = Future<String>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max
+            do {} while j++ < Int.max/10
             return "Hello"
             })
         do {} while !f2.isComplete()
@@ -259,7 +259,7 @@ class FutureTests: XCTestCase {
     func testAwait() -> () {
         let f1 = Future<String>(task: {
             var j: Int = 0;
-            do {} while j++ < Int.max
+            do {} while j++ < Int.max/10
             return "Hello"
             })
         f1.await()

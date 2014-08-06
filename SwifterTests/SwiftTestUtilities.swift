@@ -10,5 +10,5 @@ import XCTest
 
 func assertNil<T>(expression: T?, _ message: String = "") -> () {
     let isSome = expression ? true : false
-    XCTAssertTrue(isSome, message)
+    XCTAssertFalse(isSome, message)
 }

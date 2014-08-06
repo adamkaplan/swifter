@@ -12,22 +12,20 @@ import Foundation
  * the completion of an observed object that triggers the execution. */
 class CallbackNotification : NSNotification {
     
-    var _value: [Any]
-    var value: Any {
-    get
-    {
-       return _value[0]
-    }
-    set(newValue)
-    {
-        _value = [newValue]
-    }
-    }
-    
-    init(value: Any) {
-        _value = [value]
-        super.init()
-        self.value = value
-    }
+//    // TODO: Reimplement and make generic
+//    // it is a subclass that just wraps var callbackValue into userInfo
+//    
+//    var callbackValue: Any {
+//    get {
+//        // Retrieve from userInfo
+//    }
+//    set {
+//        // Store into userInfo
+//    }
+//    }
+//    
+//    init(callbackValue: Any, caller: AnyObject?) {
+//        // Store callbackValue and create NSNotification
+//    }
     
 }
