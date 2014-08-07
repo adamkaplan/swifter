@@ -383,26 +383,19 @@ let sumA: [Int] -> Int = { $0.reduce(0, +) }
 let sumL: List<Int> -> Int = { $0.leftFold(0, +) }
 
 var a0 = [6, 5, 3, 2, -1, 0]
-var l0 = ^a0
+let l0 = ^a0
 
 sumA(a0) // 15
 sumL(l0) // 15
 
 a0.extend([4]) // mutates the state of the underlying array
 let l1 = l0.append(^[4]) // mutates the underlying implementation, but not the visible structure of l0
-let l2 = l0
+let l2 = l0.rightFold(List<Int>()) { $0.elem ^^ $0.acc } // copy l0
 
 sumA(a0) // 19, mutated
 sumL(l0) // 15, not mutated
 sumL(l1) // 19, includes new element
 sumL(l2) // 15, not mutated
-
-l0 = l1 // can change references to Lists but overall data structure contains all versions
-
-sumA(a0) // 19, mutated
-sumL(l0) // 19, is l1
-sumL(l1) // 19, is l1
-sumL(l2) // 15, is l0
 
 // Folding
 // Array and List define a traversal pattern (reduce, fold) that permit simple creation of various functions
