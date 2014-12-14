@@ -8,13 +8,90 @@
 
 import Foundation
 
-enum MatchResult {
-    case Match(Any)
-    case NoMatch
+public enum DefinedResult<Z> {
+    case Defined(Z)
+    case Undefined
 }
 
-/* Todo: make this private. Apple has promised Swift will get access modifiers */
-class OrElse<A,B> : PartialFunction<A,B> {
+public class UndefinedArgumentException : TryFailure {
+    
+    public func fail() -> () {
+        NSException(name: "UndefinedArgumentException", reason: nil, userInfo: nil).raise()
+    }
+    
+}
+
+public class PartialFunction<A,B> {
+    
+    typealias PF = PartialFunction<A,B>
+    typealias Z = B // The final return type, provided to be overriden
+    typealias DefaultPF = PartialFunction<A,Z>
+    
+    private let applyOrCheck: (A, Bool) -> DefinedResult<Z>
+    
+    init(f: (A, Bool) -> DefinedResult<Z>) {
+        self.applyOrCheck = f
+    }
+    
+    deinit {
+        DLog(.PartialFunction, "Deinitializing PartialFunction")
+    }
+    
+    /** Optionally applies this PartialFunction to `a` if it is in the domain. */
+    public func apply(a: A) -> B? {
+        switch applyOrCheck(a, false) {
+        case .Defined(let p):
+            return p
+        case .Undefined:
+            return nil
+        }
+    }
+    
+    /** Applies this PartialFunction to `a`, and in the case that 'a' is undefined
+        for the function, applies defaultPF to `a`. */
+    public func applyOrElse(a: A, defaultPF: DefaultPF) -> Z? {
+        switch applyOrCheck(a, false) {
+        case .Defined(let p):
+            return p
+        default:
+            return defaultPF.apply(a)
+        }
+    }
+    
+    /** Attempts to apply this PartialFunction to `a` and returns a Try of the attempt. */
+    public func tryApply(a: A) -> Try<B> {
+        switch applyOrCheck(a, false) {
+        case .Defined(let p):
+            return .Success([p])
+        case .Undefined:
+            return .Failure(UndefinedArgumentException())
+        }
+    }
+    
+    /** Returns true if this PartialFunction can be applied to `a` */
+    public func isDefinedAt(a: A) -> Bool {
+        switch applyOrCheck(a, true) {
+        case .Defined(_):
+            return true
+        case .Undefined:
+            return false
+        }
+    }
+    
+    /** Returns a PartialFunction that first applies this function, or else applies otherPF. */
+    public func orElse(otherPF: PF) -> PF {
+        return OrElse(f1: self, f2: otherPF)
+    }
+    
+    /** Returns a PartialFunction that first applies this function, and if successful,
+        next applies nextPF. */
+    public func andThen<C>(nextPF: PartialFunction<B,C>) -> PartialFunction<A,C> {
+        return AndThen<A,B,C>(f1: self, f2: nextPF)
+    }
+
+}
+
+private class OrElse<A,B> : PartialFunction<A,B> {
     
     let f1, f2: PF
     
@@ -22,15 +99,20 @@ class OrElse<A,B> : PartialFunction<A,B> {
         self.f1 = f1
         self.f2 = f2
         
-        super.init( { [unowned self] (a, checkOnly) in
-            let result = self.f1.applyOrCheck(a, checkOnly)
-            switch result {
-            case .NoMatch:
+        super.init( {
+            [unowned self] (a, checkOnly) in
+            let result1 = self.f1.applyOrCheck(a, checkOnly)
+            switch result1 {
+            case .Defined(_):
+                return result1
+            case .Undefined:
                 return self.f2.applyOrCheck(a, checkOnly)
-            case .Match(_):
-                return result
             }
             })
+    }
+    
+    deinit {
+        DLog(.PartialFunction, "Deinitializing OrElse")
     }
     
     override func isDefinedAt(a: A) -> Bool {
@@ -41,12 +123,12 @@ class OrElse<A,B> : PartialFunction<A,B> {
         return OrElse(f1: f1, f2: f2.orElse(f3))
     }
     
-    override func applyOrElse(a: A, defaultFun: PF) -> B? {
+    override func applyOrElse(a: A, defaultPF: PF) -> B? {
         switch f1.applyOrCheck(a, false) {
-        case .Match(let r1 as B):
-            return r1
+        case .Defined(let result1):
+            return result1
         default:
-            return f2.applyOrElse(a, defaultFun: defaultFun)
+            return f2.applyOrElse(a, defaultPF: defaultPF)
         }
     }
     
@@ -57,107 +139,81 @@ class OrElse<A,B> : PartialFunction<A,B> {
     }
 }
 
-
-/* Todo: make this private. Apple has promised Swift will get access modifiers */
-class AndThen<A,B,C> : PartialFunction<A,C> {
+private class AndThen<A,B,C> : PartialFunction<A,C> {
     
     typealias NextPF = PartialFunction<B,C>
-    
     typealias Z = C
     
     let f1: PartialFunction<A,B>
-    
     let f2: NextPF
     
     init(f1: PartialFunction<A,B>, f2: NextPF) {
         self.f1 = f1
         self.f2 = f2
         
-        super.init( { [unowned self] (a, checkOnly) in
-            let result = self.f1.applyOrCheck(a, checkOnly)
-            switch result {
-            case .Match(let r as B):
-                let nextResult = f2.applyOrCheck(r, checkOnly)
-                switch nextResult {
-                case .NoMatch:
-                    return .NoMatch
-                case .Match(_):
-                    return nextResult
+        super.init( {
+            [unowned self] (a, checkOnly) in
+            let result1 = self.f1.applyOrCheck(a, checkOnly)
+            switch result1 {
+            case .Defined(let r1):
+                let result2 = f2.applyOrCheck(r1, checkOnly)
+                switch result2 {
+                case .Defined(_):
+                    return result2
+                case .Undefined:
+                    return .Undefined
                 }
-            default:
-                return .NoMatch
+            case .Undefined:
+                return .Undefined
             }
             })
     }
     
-    override func isDefinedAt(a: A) -> Bool {
-        return f1.isDefinedAt(a)
+    deinit {
+        DLog(.PartialFunction, "Deinitializing AndThen")
     }
     
-    override func applyOrElse(a: A, defaultFun: DefaultPF) -> Z? {
-        switch f1.applyOrCheck(a, false) {
-        case .Match(let r1 as B):
-            return f2.apply(r1)
-        default:
-            return defaultFun.apply(a)
+    override func applyOrElse(a: A, defaultPF: DefaultPF) -> Z? {
+        switch self.applyOrCheck(a, false) {
+        case .Defined(let result):
+            return result
+        case .Undefined:
+            return defaultPF.apply(a)
         }
     }
 }
 
-class PartialFunction<A,B> {
-    
-    typealias PF = PartialFunction<A,B>
-    
-    typealias Z = B // this type is the final return type, provided to be overriden
-    
-    typealias DefaultPF = PartialFunction<A,Z>
-    
-    let applyOrCheck: (A, Bool) -> MatchResult
-    
-    init(f: (A, Bool) -> MatchResult) {
-        self.applyOrCheck = f
-    }
-    
-    func apply(a: A) -> B? {
-        switch applyOrCheck(a, false) {
-        case .Match(let p as B):
-            //println("apply: match")
-            return p
-        case .NoMatch:
-            //println("apply: no match")
-            return nil
-        default:
-            //println("apply: bad stuff")
-            return nil
+/* Creates a non-side-effect PartialFunction from body for a specific domain. */
+infix operator  >< {precedence 255}
+func >< <A,B> (domain: (a: A) -> Bool, body: (a: A) -> B) -> PartialFunction<A,B> {
+    return PartialFunction<A,B>( {
+        (a: A, _) in
+        if domain(a: a) {
+            return .Defined(body(a: a))
+        } else {
+            return .Undefined
         }
-    }
-    
-    /* Apply this PartialFunction to `a` if a is defined for it.
-    Otherwise, applies defaultFun to `a` */
-    func applyOrElse(a: A, defaultFun: DefaultPF) -> Z? {
-        switch applyOrCheck(a, false) {
-        case .Match(let p as B):
-            return p
-        default:
-            return defaultFun.apply(a)
-        }
-    }
-    
-    /* Returns true if this PartialFunction can be applied to `a` */
-    func isDefinedAt(a: A) -> Bool {
-        switch applyOrCheck(a, true) {
-        case .Match(_):
-            return true
-        case .NoMatch:
-            return false
-        }
-    }
-    
-    func orElse(that: PF) -> PF {
-        return OrElse(f1: self, f2: that)
-    }
-    
-    func andThen<C>(nextPF: PartialFunction<B,C>) -> PartialFunction<A,C> {
-        return AndThen<A,B,C>(f1: self, f2: nextPF)
-    }
+        })
+}
+
+/** Joins two PartialFunctions via PartialFunction.andThen(). */
+infix operator  => {precedence 128 associativity left}
+func => <A,B,C> (pf: PartialFunction<A, B>, nextPF: PartialFunction<B,C>) -> PartialFunction<A,C>{
+    return pf.andThen(nextPF)
+}
+
+/** Joins two PartialFunctions via PartialFunction.orElse(). */
+infix operator  | {precedence 64 associativity left}
+func | <A,B> (pf: PartialFunction<A,B>, otherPF: PartialFunction<A,B>) -> PartialFunction<A,B> {
+    return pf.orElse(otherPF)
+}
+
+/** Matches the value with the PartialFunction.
+    Example usage:
+        match(5) {
+            { $0 ~~ String.self } =|= { "Kitty says " + $0 }
+            { $0 ~~ Int.self } =|= { "This is an integer: \($0)" }
+        } // returns "This is an integer: 5" */
+func match<A,B>(value: A, patternMatch: () -> PartialFunction<A,B>) -> B? {
+    return patternMatch().apply(value)
 }
