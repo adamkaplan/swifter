@@ -228,3 +228,7 @@ References
 
 [Making Data Structures Persistent](http://www.cs.cmu.edu/~sleator/papers/Persistence.htm)
 
+Core Contributors
+=======
+[Adam Kaplan](https://github.com/adkap)
+[Daniel Hanggi](https://github.com/djh325)
