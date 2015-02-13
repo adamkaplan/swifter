@@ -43,6 +43,6 @@ public protocol Awaitable {
     func await() -> AwaitedResult
     
     /** Returns an attempt at awaiting the action for an input duration. */
-    func await(time: NSTimeInterval, timeout: (Self -> AwaitedResult)!) -> AwaitedResult
+    func await(time: NSTimeInterval, timeout: (AwaitedResult -> AwaitedResult)!) -> AwaitedResult
 
 }

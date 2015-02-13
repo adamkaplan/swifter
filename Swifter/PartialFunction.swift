@@ -93,22 +93,22 @@ public class PartialFunction<A,B> {
 
 private class OrElse<A,B> : PartialFunction<A,B> {
     
-    let f1, f2: PF
+    let _f1, _f2: PF
     
     init(f1: PF, f2: PF) {
-        self.f1 = f1
-        self.f2 = f2
+        _f1 = f1
+        _f2 = f2
         
         super.init( {
-            [unowned self] (a, checkOnly) in
-            let result1 = self.f1.applyOrCheck(a, checkOnly)
+            (a, checkOnly) in
+            let result1 = f1.applyOrCheck(a, checkOnly)
             switch result1 {
             case .Defined(_):
                 return result1
             case .Undefined:
-                return self.f2.applyOrCheck(a, checkOnly)
+                return f2.applyOrCheck(a, checkOnly)
             }
-            })
+        })
     }
     
     deinit {
@@ -116,26 +116,26 @@ private class OrElse<A,B> : PartialFunction<A,B> {
     }
     
     override func isDefinedAt(a: A) -> Bool {
-        return f1.isDefinedAt(a) || f2.isDefinedAt(a)
+        return _f1.isDefinedAt(a) || _f2.isDefinedAt(a)
     }
     
     override func orElse(f3: PF) -> PF {
-        return OrElse(f1: f1, f2: f2.orElse(f3))
+        return OrElse(f1: _f1, f2: _f2.orElse(f3))
     }
     
     override func applyOrElse(a: A, defaultPF: PF) -> B? {
-        switch f1.applyOrCheck(a, false) {
+        switch _f1.applyOrCheck(a, false) {
         case .Defined(let result1):
             return result1
         default:
-            return f2.applyOrElse(a, defaultPF: defaultPF)
+            return _f2.applyOrElse(a, defaultPF: defaultPF)
         }
     }
     
     override func andThen<C>(nextPF: PartialFunction<B,C>) -> PartialFunction<A,C> {
         return OrElse<A,C>(
-            f1: AndThen<A,B,C>(f1: f1, f2: nextPF),
-            f2: AndThen<A,B,C>(f1: f2, f2: nextPF))
+            f1: AndThen<A,B,C>(f1: _f1, f2: nextPF),
+            f2: AndThen<A,B,C>(f1: _f2, f2: nextPF))
     }
 }
 
@@ -144,16 +144,16 @@ private class AndThen<A,B,C> : PartialFunction<A,C> {
     typealias NextPF = PartialFunction<B,C>
     typealias Z = C
     
-    let f1: PartialFunction<A,B>
-    let f2: NextPF
+    let _f1: PartialFunction<A,B>
+    let _f2: NextPF
     
     init(f1: PartialFunction<A,B>, f2: NextPF) {
-        self.f1 = f1
-        self.f2 = f2
+        _f1 = f1
+        _f2 = f2
         
         super.init( {
-            [unowned self] (a, checkOnly) in
-            let result1 = self.f1.applyOrCheck(a, checkOnly)
+            (a, checkOnly) in
+            let result1 = f1.applyOrCheck(a, checkOnly)
             switch result1 {
             case .Defined(let r1):
                 let result2 = f2.applyOrCheck(r1, checkOnly)

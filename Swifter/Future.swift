@@ -17,9 +17,9 @@ public class Future<T> {
     
     /** Optionally returns the current value of the Future, dependent on its completion status. */
     public var value: T? {
-    get {
-        return self.promise.value
-    }
+        get {
+            return self.promise.value
+        }
     }
     
     /** Creates a Future already completed with `value`. */
@@ -100,6 +100,9 @@ public class Future<T> {
         }
     }
     
+    internal func getPromise() -> Promise<T> {
+        return self.promise
+    }
 }
 
 extension Future : Awaitable {
@@ -123,7 +126,7 @@ extension Future : Awaitable {
     }
     
     public func await(time: NSTimeInterval, timeout: (Future<T> -> Future<T>)!) -> Future<T> {
-        let future = Future(copiedPromise: self.promise)
+        let future = Future(copiedPromise: getPromise())
         future.promise.await(time, timeout: nil)
         return future
     }

@@ -11,7 +11,7 @@ import Foundation
 extension Array {
     
     /** Returns an array of all defined elements returned from the PartialFunction. */
-    public func collect<B>(pf: PartialFunction<T,B>) -> Array<B> {
+    internal func collect<B>(pf: PartialFunction<T,B>) -> Array<B> {
         return self.filter(pf.isDefinedAt).map { pf.apply($0)! }
     }
     

@@ -77,7 +77,7 @@ public class LinkedList<T> {
     }
     
     public func isEmpty() -> Bool {
-        return self.this ? false : true
+        return (self.this != nil) ? false : true
     }
     
 }
